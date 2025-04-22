@@ -79,7 +79,7 @@ export class AuthService {
           const user: User = {
             id: '1',
             username: credentials.username,
-            fullName: credentials.username,
+            fullName: 'David Dorantes',
             email: `${credentials.username}@coacharte.com`,
             role: 'admin'
           };
