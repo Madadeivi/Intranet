@@ -21,7 +21,7 @@
     },
     "git": {
       "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "path/to/git/repo"]
+      "args": ["mcp-server-git", "--repository", "/Users/madadeivi/Developer/Coacharte/Intranet"]
     },
     "github": {
       "command": "npx",
@@ -30,7 +30,7 @@
         "@modelcontextprotocol/server-github"
       ],
       "env": {
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+        "GITHUB_TOKEN": "${GH_TOKEN}"
       }
     }
   }
