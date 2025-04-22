@@ -53,10 +53,10 @@ const LoginForm: React.FC = () => {
   
   return (
     <div className="login-container">
-      <h2>Coacharte Intranet - Inicio de sesion</h2>
+      <h2>Coacharte Intranet - Inicio de sesión</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="username">Nmbre de usuario:</label>
+          <label htmlFor="username">Nombre de usuario:</label>
           <input
             type="text"
             id="username"
@@ -76,7 +76,7 @@ const LoginForm: React.FC = () => {
           />
         </div>
         <button type="submit" className="login-button">
-          {isLoading ? 'Iniciando sesion...' : 'Sesion iniciada'}
+          {isLoading ? 'Iniciando sesión...' : 'Sesión iniciada'}
         </button>
       </form>
       
