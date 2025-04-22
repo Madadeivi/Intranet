@@ -50,7 +50,7 @@ yarn-error.log*
 
 # IDEs and editors
 /.idea
-/.vscode
+# .vscode está permitido para versionar archivos de configuración
 *.sublime-project
 *.sublime-workspace
 .project
