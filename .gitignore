@@ -1,1 +1,78 @@
+# React project .gitignore
+
+# Custom entries
 .qodo
+*.tmp
+*.bak
+*.swp
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+/package-lock.json
+/yarn.lock
+
+# Testing
+/coverage
+/.nyc_output
+/jest-coverage
+/test-results
+
+# Production build files
+/build
+/dist
+/.next
+/out
+
+# Misc
+.DS_Store
+*.pem
+*.tgz
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and editors
+/.idea
+/.vscode
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Local files
+.eslintcache
+.stylelintcache
+.eslintrc.local.json
+.prettierrc.local.json
+
+# Cache directories
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.cache
+.parcel-cache
