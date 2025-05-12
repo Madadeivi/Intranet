@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../App.css';
 import authService, { AuthResult, LoginCredentials } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/coacharte-logo.png';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -10,29 +12,23 @@ const LoginForm: React.FC = () => {
     text: '', 
     type: '' 
   });
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Reset any previous messages
     setMessage({ text: '', type: '' });
     setIsLoading(true);
-    
     try {
       const credentials: LoginCredentials = { username, password };
       const result: AuthResult = await authService.login(credentials);
-      
       if (result.success && result.user) {
         setMessage({ 
           text: `Welcome, ${result.user.fullName || result.user.username}!`, 
           type: 'success' 
         });
-        
-        // In a real app, you might redirect to a dashboard or home page
-        // For example: navigate('/dashboard');
-        console.log('Login successful', result.user);
-        
-        // Reset form
+        setTimeout(() => {
+          navigate('/home');
+        }, 1000);
         setUsername('');
         setPassword('');
       } else {
@@ -53,6 +49,7 @@ const LoginForm: React.FC = () => {
   
   return (
     <div className="login-container">
+      <img src={logo} alt="Logo Coacharte" className="login-logo" />
       <h2>Coacharte Intranet - Inicio de sesión</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">

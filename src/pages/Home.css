@@ -1,0 +1,291 @@
+/* Home.css - Estilos base para la página de inicio de la intranet Coacharte */
+
+:root {
+  --primary-blue: #10069F;
+  --primary-green: #43a047;
+  --contrast-light: #fff;
+  --contrast-dark: #111;
+}
+
+.home-root {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--primary-blue);
+  color: var(--contrast-light);
+  min-height: 100vh;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-blue);
+}
+.logo span {
+  color: var(--primary-green);
+}
+.home-nav a {
+  margin: 0 1rem;
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.home-nav a:hover {
+  color: var(--primary-green);
+}
+.home-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.user-avatar {
+  background: var(--primary-green);
+  color: #fff;
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.user-name {
+  font-weight: 500;
+}
+
+.home-welcome {
+  text-align: center;
+  margin: 2.5rem 0 1.5rem 0;
+}
+.home-welcome h1 {
+  font-size: 2.2rem;
+  color: var(--contrast-light);
+}
+.home-welcome p {
+  color: #555;
+  margin-bottom: 1.2rem;
+}
+.home-search {
+  padding: 0.7rem 1.2rem;
+  border-radius: 2rem;
+  border: 1px solid #ddd;
+  width: 350px;
+  max-width: 90vw;
+  font-size: 1rem;
+}
+
+.home-main-cards {
+  margin: 2rem auto;
+  max-width: 1100px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.main-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.07);
+  padding: 1.5rem 1.2rem;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.main-card:hover {
+  box-shadow: 0 4px 16px rgba(67,160,71,0.13);
+  transform: translateY(-4px) scale(1.03);
+}
+.main-card h3 {
+  margin: 0.7rem 0 0.3rem 0;
+  color: var(--contrast-light);
+}
+.main-card p {
+  color: #555;
+  font-size: 0.98rem;
+}
+
+.home-notices {
+  background: #e3f2fd;
+  padding: 2rem 0 1.5rem 0;
+}
+.home-notices h2 {
+  text-align: center;
+  color: var(--contrast-light);
+  margin-bottom: 1.2rem;
+}
+.notice-grid {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.notice-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.07);
+  padding: 1.2rem 1.1rem;
+  min-width: 220px;
+  max-width: 300px;
+  flex: 1 1 220px;
+}
+.notice-date {
+  font-size: 0.9rem;
+  color: var(--primary-green);
+  font-weight: 500;
+}
+.notice-card h4 {
+  margin: 0.5rem 0 0.3rem 0;
+  color: var(--contrast-light);
+}
+.notice-card p {
+  color: #555;
+  font-size: 0.97rem;
+}
+.notice-card a {
+  color: var(--primary-green);
+  text-decoration: underline;
+  font-size: 0.95rem;
+}
+
+.home-quicklinks {
+  margin: 2.5rem auto 1.5rem auto;
+  max-width: 1100px;
+}
+.home-quicklinks h2 {
+  color: var(--primary-blue);
+  margin-bottom: 1rem;
+}
+.quicklinks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.quicklink {
+  background: #fff;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 8px rgba(67,160,71,0.07);
+  padding: 0.9rem 1rem;
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 500;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+.quicklink:hover {
+  background: var(--primary-green);
+  color: #fff;
+}
+
+.home-calendar-events {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 2.5rem auto 2rem auto;
+  max-width: 1100px;
+  flex-wrap: wrap;
+}
+.calendar-box, .events-box {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.07);
+  padding: 1.5rem 1.2rem;
+  min-width: 260px;
+  max-width: 350px;
+  flex: 1 1 260px;
+}
+.calendar-box h3, .events-box h3 {
+  color: var(--primary-blue);
+  margin-bottom: 1rem;
+}
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+.calendar-table th, .calendar-table td {
+  padding: 0.3rem 0.2rem;
+  border-radius: 0.3rem;
+}
+.calendar-table th {
+  color: var(--primary-green);
+  font-weight: 600;
+}
+.calendar-table td {
+  background: #e3f2fd;
+  color: #222;
+  font-weight: 500;
+}
+.events-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.events-list li {
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid #e3f2fd;
+}
+.event-date {
+  color: var(--primary-green);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: block;
+}
+.event-title {
+  color: var(--contrast-light);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.home-footer {
+  background: var(--primary-blue);
+  color: var(--contrast-light);
+  padding: 2rem 2rem 1rem 2rem;
+  margin-top: 2.5rem;
+  border-radius: 1.2rem 1.2rem 0 0;
+}
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+.footer-logo span {
+  color: var(--primary-green);
+}
+.footer-links {
+  display: flex;
+  gap: 3rem;
+  margin: 1.2rem 0;
+  flex-wrap: wrap;
+}
+.footer-links h4 {
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+.footer-links a {
+  color: #e3f2fd;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.98rem;
+}
+.footer-links a:hover {
+  color: var(--primary-green);
+}
+.footer-copy {
+  text-align: center;
+  color: #e3f2fd;
+  font-size: 0.95rem;
+  margin-top: 1.2rem;
+}
