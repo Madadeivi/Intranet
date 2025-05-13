@@ -156,14 +156,4 @@ button:focus {
   font-weight: 300;
 }
 
-/* Ejemplo de uso: <h1 class="text-h1 font-geometria-bold">Título</h1> */
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827; /* bg-gray-900 */
-    color: #f3f4f6; /* text-gray-100 */
-  }
-  button {
-    background-color: #374151; /* bg-gray-700 */
-  }
-}

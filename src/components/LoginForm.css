@@ -1,88 +1,131 @@
-:root {
-  --primary-blue: #10069F;
-  --primary-green: #43a047;
-  --contrast-light: #fff;
-  --contrast-dark: #111;
-}
-
+/* Estilos actualizados para LoginForm con la paleta y tipografía de Coacharte */
 .login-container {
-  max-width: 400px;
-  margin: 4rem auto 0 auto;
+  min-width: 400px;
+  max-width: 25vw;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px var(--color-dark-10);
   background: #fff;
-  border-radius: 1.2rem;
-  box-shadow: 0 2px 12px rgba(30,136,229,0.09);
-  padding: 2.5rem 2rem 2rem 2rem;
+  font-family: 'Geometria', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  min-height: 60vh;
+  box-sizing: border-box;
 }
+
+.login-logo {
+  display: block;
+  margin: 0 auto 2.5rem auto;
+  height: 60px;
+}
+
 .login-container h2 {
-  color: var(--contrast-light);
-  margin-bottom: 2rem;
-  font-size: 1.6rem;
-  font-weight: bold;
   text-align: center;
-}
-.form-group {
+  color: var(--color-primary-100);
+  font-size: 1.5rem;
+  font-family: 'Geometria-Bold', 'Geometria', sans-serif;
+  margin-bottom: 2.5rem;
   width: 100%;
-  margin-bottom: 1.3rem;
 }
+
+.login-form{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+}
+
+.form-group {
+  margin-bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
 .form-group label {
   display: block;
-  color: var(--contrast-light);
-  font-weight: 500;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Geometria-Medium', 'Geometria', sans-serif;
+  font-size: 1rem;
+  color: var(--color-dark-100);
 }
+
 .form-group input {
   width: 100%;
-  padding: 0.7rem 1rem;
-  border-radius: 0.8rem;
-  border: 1px solid #ddd;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-primary-30);
+  border-radius: 0.5rem;
   font-size: 1rem;
-  background: #f6f8fa;
-  transition: border 0.2s;
-  color: var(--contrast-dark);
+  font-family: 'Geometria', sans-serif;
+  background: #f9fafb;
+  color: var(--color-dark-100);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
+
 .form-group input:focus {
-  border: 1.5px solid var(--primary-green);
   outline: none;
+  border-color: var(--color-primary-100);
+  box-shadow: 0 0 0 2px var(--color-primary-30);
 }
+
 .login-button {
   width: 100%;
-  background: linear-gradient(90deg, var(--primary-blue) 60%, var(--primary-green) 100%);
-  color: var(--contrast-light);
+  padding: 0.75rem;
+  background: var(--color-primary-100);
+  color: #fff;
   border: none;
-  border-radius: 0.8rem;
-  padding: 0.9rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-family: 'Geometria-Medium', 'Geometria', sans-serif;
+  font-weight: 500;
   cursor: pointer;
-  margin-top: 0.5rem;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(30,136,229,0.07);
+  margin-top: 1.25rem;
 }
-.login-button:hover {
-  background: linear-gradient(90deg, var(--primary-green) 60%, var(--primary-blue) 100%);
-  box-shadow: 0 4px 16px rgba(67,160,71,0.13);
+
+.login-button:hover, .login-button:focus {
+  background: var(--color-primary-70);
+  box-shadow: 0 2px 8px var(--color-primary-10);
 }
+
 .message {
-  margin-top: 1.2rem;
-  padding: 0.8rem 1rem;
-  border-radius: 0.7rem;
-  font-size: 1rem;
-  width: 100%;
+  margin-top: 2.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   text-align: center;
+  font-size: 1rem;
+  font-family: 'Geometria', sans-serif;
 }
-.message.success {
-  background: #e8f5e9;
-  color: var(--primary-green);
-  border: 1px solid var(--primary-green);
+
+.success {
+  background: var(--color-secondary-10);
+  color: var(--color-secondary-dark-100);
+  border: 1px solid var(--color-secondary-50);
 }
-.message.error {
-  background: #ffebee;
-  color: #e53935;
-  border: 1px solid #e53935;
+
+.error {
+  background: rgba(255, 0, 0, 0.08);
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
 }
+
 body, #root {
-  background: var(--primary-blue);
+  background: #fff;
+  width: 100vw;
+  min-width: 0;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }

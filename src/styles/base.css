@@ -1,6 +1,4 @@
 @import '../assets/fonts/geometria-webfont/style.css';
-@import "tailwindcss/preflight";
-@tailwind utilities;
 
 body {
   background-color: #f9fafb;
@@ -47,14 +45,4 @@ button:hover {
 
 button:focus {
   box-shadow: 0 0 0 2px #6366f1;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #f3f4f6;
-  }
-  button {
-    background-color: #374151;
-  }
 }

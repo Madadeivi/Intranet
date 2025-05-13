@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import '../App.css';
 import authService, { AuthResult, LoginCredentials } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/coacharte-logo.png';
+import './LoginForm.css';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -51,7 +51,7 @@ const LoginForm: React.FC = () => {
     <div className="login-container">
       <img src={logo} alt="Logo Coacharte" className="login-logo" />
       <h2>Coacharte Intranet - Inicio de sesión</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='login-form'>
         <div className="form-group">
           <label htmlFor="username">Nombre de usuario:</label>
           <input
@@ -73,7 +73,7 @@ const LoginForm: React.FC = () => {
           />
         </div>
         <button type="submit" className="login-button">
-          {isLoading ? 'Iniciando sesión...' : 'Sesión iniciada'}
+          {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
       </form>
       
