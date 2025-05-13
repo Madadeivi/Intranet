@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import './Home.css'; // Puedes crear este archivo para estilos específicos
+import './Home.css';
 import logo from '../assets/coacharte-logo.png';
-import logoFooter from '../assets/coacharte-bco@4x.png'; // Asegúrate de tener este logo
+import logoFooter from '../assets/coacharte-bco@4x.png';
+import homeOfficeImg from '../assets/home-office.jpeg';
+// Importar iconos rellenos de Material Icons
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+import EventIcon from '@mui/icons-material/Event';
+import InfoIcon from '@mui/icons-material/Info';
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
@@ -60,12 +68,48 @@ const Home: React.FC = () => {
       {/* Tarjetas principales */}
       <section className="home-main-cards">
         <div className="card-grid">
-          <div className="main-card"><span role="img" aria-label="user">👤</span> <h3>Mi Cuenta</h3><p>Gestiona tu perfil, documentos y accesos</p></div>
-          <div className="main-card"><span role="img" aria-label="hr">📁</span> <h3>Recursos Humanos</h3><p>Nómina, vacaciones y prestaciones</p></div>
-          <div className="main-card"><span role="img" aria-label="docs">📄</span> <h3>Procesos y Documentación</h3><p>Formatos y políticas corporativas</p></div>
-          <div className="main-card"><span role="img" aria-label="support">❓</span> <h3>Soporte y Comunicación</h3><p>Tickets y material de capacitación</p></div>
-          <div className="main-card"><span role="img" aria-label="calendar">📅</span> <h3>Calendario y Eventos</h3><p>Agenda corporativa y actividades</p></div>
-          <div className="main-card"><span role="img" aria-label="about">🏢</span> <h3>Conoce Coacharte</h3><p>Nuestra cultura y valores</p></div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Mi Cuenta">
+              <AccountCircleIcon fontSize="inherit" />
+            </span>
+            <h3>Mi Cuenta</h3>
+            <p>Gestiona tu perfil, documentos y accesos</p>
+          </div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Recursos Humanos">
+              <FolderSpecialIcon fontSize="inherit" />
+            </span>
+            <h3>Recursos Humanos</h3>
+            <p>Nómina, vacaciones y prestaciones</p>
+          </div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Procesos y Documentación">
+              <DescriptionIcon fontSize="inherit" />
+            </span>
+            <h3>Procesos y Documentación</h3>
+            <p>Formatos y políticas corporativas</p>
+          </div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Soporte y Comunicación">
+              <HeadsetMicIcon fontSize="inherit" />
+            </span>
+            <h3>Soporte y Comunicación</h3>
+            <p>Tickets y material de capacitación</p>
+          </div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Calendario y Eventos">
+              <EventIcon fontSize="inherit" />
+            </span>
+            <h3>Calendario y Eventos</h3>
+            <p>Agenda corporativa y actividades</p>
+          </div>
+          <div className="main-card">
+            <span className="main-card-icon" aria-label="Conoce Coacharte">
+              <InfoIcon fontSize="inherit" />
+            </span>
+            <h3>Conoce Coacharte</h3>
+            <p>Nuestra cultura y valores</p>
+          </div>
         </div>
       </section>
 
@@ -74,22 +118,31 @@ const Home: React.FC = () => {
         <h2>Avisos Importantes</h2>
         <div className="notice-grid">
           <div className="notice-card">
-            <span className="notice-date">15 Feb 2024</span>
-            <h4>Nueva Política de Home Office</h4>
-            <p>Actualización de lineamientos para trabajo remoto</p>
-            <a href="#">Ver más</a>
+            <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" />
+            <div className="notice-card-content">
+              <span className="notice-date">15 Feb 2024</span>
+              <h4>Nueva Política de Home Office</h4>
+              <p>Actualización de lineamientos para trabajo remoto</p>
+              <a href="#">Ver más</a>
+            </div>
           </div>
           <div className="notice-card">
-            <span className="notice-date">20 Feb 2024</span>
-            <h4>Campaña de Vacunación</h4>
-            <p>Próxima jornada de vacunación empresarial</p>
-            <a href="#">Ver más</a>
+            <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" />
+            <div className="notice-card-content">
+              <span className="notice-date">20 Feb 2024</span>
+              <h4>Campaña de Vacunación</h4>
+              <p>Próxima jornada de vacunación empresarial</p>
+              <a href="#">Ver más</a>
+            </div>
           </div>
           <div className="notice-card">
-            <span className="notice-date">18 Feb 2024</span>
-            <h4>Actualización de Sistemas</h4>
-            <p>Mantenimiento programado para el fin de semana</p>
-            <a href="#">Ver más</a>
+            <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" />
+            <div className="notice-card-content">
+              <span className="notice-date">18 Feb 2024</span>
+              <h4>Actualización de Sistemas</h4>
+              <p>Mantenimiento programado para el fin de semana</p>
+              <a href="#">Ver más</a>
+            </div>
           </div>
         </div>
       </section>
