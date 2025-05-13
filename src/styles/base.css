@@ -55,6 +55,6 @@ button:focus {
   align-items: center;
   justify-content: space-between;
   background: #fff;
-  padding: 1rem 2rem;
+  padding: 0.25rem 2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }

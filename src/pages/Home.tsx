@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Home.css'; // Puedes crear este archivo para estilos específicos
 import logo from '../assets/coacharte-logo.png';
+import logoFooter from '../assets/coacharte-bco@4x.png'; // Asegúrate de tener este logo
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
@@ -17,8 +18,18 @@ const Home: React.FC = () => {
           <a href="#">Procesos</a>
         </nav>
         <div className="home-user">
+          <span className="notification-bell" aria-label="Notificaciones">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 20c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6V9c0-3.07-1.63-5.64-5-6.32V2a1 1 0 1 0-2 0v.68C6.63 3.36 5 5.92 5 9v5l-1.29 1.29A1 1 0 0 0 5 17h12a1 1 0 0 0 .71-1.71L17 14zM17 15H5v-1.17l1.41-1.41C6.79 12.21 7 11.7 7 11.17V9c0-2.76 1.12-5 4-5s4 2.24 4 5v2.17c0 .53.21 1.04.59 1.42L17 13.83V15z" fill="currentColor"/>
+            </svg>
+          </span>
           <span className="user-avatar">DD</span>
           <span className="user-name">David Dorantes</span>
+          <span className="user-dropdown-arrow" aria-label="Más opciones">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
         </div>
       </header>
 
@@ -137,21 +148,40 @@ const Home: React.FC = () => {
 
       {/* Footer */}
       <footer className="home-footer">
-        <div className="footer-logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" /></div>
-        <div className="footer-links">
-          <div>
-            <h4>Enlaces Útiles</h4>
-            <a href="#">Directorio</a>
-            <a href="#">Políticas</a>
-            <a href="#">Soporte</a>
-            <a href="#">FAQ</a>
+        <div className="footer-content">
+          <div className="footer-col footer-col-logo">
+            <img src={logoFooter} alt="Logo Coacharte" className="home-logo-img" />
+            <div className="footer-slogan">Transformando el futuro a través del desarrollo humano</div>
           </div>
-          <div>
+          <div className="footer-col footer-col-links">
+            <h4>Enlaces Útiles</h4>
+            <div className="footer-links-list">
+              <div>
+                <a href="#">Directorio</a>
+                <a href="#">Políticas</a>
+              </div>
+              <div>
+                <a href="#">Soporte</a>
+                <a href="#">FAQ</a>
+              </div>
+            </div>
+          </div>
+          <div className="footer-col footer-col-social">
             <h4>Síguenos</h4>
-            {/* Aquí puedes agregar iconos de redes sociales */}
+            <div className="footer-social-icons">
+              <a href="#" aria-label="Facebook" className="footer-social-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M21 16h-3v10h-4V16h-2v-4h2v-2c0-2.2 1.3-4 4-4h3v4h-2c-.6 0-1 .4-1 1v1h3l-1 4z" fill="currentColor"/></svg>
+              </a>
+              <a href="#" aria-label="Instagram" className="footer-social-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="7" y="7" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="2"/><circle cx="16" cy="16" r="5" stroke="currentColor" strokeWidth="2"/><circle cx="22.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
+              </a>
+              <a href="#" aria-label="YouTube" className="footer-social-icon">
+                <svg width="38" height="32" viewBox="0 0 38 32" fill="none"><rect x="2" y="6" width="34" height="20" rx="6" stroke="currentColor" strokeWidth="2"/><polygon points="16,12 26,16 16,20" fill="currentColor"/></svg>
+              </a>
+            </div>
           </div>
         </div>
-        <div className="footer-copy">© 2024 Coacharte. Todos los derechos reservados.</div>
+        <div className="footer-copy">© 2025 Coacharte. Todos los derechos reservados.</div>
       </footer>
     </div>
   );

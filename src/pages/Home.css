@@ -41,11 +41,12 @@
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
+  margin-right: 1rem;
 }
 .user-avatar {
   background: var(--color-primary-100);
   color: #fff;
-  border-radius: 50%;
+  border-radius: 0.5rem;
   width: 2.2rem;
   height: 2.2rem;
   display: flex;
@@ -53,10 +54,46 @@
   justify-content: center;
   font-weight: bold;
   font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.10);
 }
+.notification-bell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.10);
+  color: var(--color-primary-100);
+  margin-right: 0.7rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.notification-bell:hover {
+  background: var(--color-primary-100);
+  color: #fff;
+}
+
 .user-name {
   font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
   font-weight: 500;
+}
+
+.user-dropdown-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  color: var(--color-primary-100);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.user-dropdown-arrow:hover {
+  background: var(--color-primary-100);
+  color: #fff;
 }
 
 .home-welcome {
@@ -325,45 +362,113 @@
 }
 
 .home-footer {
-  background: var(--color-primary-100);
-  color: var(--contrast-light);
-  padding: 2rem 2rem 1rem 2rem;
+  background: #181816;
+  color: #e3e3e3;
+  padding: 2rem 2.5rem 1.2rem 2rem;
   margin-top: 2.5rem;
-  border-radius: 1.2rem 1.2rem 0 0;
+  border-radius: 0 0 0 0;
 }
-.footer-logo {
-  font-family: 'Geometria', Arial, sans-serif;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #fff;
-}
-.footer-logo span {
-  color: var(--primary-green);
-}
-.footer-links {
+.footer-content {
   display: flex;
-  gap: 3rem;
-  margin: 1.2rem 0;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: 1rem;
 }
-.footer-links h4 {
+.footer-col {
+  flex: 1 1 0;
+  min-width: 220px;
+}
+.footer-col-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  min-width: 320px;
+  margin-left: 0;
+  padding-left: 0;
+}
+.footer-logo-img {
+  width: 220px;
+  height: auto;
   margin-bottom: 0.5rem;
+}
+.footer-slogan {
+  font-family: 'Geometria', Arial, sans-serif;
+  font-size: 0.9rem;
+  color: #bdbdbd;
+  margin-top: 0.2rem;
+}
+.footer-col-links h4,
+.footer-col-social h4 {
+  font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
+  font-size: 1.35rem;
+  color: #e3e3e3;
+  margin-bottom: 1.1rem;
+}
+.footer-links-list {
+  display: flex;
+  gap: 2.5rem;
+}
+.footer-links-list div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.footer-links-list a {
+  color: #bdbdbd;
+  font-size: 1.1rem;
+  text-decoration: none;
+  font-family: 'Geometria', Arial, sans-serif;
+  transition: color 0.2s;
+}
+.footer-links-list a:hover {
   color: #fff;
 }
-.footer-links a {
-  font-family: 'Geometria', Arial, sans-serif;
-  color: #e3f2fd;
-  text-decoration: none;
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.98rem;
+.footer-col-social {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
 }
-.footer-links a:hover {
-  color: var(--primary-green);
+.footer-social-icons {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.footer-social-icon {
+  color: #e3e3e3;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.footer-social-icon:hover {
+  color: #3472E5;
 }
 .footer-copy {
   text-align: center;
-  color: #e3f2fd;
-  font-size: 0.95rem;
-  margin-top: 1.2rem;
+  font-family: 'Geometria', Arial, sans-serif;
+  color: #bdbdbd;
+  font-size: 1.05rem;
+  margin-top: 2.2rem;
+  margin-left: 0.2rem;
 }
+@media (max-width: 900px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.2rem;
+    padding-left: 0;
+  }
+  .footer-col-logo {
+    margin-left: 0;
+    padding-left: 0;
+    align-items: flex-start;
+  }
+  .footer-logo-img {
+    width: 160px;
+  }
+}
+
