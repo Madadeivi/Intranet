@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css'; // Puedes crear este archivo para estilos específicos
 import logo from '../assets/coacharte-logo.png';
 
 const Home: React.FC = () => {
+  const [searchActive, setSearchActive] = useState(false);
+
   return (
     <div className="home-root">
       {/* Header y barra de navegación */}
@@ -15,16 +17,33 @@ const Home: React.FC = () => {
           <a href="#">Procesos</a>
         </nav>
         <div className="home-user">
-          <span className="user-avatar">AG</span>
-          <span className="user-name">Ana García</span>
+          <span className="user-avatar">DD</span>
+          <span className="user-name">David Dorantes</span>
         </div>
       </header>
 
       {/* Bienvenida y buscador */}
       <section className="home-welcome">
+        <div className="home-welcome-month"><span>Mayo 2025</span></div>
         <h1>Bienvenido a tu Intranet</h1>
         <p>Tu espacio central para acceder a todos los recursos y herramientas de Coacharte</p>
-        <input className="home-search" type="text" placeholder="Buscar recursos, documentos, personas..." />
+        <div className="home-search-wrapper">
+          <input
+            className="home-search"
+            type="text"
+            placeholder={searchActive ? '' : 'Buscar recursos, documentos, personas...'}
+            onFocus={() => setSearchActive(true)}
+            onBlur={e => { if (!e.target.value) setSearchActive(false); }}
+          />
+          {!searchActive && (
+            <span className="home-search-icon" aria-label="Buscar">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2"/>
+                <line x1="14.4142" y1="14" x2="18" y2="17.5858" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+          </span>
+          )}
+        </div>
       </section>
 
       {/* Tarjetas principales */}

@@ -27,4 +27,9 @@
   --color-secondary-dark-50: rgba(2, 2, 173, 0.5);
   --color-secondary-dark-30: rgba(2, 2, 173, 0.3);
   --color-secondary-dark-10: rgba(2, 2, 173, 0.1);
+
+  /* Colores de texto Coacharte */
+  --color-text-secondary: #64748B;
+  --color-text-title: #1E293B;
+  --color-text-on-primary: #fff;
 }

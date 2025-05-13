@@ -26,9 +26,8 @@
   height: 64px;
 }
 
-.login-container h2 {
-  text-align: center;
-  color: var(--color-primary-100);
+.login-container h2, .login-title, h1, h2, h3 {
+  color: var(--color-text-title);
   font-size: 2rem;
   font-family: 'Geometria-Bold', 'Geometria', sans-serif;
   margin-bottom: 1.5rem;
@@ -57,9 +56,9 @@
 }
 
 .form-group label {
-  font-family: 'Geometria-Medium', 'Geometria', sans-serif;
-  font-size: 1.05rem;
-  color: var(--color-dark-100);
+  color: var(--color-text-secondary);
+  font-family: 'Geometria', sans-serif;
+  font-size: 1rem;
   margin-bottom: 0.25rem;
   letter-spacing: 0.01em;
 }
@@ -75,6 +74,10 @@
   color: var(--color-dark-100);
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
+}
+
+input[type="text"], input[type="password"] {
+  color: var(--color-dark-100);
 }
 
 .form-group input:focus {
