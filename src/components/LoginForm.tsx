@@ -23,7 +23,7 @@ const LoginForm: React.FC = () => {
       const result: AuthResult = await authService.login(credentials);
       if (result.success && result.user) {
         setMessage({ 
-          text: `Welcome, ${result.user.fullName || result.user.username}!`, 
+          text: `Bienvenido, ${result.user.fullName || result.user.username}!`, 
           type: 'success' 
         });
         setTimeout(() => {
@@ -33,13 +33,13 @@ const LoginForm: React.FC = () => {
         setPassword('');
       } else {
         setMessage({ 
-          text: result.message || 'Login failed. Please check your credentials.', 
+          text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 
           type: 'error' 
         });
       }
     } catch (error) {
       setMessage({ 
-        text: error instanceof Error ? error.message : 'An unexpected error occurred', 
+        text: error instanceof Error ? error.message : 'Un error inesperado ocurrió.', 
         type: 'error' 
       });
     } finally {

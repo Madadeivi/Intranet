@@ -46,3 +46,15 @@ button:hover {
 button:focus {
   box-shadow: 0 0 0 2px #6366f1;
 }
+
+.home-header {
+  max-height: 80px;
+  height: 80px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}

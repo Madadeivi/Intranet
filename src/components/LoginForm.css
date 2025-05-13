@@ -1,43 +1,47 @@
-/* Estilos actualizados para LoginForm con la paleta y tipografía de Coacharte */
+@import '../styles/variables.css';
+@import '../styles/typography.css';
+@import '../styles/base.css';
+
 .login-container {
-  min-width: 400px;
-  max-width: 25vw;
+  width: 100%;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 16px var(--color-dark-10);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 32px var(--color-primary-10);
   background: #fff;
   font-family: 'Geometria', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2.5rem;
-  min-height: 60vh;
+  gap: 2rem;
+  min-height: 70vh;
   box-sizing: border-box;
 }
 
 .login-logo {
   display: block;
-  margin: 0 auto 2.5rem auto;
-  height: 60px;
+  margin: 0 auto 2rem auto;
+  height: 64px;
 }
 
 .login-container h2 {
   text-align: center;
   color: var(--color-primary-100);
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-family: 'Geometria-Bold', 'Geometria', sans-serif;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   width: 100%;
+  letter-spacing: 0.01em;
 }
 
-.login-form{
+.login-form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.75rem;
+  align-items: stretch;
+  gap: 1.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   box-sizing: border-box;
@@ -53,23 +57,23 @@
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
   font-family: 'Geometria-Medium', 'Geometria', sans-serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--color-dark-100);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.01em;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-primary-30);
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--color-primary-30);
+  border-radius: 0.7rem;
+  font-size: 1.08rem;
   font-family: 'Geometria', sans-serif;
   background: #f9fafb;
   color: var(--color-dark-100);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
 }
 
@@ -81,47 +85,49 @@
 
 .login-button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.9rem;
   background: var(--color-primary-100);
   color: #fff;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1.125rem;
+  border-radius: 0.7rem;
+  font-size: 1.15rem;
   font-family: 'Geometria-Medium', 'Geometria', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  margin-top: 1.25rem;
+  margin-top: 0.5rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px var(--color-primary-10);
 }
 
 .login-button:hover, .login-button:focus {
   background: var(--color-primary-70);
-  box-shadow: 0 2px 8px var(--color-primary-10);
+  box-shadow: 0 4px 16px var(--color-primary-30);
 }
 
 .message {
-  margin-top: 2.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.7rem;
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-family: 'Geometria', sans-serif;
 }
 
 .success {
   background: var(--color-secondary-10);
   color: var(--color-secondary-dark-100);
-  border: 1px solid var(--color-secondary-50);
+  border: 1.5px solid var(--color-secondary-50);
 }
 
 .error {
   background: rgba(255, 0, 0, 0.08);
   color: #b91c1c;
-  border: 1px solid #fca5a5;
+  border: 1.5px solid #fca5a5;
 }
 
 body, #root {
-  background: #fff;
+  background: #f9fafb;
   width: 100vw;
   min-width: 0;
   max-width: 100vw;

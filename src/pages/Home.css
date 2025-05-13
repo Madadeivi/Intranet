@@ -1,26 +1,9 @@
-/* Home.css - Estilos base para la página de inicio de la intranet Coacharte */
-
-:root {
-  --primary-blue: #10069F;
-  --primary-green: #43a047;
-  --contrast-light: #fff;
-  --contrast-dark: #111;
-}
 
 .home-root {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: var(--primary-blue);
   color: var(--contrast-light);
   min-height: 100vh;
-}
-
-.home-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 .logo {
   font-size: 2rem;
