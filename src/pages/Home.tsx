@@ -115,33 +115,35 @@ const Home: React.FC = () => {
 
       {/* Avisos importantes */}
       <section className="home-notices">
-        <h2>Avisos Importantes</h2>
-        <div className="notice-grid">
-          <div className="notice-card">
-            <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" />
-            <div className="notice-card-content">
-              <span className="notice-date">15 Feb 2024</span>
-              <h4>Nueva Política de Home Office</h4>
-              <p>Actualización de lineamientos para trabajo remoto</p>
-              <a href="#">Ver más</a>
+        <div className='home-notices-span'>
+          <h2>Avisos Importantes</h2>
+          <div className="notice-grid">
+            <div className="notice-card">
+              <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" />
+              <div className="notice-card-content">
+                <span className="notice-date">15 Feb 2024</span>
+                <h4>Nueva Política de Home Office</h4>
+                <p>Actualización de lineamientos para trabajo remoto</p>
+                <a href="#">Ver más</a>
+              </div>
             </div>
-          </div>
-          <div className="notice-card">
-            <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" />
-            <div className="notice-card-content">
-              <span className="notice-date">20 Feb 2024</span>
-              <h4>Campaña de Vacunación</h4>
-              <p>Próxima jornada de vacunación empresarial</p>
-              <a href="#">Ver más</a>
+            <div className="notice-card">
+              <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" />
+              <div className="notice-card-content">
+                <span className="notice-date">20 Feb 2024</span>
+                <h4>Campaña de Vacunación</h4>
+                <p>Próxima jornada de vacunación empresarial</p>
+                <a href="#">Ver más</a>
+              </div>
             </div>
-          </div>
-          <div className="notice-card">
-            <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" />
-            <div className="notice-card-content">
-              <span className="notice-date">18 Feb 2024</span>
-              <h4>Actualización de Sistemas</h4>
-              <p>Mantenimiento programado para el fin de semana</p>
-              <a href="#">Ver más</a>
+            <div className="notice-card">
+              <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" />
+              <div className="notice-card-content">
+                <span className="notice-date">18 Feb 2024</span>
+                <h4>Actualización de Sistemas</h4>
+                <p>Mantenimiento programado para el fin de semana</p>
+                <a href="#">Ver más</a>
+              </div>
             </div>
           </div>
         </div>
