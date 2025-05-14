@@ -10,6 +10,10 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import EventIcon from '@mui/icons-material/Event';
 import InfoIcon from '@mui/icons-material/Info';
+import GppGoodIcon from '@mui/icons-material/GppGood';
+import SchoolIcon from '@mui/icons-material/School';
+import GroupsIcon from '@mui/icons-material/Groups';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
@@ -151,16 +155,18 @@ const Home: React.FC = () => {
 
       {/* Enlaces rápidos */}
       <section className="home-quicklinks">
-        <h2>Enlaces Rápidos</h2>
-        <div className="quicklinks-grid">
-          <a href="#" className="quicklink">Solicitud de Vacaciones</a>
-          <a href="#" className="quicklink">Cambio de Contraseña</a>
-          <a href="#" className="quicklink">Portal de Capacitación</a>
-          <a href="#" className="quicklink">Directorio Empresarial</a>
-          <a href="#" className="quicklink">Soporte Técnico</a>
-          <a href="#" className="quicklink">Configuración de Cuenta</a>
-          <a href="#" className="quicklink">Calendario de Eventos</a>
-          <a href="#" className="quicklink">Mi Perfil</a>
+        <div className="home-quicklinks-span">
+          <h4>Enlaces Rápidos</h4>
+          <div className="quicklinks-grid">
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Solicitud de Vacaciones"><DescriptionIcon fontSize="inherit" /></span>Solicitud de Vacaciones</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Portal de Capacitación"><SchoolIcon fontSize="inherit" /></span>Portal de Capacitación</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Directorio Empresarial"><GroupsIcon fontSize="inherit" /></span>Directorio Empresarial</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Configuración de Cuenta"><SettingsIcon fontSize="inherit" /></span>Configuración de Cuenta</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Calendario de Eventos"><EventIcon fontSize="inherit" /></span>Calendario de Eventos</a>
+            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Mi Perfil"><AccountCircleIcon fontSize="inherit" /></span>Mi Perfil</a>
+          </div>
         </div>
       </section>
 
