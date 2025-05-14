@@ -378,13 +378,13 @@
   width: 100%;
   margin: 0 auto;
 }
-.home-quicklinks h4 {
+.home-quicklinks h2 {
+  text-align: left;
+  color: var(--color-dark-100);
+  margin-top: 0;
+  margin-bottom: 1.4rem;
   font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
-  color: var(--color-text-title);
-  font-size: 1.18rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  margin: 0.3rem 0;
+  font-size: 2rem;
 }
 .quicklinks-grid {
   display: grid;
@@ -405,6 +405,12 @@
   }
 }
 .quicklink {
+  font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
+  margin: 0.3rem 0;
+  color: var(--color-text-title);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -414,9 +420,6 @@
   padding: 0.5rem 1rem;
   color: var(--color-text-title);
   text-decoration: none;
-  font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   border: none;
   min-height: 64px;

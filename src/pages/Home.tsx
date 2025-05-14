@@ -156,7 +156,7 @@ const Home: React.FC = () => {
       {/* Enlaces rápidos */}
       <section className="home-quicklinks">
         <div className="home-quicklinks-span">
-          <h4>Enlaces Rápidos</h4>
+          <h2>Enlaces Rápidos</h2>
           <div className="quicklinks-grid">
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Solicitud de Vacaciones"><DescriptionIcon fontSize="inherit" /></span>Solicitud de Vacaciones</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
