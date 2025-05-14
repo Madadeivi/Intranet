@@ -454,7 +454,7 @@
 
 .home-calendar-events {
   display: flex;
-  gap: 3.2rem;
+  gap: 1.5rem;
   justify-content: center;
   align-items: flex-start;
   margin: 1rem auto 0;
@@ -462,13 +462,13 @@
   flex-wrap: wrap;
   background: #f5f6f8;
   border-radius: 1.5rem;
-  padding: 3rem 2.5rem;
+  padding: 2rem 0;
 }
 .calendar-box {
   background: #f5f6f8;
   padding: 0.5rem 0.2rem;
-  width: 50%;
-  max-width: 600px;
+  width: 40%;
+  max-width: 580px;
   flex: 1 1 40px;
   display: flex;
   flex-direction: column;
@@ -480,8 +480,8 @@
 .events-box {
   background: #f5f6f8;
   padding: 0.5rem 0.2rem;
-  width: 50%;
-  max-width: 600px;
+  width: 40%;
+  max-width: 580px;
   flex: 1 1 40px;
   display: flex;
   flex-direction: column;
