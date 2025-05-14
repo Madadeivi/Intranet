@@ -16,6 +16,9 @@ import GppGoodIcon from '@mui/icons-material/GppGood';
 import SchoolIcon from '@mui/icons-material/School';
 import GroupsIcon from '@mui/icons-material/Groups';
 import SettingsIcon from '@mui/icons-material/Settings';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
@@ -230,13 +233,13 @@ const Home: React.FC = () => {
             <h4>Síguenos</h4>
             <div className="footer-social-icons">
               <a href="#" aria-label="Facebook" className="footer-social-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M21 16h-3v10h-4V16h-2v-4h2v-2c0-2.2 1.3-4 4-4h3v4h-2c-.6 0-1 .4-1 1v1h3l-1 4z" fill="currentColor"/></svg>
+                <FacebookIcon fontSize="inherit" />
               </a>
               <a href="#" aria-label="Instagram" className="footer-social-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="7" y="7" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="2"/><circle cx="16" cy="16" r="5" stroke="currentColor" strokeWidth="2"/><circle cx="22.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
+                <InstagramIcon fontSize="inherit" />
               </a>
               <a href="#" aria-label="YouTube" className="footer-social-icon">
-                <svg width="38" height="32" viewBox="0 0 38 32" fill="none"><rect x="2" y="6" width="34" height="20" rx="6" stroke="currentColor" strokeWidth="2"/><polygon points="16,12 26,16 16,20" fill="currentColor"/></svg>
+                <YouTubeIcon fontSize="inherit" />
               </a>
             </div>
           </div>
