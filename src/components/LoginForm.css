@@ -138,3 +138,33 @@ body, #root {
   padding: 0;
   box-sizing: border-box;
 }
+
+.login-user-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.user-avatar-login {
+  background: var(--color-primary-100);
+  color: #fff;
+  border-radius: 0.7rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.10);
+}
+
+.user-name-login {
+  font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-text-title);
+  margin-bottom: 0.2rem;
+}

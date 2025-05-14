@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
 import logoFooter from '../assets/coacharte-bco@4x.png';
@@ -19,58 +19,102 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string } | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const stored = localStorage.getItem('coacharteUserInfo');
+    if (stored) {
+      setUserInfo(JSON.parse(stored));
+    }
+  }, []);
+
+  // Cerrar menú si se hace clic fuera
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+
+  // Handler para logout
+  const handleLogout = async () => {
+    await authService.logout();
+    localStorage.removeItem('coacharteUserInfo');
+    setUserInfo(null);
+    setDropdownOpen(false);
+    navigate('/');
+  };
 
   return (
     <div className="home-root">
       {/* Header y barra de navegación */}
       <header className="home-header">
-        <div className="logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" /></div>
+        <div className="logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" loading="lazy" /></div>
         <nav className="home-nav">
-          <a href="#">Inicio</a>
+          <a href="#" onClick={e => { e.preventDefault(); navigate('/home'); }}>Inicio</a>
           <a href="#">Mi Cuenta</a>
           <a href="#">Recursos Humanos</a>
           <a href="#">Procesos</a>
         </nav>
-        <div className="home-user">
+        <div className="home-user" ref={dropdownRef}>
           <span className="notification-bell" aria-label="Notificaciones">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M11 20c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6V9c0-3.07-1.63-5.64-5-6.32V2a1 1 0 1 0-2 0v.68C6.63 3.36 5 5.92 5 9v5l-1.29 1.29A1 1 0 0 0 5 17h12a1 1 0 0 0 .71-1.71L17 14zM17 15H5v-1.17l1.41-1.41C6.79 12.21 7 11.7 7 11.17V9c0-2.76 1.12-5 4-5s4 2.24 4 5v2.17c0 .53.21 1.04.59 1.42L17 13.83V15z" fill="currentColor"/>
             </svg>
           </span>
-          <span className="user-avatar">DD</span>
-          <span className="user-name">David Dorantes</span>
-          <span className="user-dropdown-arrow" aria-label="Más opciones">
+          <span className="user-avatar">{userInfo?.initials}</span>
+          <span className="user-name">{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''}</span>
+          <span className="user-dropdown-arrow" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </span>
+          {dropdownOpen && (
+            <div className="user-dropdown-menu">
+              <button className="user-dropdown-item" onClick={handleLogout}>Cerrar sesión</button>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Bienvenida y buscador */}
       <section className="home-welcome">
-        <div className="home-welcome-month"><span>Mayo 2025</span></div>
-        <h1>Bienvenido a tu Intranet</h1>
-        <p>Tu espacio central para acceder a todos los recursos y herramientas de Coacharte</p>
-        <div className="home-search-wrapper">
-          <input
-            className="home-search"
-            type="text"
-            placeholder={searchActive ? '' : 'Buscar recursos, documentos, personas...'}
-            onFocus={() => setSearchActive(true)}
-            onBlur={e => { if (!e.target.value) setSearchActive(false); }}
-          />
-          {!searchActive && (
-            <span className="home-search-icon" aria-label="Buscar">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2"/>
-                <line x1="14.4142" y1="14" x2="18" y2="17.5858" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-          </span>
-          )}
+        <div className="home-welcome-content">
+          <div className="home-welcome-month"><span>Mayo 2025</span></div>
+          <h1>Bienvenido a tu Intranet</h1>
+          <p>Tu espacio central para acceder a todos los recursos y herramientas de Coacharte</p>
+          <div className="home-search-wrapper">
+            <input
+              className="home-search"
+              type="text"
+              placeholder={searchActive ? '' : 'Buscar recursos, documentos, personas...'}
+              onFocus={() => setSearchActive(true)}
+              onBlur={e => { if (!e.target.value) setSearchActive(false); }}
+            />
+            {!searchActive && (
+              <span className="home-search-icon" aria-label="Buscar">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="14.4142" y1="14" x2="18" y2="17.5858" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+            </span>
+            )}
+          </div>
         </div>
       </section>
 
@@ -128,7 +172,7 @@ const Home: React.FC = () => {
           <h2>Avisos Importantes</h2>
           <div className="notice-grid">
             <div className="notice-card">
-              <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" />
+              <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" loading="lazy" />
               <div className="notice-card-content">
                 <span className="notice-date">15 Feb 2024</span>
                 <h4>Nueva Política de Home Office</h4>
@@ -137,7 +181,7 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="notice-card">
-              <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" />
+              <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" loading="lazy" />
               <div className="notice-card-content">
                 <span className="notice-date">20 Feb 2024</span>
                 <h4>Campaña de Vacunación</h4>
@@ -146,7 +190,7 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="notice-card">
-              <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" />
+              <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" loading="lazy" />
               <div className="notice-card-content">
                 <span className="notice-date">18 Feb 2024</span>
                 <h4>Actualización de Sistemas</h4>
@@ -189,21 +233,21 @@ const Home: React.FC = () => {
                 <span className="event-date">15 Feb 2024 - 10:00 AM</span>
                 <span className="event-title">Reunión General</span>
               </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
             <li>
               <div>
                 <span className="event-date">18 Feb 2024 - 2:00 PM</span>
                 <span className="event-title">Capacitación Nuevas Herramientas</span>
               </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
             <li>
               <div>
                 <span className="event-date">20 Feb 2024 - Todo el día</span>
                 <span className="event-title">Día de Pago</span>
               </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
           </ul>
         </div>
@@ -213,7 +257,7 @@ const Home: React.FC = () => {
       <footer className="home-footer">
         <div className="footer-content">
           <div className="footer-col footer-col-logo">
-            <img src={logoFooter} alt="Logo Coacharte" className="home-logo-img" />
+            <img src={logoFooter} alt="Logo Coacharte" className="home-logo-img" loading="lazy" />
             <div className="footer-slogan">Transformando el futuro a través del desarrollo humano</div>
           </div>
           <div className="footer-col footer-col-links">
