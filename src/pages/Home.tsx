@@ -3,6 +3,8 @@ import './Home.css';
 import logo from '../assets/coacharte-logo.png';
 import logoFooter from '../assets/coacharte-bco@4x.png';
 import homeOfficeImg from '../assets/home-office.jpeg';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 // Importar iconos rellenos de Material Icons
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
@@ -174,34 +176,31 @@ const Home: React.FC = () => {
       <section className="home-calendar-events">
         <div className="calendar-box">
           <h3>Calendario</h3>
-          {/* Aquí puedes integrar un componente de calendario real */}
-          <table className="calendar-table">
-            <thead>
-              <tr><th>D</th><th>L</th><th>M</th><th>M</th><th>J</th><th>V</th><th>S</th></tr>
-            </thead>
-            <tbody>
-              <tr><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td></tr>
-              <tr><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
-              <tr><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td></tr>
-              <tr><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td></tr>
-              <tr><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td></tr>
-            </tbody>
-          </table>
+          <Calendar className="coacharte-calendar" locale="es-MX" />
         </div>
         <div className="events-box">
           <h3>Próximos Eventos</h3>
           <ul className="events-list">
             <li>
-              <span className="event-date">15 Feb 2024 - 10:00 AM</span>
-              <span className="event-title">Reunión General</span>
+              <div>
+                <span className="event-date">15 Feb 2024 - 10:00 AM</span>
+                <span className="event-title">Reunión General</span>
+              </div>
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
             </li>
             <li>
-              <span className="event-date">18 Feb 2024 - 2:00 PM</span>
-              <span className="event-title">Capacitación Nuevas Herramientas</span>
+              <div>
+                <span className="event-date">18 Feb 2024 - 2:00 PM</span>
+                <span className="event-title">Capacitación Nuevas Herramientas</span>
+              </div>
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
             </li>
             <li>
-              <span className="event-date">20 Feb 2024 - Todo el día</span>
-              <span className="event-title">Día de Pago</span>
+              <div>
+                <span className="event-date">20 Feb 2024 - Todo el día</span>
+                <span className="event-title">Día de Pago</span>
+              </div>
+              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" />
             </li>
           </ul>
         </div>

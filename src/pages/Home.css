@@ -444,73 +444,117 @@
 
 .home-calendar-events {
   display: flex;
-  gap: 2rem;
+  gap: 3.2rem;
   justify-content: center;
   align-items: flex-start;
-  margin: 2.5rem auto 2rem auto;
-  max-width: 1100px;
+  margin: 1rem auto 0;
+  width: 100%;
   flex-wrap: wrap;
+  background: #f5f6f8;
+  border-radius: 1.5rem;
+  padding: 3rem 2.5rem;
 }
-.calendar-box, .events-box {
+.calendar-box {
   background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(30,136,229,0.07);
-  padding: 1.5rem 1.2rem;
-  min-width: 260px;
-  max-width: 350px;
-  flex: 1 1 260px;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px rgba(30,136,229,0.07);
+  padding: 2.2rem;
+  min-width: 340px;
+  max-width: 520px;
+  flex: 1 1 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+  min-height: 450px;
+}
+
+.events-box {
+  background: #f5f6f8;
+  padding: 2.2rem;
+  min-width: 340px;
+  max-width: 520px;
+  flex: 1 1 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+  min-height: 450px;
 }
 .calendar-box h3, .events-box h3 {
   font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
-  color: var(--color-primary-100);
-  margin-bottom: 1rem;
+  color: var(--color-text-title);
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.01em;
 }
-.calendar-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  margin-top: 0.5rem;
-}
-.calendar-table th, .calendar-table td {
-  padding: 0.3rem 0.2rem;
-  border-radius: 0.3rem;
-}
-.calendar-table th {
-  color: var(--primary-green);
-  font-weight: 600;
-}
-.calendar-table td {
-  background: #e3f2fd;
-  color: #222;
-  font-weight: 500;
-}
+
 .events-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 .events-list li {
-  margin-bottom: 1.1rem;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid #e3f2fd;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.04);
+  padding: 0 ;
+  gap: 1rem;
+  min-height: 72px;
 }
 .event-date {
-  color: var(--primary-green);
-  font-size: 0.95rem;
+  color: var(--color-primary-100);
+  font-size: 1rem;
   font-weight: 500;
+  font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
+  margin-bottom: 0.2rem;
   display: block;
 }
 .event-title {
-  color: var(--contrast-light);
-  font-weight: 600;
-  font-size: 1.05rem;
+  color: var(--color-text-title);
+  font-weight: 700;
+  font-size: 1.18rem;
+  font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
+  margin: 0;
+}
+.event-img {
+  width: 140px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.9rem;
+  margin-left: auto;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.04);
+}
+@media (max-width: 1200px) {
+  .home-calendar-events {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: stretch;
+    padding: 2rem 1rem;
+  }
+  .calendar-box, .events-box {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+    padding: 1.5rem 1rem 1.5rem 1rem;
+  }
+  .event-img {
+    width: 100px;
+    height: 48px;
+  }
 }
 
 .home-footer {
   background: #181816;
   color: #e3e3e3;
   padding: 2rem 2.5rem 1.2rem 2rem;
-  margin-top: 2.5rem;
   border-radius: 0 0 0 0;
 }
 .footer-content {
@@ -641,6 +685,89 @@
     object-fit: cover;
     background: #e3f2fd;
     display: block;
+  }
+}
+
+/* Personalización Coacharte para react-calendar */
+.coacharte-calendar {
+  border-radius: 16px;
+  border: none !important;
+  border-width: 0 !important;
+  font-family: 'Geometria', Arial, sans-serif;
+  font-size: 2rem;
+  color: var(--color-text-title);
+  background: #fff;
+  padding: 0.5rem 0.5rem;
+  min-width: 100%;
+}
+
+.coacharte-calendar .react-calendar__navigation {
+  background: transparent;
+  border-bottom: 1px solid var(--color-primary-30);
+  margin-bottom: 0.5rem;
+}
+
+.coacharte-calendar .react-calendar__navigation button {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  transition: background 0.2s, color 0.2s;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.coacharte-calendar .react-calendar__navigation button:enabled:hover {
+  background: var(--color-primary-10);
+  color: var(--color-primary-100);
+}
+
+.coacharte-calendar .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.coacharte-calendar .react-calendar__tile {
+  background: none;
+  border-radius: 8px;
+  color: var(--color-text-title);
+  font-size: 1rem;
+  font-family: 'Geometria', Arial, sans-serif;
+  transition: background 0.2s, color 0.2s;
+  padding: 0.5rem 0;
+}
+
+.coacharte-calendar .react-calendar__tile:enabled:hover,
+.coacharte-calendar .react-calendar__tile--active {
+  background: var(--color-primary-10);
+  color: var(--color-primary-70);
+}
+
+.coacharte-calendar .react-calendar__tile--now {
+  background: var(--color-primary-50);
+  color: var(--color-primary-100);
+  font-weight: 700;
+}
+
+.coacharte-calendar .react-calendar__tile--hasActive {
+  background: var(--color-secondary-10);
+  color: var(--color-text-on-secondary);
+}
+
+.coacharte-calendar .react-calendar__month-view__days__day--weekend {
+  color: var(--color-text-primary-100);
+}
+
+@media (max-width: 600px) {
+  .coacharte-calendar {
+    max-width: 100%;
+    padding: 1rem 0.25rem;
+    font-size: 0.95rem;
   }
 }
 
