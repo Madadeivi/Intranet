@@ -19,12 +19,6 @@
 /jest-coverage
 /test-results
 
-# Production build files
-/build
-/dist
-/.next
-/out
-
 # Misc
 .DS_Store
 *.pem
