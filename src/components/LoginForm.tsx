@@ -74,7 +74,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="login-container">
       <img src={logo} alt="Logo Coacharte" className="login-logo" />
-      <h2>Coacharte Intranet - Inicio de sesión</h2>
+      <h2>Coacharte Intranet</h2>
       {/* Avatar e info de usuario extraídos del correo */}
       {(firstName && lastName && initials) && (
         <div className="login-user-preview">
