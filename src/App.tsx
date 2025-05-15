@@ -5,7 +5,7 @@ import Home from './pages/Home';
 
 function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.VITE_BASE_PATH || '/Intranet'}>
       <Routes>
         <Route path="/" element={<LoginForm />} />
         <Route path="/home" element={<Home />} />
