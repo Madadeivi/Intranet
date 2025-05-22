@@ -40,8 +40,9 @@ const LoginForm: React.FC = () => {
     setFirstName(firstNameValue);
     setLastName(lastNameValue);
     setInitials(initialsValue);
+    setEmail(email);
     // Guardar en localStorage para Home
-    localStorage.setItem('coacharteUserInfo', JSON.stringify({ firstName: firstNameValue, lastName: lastNameValue, initials: initialsValue }));
+    localStorage.setItem('coacharteUserInfo', JSON.stringify({ firstName: firstNameValue, lastName: lastNameValue, initials: initialsValue, email }));
     try {
       const credentials: LoginCredentials = { username: email, password };
       const result: AuthResult = await authService.login(credentials);

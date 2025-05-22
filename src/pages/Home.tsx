@@ -106,6 +106,9 @@ const Home: React.FC = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setUserInfo({ ...parsed, email: parsed.email || '' });
+      console.log('Datos de usuario cargados:', parsed); // Depuración
+    } else {
+      console.log('No se encontraron datos de usuario.'); // Depuración
     }
   }, []);
 
@@ -304,7 +307,12 @@ const Home: React.FC = () => {
             <a href="#" className="quicklink" onClick={(e) => { e.preventDefault(); setIsSupportModalOpen(true); }}>
               <span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico
             </a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Configuración de Cuenta"><SettingsIcon fontSize="inherit" /></span>Configuración de Cuenta</a>
+            <a href={`https://nomina.coacharte.mx/user.php?email=${userInfo?.email}`} className="quicklink" target="_blank" rel="noopener noreferrer">
+              <span className="quicklink-icon" aria-label="Consulta Nómina">
+                <SettingsIcon fontSize="inherit" />
+              </span>
+              Consulta Nómina
+            </a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Calendario de Eventos"><EventIcon fontSize="inherit" /></span>Calendario de Eventos</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Mi Perfil"><AccountCircleIcon fontSize="inherit" /></span>Mi Perfil</a>
           </div>
