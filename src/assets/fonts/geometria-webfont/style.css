@@ -5,6 +5,7 @@
     font-style: normal;
     font-weight: normal;
     src: local('Geometria'), url('Geometria.woff') format('woff');
+    -webkit-font-smoothing: antialiased;
     }
     
 

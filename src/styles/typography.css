@@ -2,6 +2,7 @@
 .font-geometria-bold {
   font-family: 'Geometria-Bold', 'Geometria', sans-serif;
   font-weight: bold;
+  -webkit-font-smoothing: antialiased;
 }
 .font-geometria-semibold {
   font-family: 'Geometria-Medium', 'Geometria', sans-serif;
