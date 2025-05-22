@@ -8,6 +8,7 @@
   margin: 0 auto;
   padding: 2.5rem 2.5rem 2rem 2.5rem;
   border-radius: 1.5rem;
+  -webkit-box-shadow: 0 6px 32px var(--color-primary-10);
   box-shadow: 0 6px 32px var(--color-primary-10);
   background: #fff;
   font-family: 'Geometria', sans-serif;
