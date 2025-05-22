@@ -21,18 +21,91 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
+
+const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
+  const { userInfo, onClose } = props;
+  const [subject, setSubject] = useState('');
+  const [description, setDescription] = useState('');
+  const [urgency, setUrgency] = useState('Normal');
+
+  const handleSend = () => {
+    if (!subject || !description) {
+      alert('Por favor, complete todos los campos antes de enviar.');
+      return;
+    }
+
+    const templateParams = {
+      subject: `[${urgency}] ${subject}`,
+      description,
+      user_name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+      user_email: userInfo?.email,
+    };
+
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_EMAILJS_USER_ID
+      )
+      .then(
+        (response) => {
+          console.log('Correo enviado exitosamente:', response.status, response.text);
+          alert('El ticket de soporte ha sido enviado exitosamente.');
+          onClose();
+        },
+        (error) => {
+          console.error('Error al enviar el correo:', error);
+          alert('Hubo un problema al enviar el ticket. Por favor, intente nuevamente.');
+        }
+      );
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal" ref={ref}>
+        <h2>Crear Ticket de Soporte</h2>
+        <div className="input-group">
+          <label htmlFor="subject">Asunto:</label>
+          <input id="subject" type="text" value={subject} onChange={(e) => setSubject(e.target.value)} />
+        </div>
+        <div className="input-group">
+          <label htmlFor="description">Descripción del problema:</label>
+          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="input-group">
+          <label htmlFor="urgency">Nivel de urgencia:</label>
+          <select id="urgency" value={urgency} onChange={(e) => setUrgency(e.target.value)}>
+            <option value="Urgente">Urgente</option>
+            <option value="Normal">Normal</option>
+            <option value="Soporte">Soporte</option>
+            <option value="Información">Información</option>
+          </select>
+        </div>
+        <div className="button-group">
+          <button onClick={handleSend}>Enviar</button>
+          <button onClick={onClose}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
-  const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string } | null>(null);
+  const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string; email: string } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem('coacharteUserInfo');
     if (stored) {
-      setUserInfo(JSON.parse(stored));
+      const parsed = JSON.parse(stored);
+      setUserInfo({ ...parsed, email: parsed.email || '' });
     }
   }, []);
 
@@ -50,6 +123,23 @@ const Home: React.FC = () => {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
+
+  // Cerrar modal de soporte si se hace clic fuera de él
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setIsSupportModalOpen(false);
+      }
+    }
+
+    if (isSupportModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isSupportModalOpen]);
 
   // Handler para logout
   const handleLogout = async () => {
@@ -211,7 +301,9 @@ const Home: React.FC = () => {
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Portal de Capacitación"><SchoolIcon fontSize="inherit" /></span>Portal de Capacitación</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Directorio Empresarial"><GroupsIcon fontSize="inherit" /></span>Directorio Empresarial</a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico</a>
+            <a href="#" className="quicklink" onClick={(e) => { e.preventDefault(); setIsSupportModalOpen(true); }}>
+              <span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico
+            </a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Configuración de Cuenta"><SettingsIcon fontSize="inherit" /></span>Configuración de Cuenta</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Calendario de Eventos"><EventIcon fontSize="inherit" /></span>Calendario de Eventos</a>
             <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Mi Perfil"><AccountCircleIcon fontSize="inherit" /></span>Mi Perfil</a>
@@ -290,6 +382,15 @@ const Home: React.FC = () => {
         </div>
         <div className="footer-copy">© 2025 Coacharte. Todos los derechos reservados.</div>
       </footer>
+
+      {/* Modal de soporte técnico */}
+      {isSupportModalOpen && userInfo && (
+        <SupportModal
+          userInfo={{ firstName: userInfo.firstName, lastName: userInfo.lastName, email: userInfo.email }}
+          onClose={() => setIsSupportModalOpen(false)}
+          ref={modalRef}
+        />
+      )}
     </div>
   );
 };
