@@ -103,9 +103,11 @@
   display: flex;
   background-color: var(--color-primary-10);
   background-image: url('../assets/diapadre.png');
-  background-size: 110%;
+  background-size: 112%;
   background-position: left center;
   background-repeat: no-repeat;
+  object-fit: contain;
+  align-items: center;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -121,9 +123,7 @@
   flex-direction: column;
   align-items: left;
   justify-content:space-evenly;
-  margin-top: 2.5rem;
-  max-width: 800px;
-  color: var(--color-text-title);
+  max-width: 500px;
 }
 
 @media (max-width: 768px) {
@@ -151,7 +151,6 @@
   box-shadow: 0 2px 8px rgba(30,136,229,0.10);
   display: inline-block;
   margin-bottom: 1rem;
-  margin-top: 0.2rem;
   width: fit-content;
 }
 
