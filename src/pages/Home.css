@@ -104,7 +104,7 @@
   min-width: 0;
   margin: 0 auto;
   height: 20rem;
-  background: url('../assets/mothers-day.jpg') center center/cover no-repeat;
+  background: url('../assets/diapadre.png') center center/cover no-repeat;
   border-radius: 0;
   box-shadow: none;
   display: flex;
@@ -915,5 +915,13 @@
 .modal button:disabled {
   background-color: var(--color-border);
   cursor: not-allowed;
+}
+
+/* Estilo temporal para elementos deshabilitados en las tarjetas principales */
+.main-card.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #d3d3d3; /* Color gris claro */
 }
 

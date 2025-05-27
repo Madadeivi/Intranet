@@ -97,6 +97,7 @@ const Home: React.FC = () => {
   const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string; email: string } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [disabledCards, setDisabledCards] = useState<string[]>([]); // Estado para controlar las tarjetas deshabilitadas
   const dropdownRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -110,6 +111,10 @@ const Home: React.FC = () => {
     } else {
       console.log('No se encontraron datos de usuario.'); // Depuración
     }
+  }, []);
+
+  useEffect(() => {
+    setDisabledCards(["Mi Cuenta","Recursos Humanos", "Procesos y Documentación", "Soporte y Comunicación", "Calendario y Eventos", "Conoce Coacharte"]);
   }, []);
 
   // Cerrar menú si se hace clic fuera
@@ -144,7 +149,6 @@ const Home: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isSupportModalOpen]);
 
-  // Handler para logout
   const handleLogout = async () => {
     await authService.logout();
     localStorage.removeItem('coacharteUserInfo');
@@ -152,6 +156,11 @@ const Home: React.FC = () => {
     setDropdownOpen(false);
     navigate('/');
   };
+
+  const currentDate = new Date();
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const currentMonth = monthNames[currentDate.getMonth()];
+  const currentYear = currentDate.getFullYear();
 
   return (
     <div className="home-root">
@@ -188,7 +197,7 @@ const Home: React.FC = () => {
       {/* Bienvenida y buscador */}
       <section className="home-welcome">
         <div className="home-welcome-content">
-          <div className="home-welcome-month"><span>Mayo 2025</span></div>
+          <div className="home-welcome-month"><span>{`${currentMonth} ${currentYear}`}</span></div>
           <h1>Bienvenido a tu Intranet</h1>
           <p>Tu espacio central para acceder a todos los recursos y herramientas de Coacharte</p>
           <div className="home-search-wrapper">
@@ -214,42 +223,42 @@ const Home: React.FC = () => {
       {/* Tarjetas principales */}
       <section className="home-main-cards">
         <div className="card-grid">
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Mi Cuenta") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Mi Cuenta">
               <AccountCircleIcon fontSize="inherit" />
             </span>
             <h3>Mi Cuenta</h3>
             <p>Gestiona tu perfil, documentos y accesos</p>
           </div>
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Recursos Humanos") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Recursos Humanos">
               <FolderSpecialIcon fontSize="inherit" />
             </span>
             <h3>Recursos Humanos</h3>
             <p>Nómina, vacaciones y prestaciones</p>
           </div>
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Procesos y Documentación") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Procesos y Documentación">
               <DescriptionIcon fontSize="inherit" />
             </span>
             <h3>Procesos y Documentación</h3>
             <p>Formatos y políticas corporativas</p>
           </div>
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Soporte y Comunicación") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Soporte y Comunicación">
               <HeadsetMicIcon fontSize="inherit" />
             </span>
             <h3>Soporte y Comunicación</h3>
             <p>Tickets y material de capacitación</p>
           </div>
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Calendario y Eventos") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Calendario y Eventos">
               <EventIcon fontSize="inherit" />
             </span>
             <h3>Calendario y Eventos</h3>
             <p>Agenda corporativa y actividades</p>
           </div>
-          <div className="main-card">
+          <div className={`main-card ${disabledCards.includes("Conoce Coacharte") ? "disabled" : ""}`}>
             <span className="main-card-icon" aria-label="Conoce Coacharte">
               <InfoIcon fontSize="inherit" />
             </span>
