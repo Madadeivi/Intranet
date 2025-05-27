@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
 import logoFooter from '../assets/coacharte-bco@4x.png';
-import homeOfficeImg from '../assets/home-office.jpeg';
+import importantArticle1 from '../assets/diadelpadre_img.png';
+import importantArticle2 from '../assets/evento_integracion.png';
+import importantArticle3 from '../assets/intranet_growth.svg';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 // Importar iconos rellenos de Material Icons
@@ -274,29 +276,29 @@ const Home: React.FC = () => {
           <h2>Avisos Importantes</h2>
           <div className="notice-grid">
             <div className="notice-card">
-              <img className="notice-card-img" src={homeOfficeImg} alt="Política Home Office" loading="lazy" />
+              <img className="notice-card-img" src={importantArticle1} alt="Dia del padre" loading="lazy" />
               <div className="notice-card-content">
-                <span className="notice-date">15 Feb 2024</span>
-                <h4>Nueva Política de Home Office</h4>
-                <p>Actualización de lineamientos para trabajo remoto</p>
+                <span className="notice-date">15 Jun 2025</span>
+                <h4>Dia del Padre</h4>
+                <p>Celebramos a todos los padres en su día especial.</p>
                 <a href="#">Ver más</a>
               </div>
             </div>
             <div className="notice-card">
-              <img className="notice-card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Vacunación" loading="lazy" />
+              <img className="notice-card-img" src={importantArticle2} alt="Evento de integracion" loading="lazy" />
               <div className="notice-card-content">
-                <span className="notice-date">20 Feb 2024</span>
-                <h4>Campaña de Vacunación</h4>
-                <p>Próxima jornada de vacunación empresarial</p>
+                <span className="notice-date">Proximamente</span>
+                <h4>Evento de integración</h4>
+                <p>Un espacio para fortalecer lazos y compartir experiencias.</p>
                 <a href="#">Ver más</a>
               </div>
             </div>
             <div className="notice-card">
-              <img className="notice-card-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Actualización de Sistemas" loading="lazy" />
+              <img className="notice-card-img" src={importantArticle3} alt="Intranet Coacharte" loading="lazy" />
               <div className="notice-card-content">
-                <span className="notice-date">18 Feb 2024</span>
-                <h4>Actualización de Sistemas</h4>
-                <p>Mantenimiento programado para el fin de semana</p>
+                <span className="notice-date">Junio 2025</span>
+                <h4>Intranet Coacharte en desarrollo</h4>
+                <p>Estamos trabajando en el desarrollo de la intranet para ofrecerte más funcionalidades y mejorar tu experiencia.</p>
                 <a href="#">Ver más</a>
               </div>
             </div>
@@ -309,10 +311,10 @@ const Home: React.FC = () => {
         <div className="home-quicklinks-span">
           <h2>Enlaces Rápidos</h2>
           <div className="quicklinks-grid">
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Solicitud de Vacaciones"><DescriptionIcon fontSize="inherit" /></span>Solicitud de Vacaciones</a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Portal de Capacitación"><SchoolIcon fontSize="inherit" /></span>Portal de Capacitación</a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Directorio Empresarial"><GroupsIcon fontSize="inherit" /></span>Directorio Empresarial</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Solicitud de Vacaciones"><DescriptionIcon fontSize="inherit" /></span>Solicitud de Vacaciones</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Portal de Capacitación"><SchoolIcon fontSize="inherit" /></span>Portal de Capacitación</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Directorio Empresarial"><GroupsIcon fontSize="inherit" /></span>Directorio Empresarial</a>
             <a href="#" className="quicklink" onClick={(e) => { e.preventDefault(); setIsSupportModalOpen(true); }}>
               <span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico
             </a>
@@ -322,8 +324,8 @@ const Home: React.FC = () => {
               </span>
               Consulta Nómina
             </a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Calendario de Eventos"><EventIcon fontSize="inherit" /></span>Calendario de Eventos</a>
-            <a href="#" className="quicklink"><span className="quicklink-icon" aria-label="Mi Perfil"><AccountCircleIcon fontSize="inherit" /></span>Mi Perfil</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Calendario de Eventos"><EventIcon fontSize="inherit" /></span>Calendario de Eventos</a>
+            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Mi Perfil"><AccountCircleIcon fontSize="inherit" /></span>Mi Perfil</a>
           </div>
         </div>
       </section>

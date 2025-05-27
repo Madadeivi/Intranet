@@ -104,7 +104,10 @@
   min-width: 0;
   margin: 0 auto;
   height: 20rem;
-  background: url('../assets/diapadre.png') center center/cover no-repeat;
+  background-image: url('../assets/diapadre.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 0;
   box-shadow: none;
   display: flex;
@@ -129,7 +132,7 @@
 .home-welcome h1, .home-welcome p, .home-welcome .home-welcome-month {
   text-align: left;
   font-family: 'Geometria-Medium', 'Geometria', Arial, sans-serif;
-  color: var(--color-text-on-primary);
+  color: var(--color-text-title);
 }
 .home-welcome-month {
   font-size: 1.5rem;
@@ -923,5 +926,13 @@
   pointer-events: none;
   cursor: not-allowed;
   background-color: #d3d3d3; /* Color gris claro */
+}
+
+.quicklink.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #a9a9a9; /* Color gris claro para texto */
+  text-decoration: none;
 }
 
