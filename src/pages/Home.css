@@ -942,10 +942,10 @@
   text-decoration: none;
 }
 
-.event-day {
-  background-color: var(--color-primary-30);
-  color: var(--color-primary-100);
-  border-radius: 50%;
+.react-calendar__tile.event-day {
+  background-color: var(--color-primary-70) !important;
+  color: var(--color-text-title) !important;
+  border-radius: 10px;
   font-weight: bold;
 }
 

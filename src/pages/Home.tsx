@@ -121,10 +121,9 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Definir las fechas de los eventos
     const events = [
-      new Date(2025, 5, 15), // Día del Padre
-      new Date(2025, 5, 1),  // Lanzamiento Intranet
+      new Date(2025, 5, 15),
+      new Date(2025, 5, 3),
     ];
     setEventDates(events);
   }, []);
@@ -144,7 +143,6 @@ const Home: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
 
-  // Cerrar modal de soporte si se hace clic fuera de él
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -175,7 +173,6 @@ const Home: React.FC = () => {
   const currentYear = currentDate.getFullYear();
 
   const tileClassName = ({ date }: { date: Date }) => {
-    // Agregar clase especial si la fecha coincide con un evento
     if (eventDates.some(eventDate => eventDate.toDateString() === date.toDateString())) {
       return 'event-day';
     }
@@ -379,7 +376,7 @@ const Home: React.FC = () => {
             </li>
             <li>
               <div>
-                <span className="event-date">01 Junio 2025</span>
+                <span className="event-date">02 Junio 2025</span>
                 <span className="event-title">Lanzamiento Intranet</span>
               </div>
               <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
