@@ -1,43 +1,29 @@
 {
   "name": "coacharte-intranet",
-  "private": true,
   "version": "0.0.1",
-  "type": "module",
-  "description": "Intranet for Coacharte",
+  "private": true,
+  "workspaces": [
+    "client",
+    "api"
+  ],
+  "description": "Intranet for Coacharte - monorepo",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@emailjs/browser": "^4.4.1",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^7.1.0",
-    "@mui/material": "^7.1.0",
-    "@vercel/speed-insights": "^1.2.0",
-    "react": "^19.0.0",
-    "react-calendar": "^5.1.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^6.23.0"
+    "dev": "npm run dev:client",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:api": "npm run dev --workspace=api",
+    "build": "npm run build:client",
+    "build:client": "npm run build --workspace=client",
+    "build:api": "npm run build --workspace=api",
+    "start:client": "npm run start --workspace=client",
+    "start:api": "npm run start --workspace=api",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
     "@types/node": "^22.15.18",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1",
-    "vite-imagetools": "^7.1.0"
+    "typescript": "~5.7.2"
   }
 }

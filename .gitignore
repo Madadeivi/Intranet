@@ -1,52 +1,53 @@
 # React project .gitignore
 
-# Custom entries
-.qodo
-*.tmp
-*.bak
-*.swp
+# Node modules
+/node_modules/
+client/node_modules/
+api/node_modules/
 
-# Dependencies
-/node_modules
-/.pnp
-.pnp.js
-/package-lock.json
-/yarn.lock
+# Build outputs
+/dist/
+build/
+client/dist/
+client/build/
+api/dist/
+api/build/
 
-# Testing
-/coverage
-/.nyc_output
-/jest-coverage
-/test-results
-
-/dist
-
-# Misc
-.DS_Store
-*.pem
-*.tgz
-
-# Debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
+# TypeScript
+*.tsbuildinfo
+.tmp/
 
 # Environment files
 .env
+.env.local
+.env.*.local
 .env.*
-.env.local
-.env.development
-.env.test
-.env.production
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+client/.env
+client/.env.local
+api/.env
+api/.env.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+/coverage/
+client/coverage/
+api/coverage/
+.nyc_output
+jest-coverage
+test-results
 
 # IDEs and editors
 /.idea
-# .vscode está permitido para versionar archivos de configuración
+.vscode/*
+!.vscode/extensions.json
 *.sublime-project
 *.sublime-workspace
 .project
@@ -57,12 +58,21 @@ yarn-error.log*
 *.suo
 *.ntvs*
 *.njsproj
+*.sln
+*.sw?
 
-# Local files
+# Misc
+.qodo
+*.tmp
+*.bak
+*.swp
+.DS_Store
+*.pem
+*.tgz
+*.eslintrc.local.json
+.prettierrc.local.json
 .eslintcache
 .stylelintcache
-.eslintrc.local.json
-.prettierrc.local.json
 
 # Cache directories
 .npm
