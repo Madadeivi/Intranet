@@ -111,7 +111,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(30,136,229,0.10);
   height: 300px;
@@ -940,5 +940,12 @@
   cursor: not-allowed;
   color: #a9a9a9; /* Color gris claro para texto */
   text-decoration: none;
+}
+
+.event-day {
+  background-color: var(--color-primary-30);
+  color: var(--color-primary-100);
+  border-radius: 50%;
+  font-weight: bold;
 }
 

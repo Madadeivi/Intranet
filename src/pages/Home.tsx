@@ -100,6 +100,7 @@ const Home: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [disabledCards, setDisabledCards] = useState<string[]>([]); // Estado para controlar las tarjetas deshabilitadas
+  const [eventDates, setEventDates] = useState<Date[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -117,6 +118,15 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     setDisabledCards(["Mi Cuenta","Recursos Humanos", "Procesos y Documentación", "Soporte y Comunicación", "Calendario y Eventos", "Conoce Coacharte"]);
+  }, []);
+
+  useEffect(() => {
+    // Definir las fechas de los eventos
+    const events = [
+      new Date(2025, 5, 15), // Día del Padre
+      new Date(2025, 5, 1),  // Lanzamiento Intranet
+    ];
+    setEventDates(events);
   }, []);
 
   // Cerrar menú si se hace clic fuera
@@ -163,6 +173,14 @@ const Home: React.FC = () => {
   const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
   const currentMonth = monthNames[currentDate.getMonth()];
   const currentYear = currentDate.getFullYear();
+
+  const tileClassName = ({ date }: { date: Date }) => {
+    // Agregar clase especial si la fecha coincide con un evento
+    if (eventDates.some(eventDate => eventDate.toDateString() === date.toDateString())) {
+      return 'event-day';
+    }
+    return null;
+  };
 
   return (
     <div className="home-root">
@@ -336,29 +354,33 @@ const Home: React.FC = () => {
       <section className="home-calendar-events">
         <div className="calendar-box">
           <h3>Calendario</h3>
-          <Calendar className="coacharte-calendar" locale="es-MX" />
+          <Calendar
+            className="coacharte-calendar"
+            locale="es-MX"
+            tileClassName={tileClassName} // Pasar la función para marcar días
+          />
         </div>
         <div className="events-box">
           <h3>Próximos Eventos</h3>
           <ul className="events-list">
             <li>
               <div>
-                <span className="event-date">15 Feb 2024 - 10:00 AM</span>
-                <span className="event-title">Reunión General</span>
+                <span className="event-date">15 Junio 2025 - Todo el día</span>
+                <span className="event-title">Día del Padre</span>
               </div>
               <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
             <li>
               <div>
-                <span className="event-date">18 Feb 2024 - 2:00 PM</span>
-                <span className="event-title">Capacitación Nuevas Herramientas</span>
+                <span className="event-date">Junio 2025</span>
+                <span className="event-title">Evento de Integración</span>
               </div>
               <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
             <li>
               <div>
-                <span className="event-date">20 Feb 2024 - Todo el día</span>
-                <span className="event-title">Día de Pago</span>
+                <span className="event-date">01 Junio 2025</span>
+                <span className="event-title">Lanzamiento Intranet</span>
               </div>
               <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
             </li>
