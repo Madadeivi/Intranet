@@ -500,6 +500,12 @@
   margin-bottom: 0;
   min-height: 450px;
 }
+.events-carousel-vertical {
+  max-height: 350px;
+  overflow-y: auto;
+  width: 100%;
+  padding-right: 8px;
+}
 .calendar-box h3, .events-box h3 {
   font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
   color: var(--color-text-title);

@@ -122,8 +122,10 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const events = [
-      new Date(2025, 5, 15),
-      new Date(2025, 5, 3),
+      new Date(2025, 5, 15), // Día del Padre
+      new Date(2025, 5, 3),  // Evento de Integración
+      new Date(2025, 5, 13), // Pago de Nómina
+      new Date(2025, 5, 30), // Pago de Nómina
     ];
     setEventDates(events);
   }, []);
@@ -359,29 +361,58 @@ const Home: React.FC = () => {
         </div>
         <div className="events-box">
           <h3>Próximos Eventos</h3>
-          <ul className="events-list">
-            <li>
-              <div>
-                <span className="event-date">15 Junio 2025 - Todo el día</span>
-                <span className="event-title">Día del Padre</span>
-              </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
-            </li>
-            <li>
-              <div>
-                <span className="event-date">Junio 2025</span>
-                <span className="event-title">Evento de Integración</span>
-              </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
-            </li>
-            <li>
-              <div>
-                <span className="event-date">02 Junio 2025</span>
-                <span className="event-title">Lanzamiento Intranet</span>
-              </div>
-              <img className="event-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Evento" loading="lazy" />
-            </li>
-          </ul>
+          <div className="events-carousel-vertical">
+            <ul className="events-list">
+              {/* Ordenar eventos por fecha */}
+              {[
+                {
+                  date: new Date(2025, 5, 2),
+                  label: '02 Junio 2025',
+                  title: 'Lanzamiento Intranet',
+                  img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=80',
+                  alt: 'Lanzamiento Intranet',
+                },
+                {
+                  date: new Date(2025, 5, 13),
+                  label: '13 Junio 2025 - Todo el día',
+                  title: 'Pago de Nómina',
+                  img: 'https://images.unsplash.com/photo-1556740772-1a741367b93e?auto=format&fit=crop&w=400&q=80',
+                  alt: 'Pago de Nómina',
+                },
+                {
+                  date: new Date(2025, 5, 15),
+                  label: '15 Junio 2025 - Todo el día',
+                  title: 'Día del Padre',
+                  img: 'https://images.unsplash.com/photo-1581579186913-45ac3e6efe93?auto=format&fit=crop&w=400&q=80',
+                  alt: 'Día del Padre',
+                },
+                {
+                  date: new Date(2025, 5, 30),
+                  label: '30 Junio 2025 - Todo el día',
+                  title: 'Pago de Nómina',
+                  img: 'https://images.unsplash.com/photo-1556740772-1a741367b93e?auto=format&fit=crop&w=400&q=80',
+                  alt: 'Pago de Nómina',
+                },
+                {
+                  date: new Date(2025, 5, 3),
+                  label: 'Junio 2025',
+                  title: 'Evento de Integración',
+                  img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=400&q=80',
+                  alt: 'Evento de Integración',
+                },
+              ]
+                .sort((a, b) => a.date.getTime() - b.date.getTime())
+                .map((event, idx) => (
+                  <li key={idx}>
+                    <div>
+                      <span className="event-date">{event.label}</span>
+                      <span className="event-title">{event.title}</span>
+                    </div>
+                    <img className="event-img" src={event.img} alt={event.alt} loading="lazy" />
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
       </section>
 
