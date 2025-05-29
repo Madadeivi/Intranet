@@ -24,6 +24,8 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
   const { userInfo, onClose } = props;
@@ -94,6 +96,64 @@ const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: s
   );
 });
 
+const NoticeDetailModal: React.FC<{ open: boolean; onClose: () => void; title: string; detail: string; }> = ({ open, onClose, title, detail }) => {
+  if (!open) return null;
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>{title}</h2>
+        <p className="notice-detail-text">{parseBoldAndBreaks(detail)}</p>
+        <div className="button-group">
+          <button onClick={onClose}>Cerrar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Utilidad para parsear **negrita** y saltos de línea a JSX seguro
+type ParsedPart = { type: 'text' | 'bold' | 'br'; content: string };
+function parseBoldAndBreaks(text: string): React.ReactNode[] {
+  const parts: ParsedPart[] = [];
+  let buffer = '';
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === '\\' && text[i + 1] === 'n') {
+      if (buffer) parts.push({ type: 'text', content: buffer });
+      parts.push({ type: 'br', content: '' });
+      buffer = '';
+      i += 2;
+    } else if (text[i] === '\n') {
+      if (buffer) parts.push({ type: 'text', content: buffer });
+      parts.push({ type: 'br', content: '' });
+      buffer = '';
+      i++;
+    } else if (text[i] === '*' && text[i + 1] === '*' ) {
+      // Detectar inicio de negrita
+      if (buffer) parts.push({ type: 'text', content: buffer });
+      buffer = '';
+      i += 2;
+      let boldText = '';
+      while (i < text.length && !(text[i] === '*' && text[i + 1] === '*')) {
+        boldText += text[i];
+        i++;
+      }
+      if (i < text.length) i += 2; // Saltar cierre **
+      parts.push({ type: 'bold', content: boldText });
+    } else {
+      buffer += text[i];
+      i++;
+    }
+  }
+  if (buffer) parts.push({ type: 'text', content: buffer });
+  // Convertir a JSX
+  return parts.map((part, idx) => {
+    if (part.type === 'bold') return <strong key={idx}>{part.content}</strong>;
+    if (part.type === 'br') return <br key={idx} />;
+    return part.content;
+  });
+}
+
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string; email: string } | null>(null);
@@ -101,6 +161,7 @@ const Home: React.FC = () => {
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [disabledCards, setDisabledCards] = useState<string[]>([]); // Estado para controlar las tarjetas deshabilitadas
   const [eventDates, setEventDates] = useState<Date[]>([]);
+  const [noticeModal, setNoticeModal] = useState<{ open: boolean; title: string; detail: string }>({ open: false, title: '', detail: '' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -117,7 +178,7 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setDisabledCards(["Mi Cuenta","Recursos Humanos", "Procesos y Documentación", "Soporte y Comunicación", "Calendario y Eventos", "Conoce Coacharte"]);
+    setDisabledCards(["Mi Cuenta", "Recursos Humanos", "Procesos y Documentación", "Soporte y Comunicación", "Calendario y Eventos", "Conoce Coacharte"]);
   }, []);
 
   useEffect(() => {
@@ -181,6 +242,57 @@ const Home: React.FC = () => {
     return null;
   };
 
+  // Carrusel de avisos importantes
+  const noticeCarouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const handleScroll = () => {
+    const el = noticeCarouselRef.current;
+    if (el) {
+      setCanScrollLeft(el.scrollLeft > 0);
+      setCanScrollRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 1);
+    }
+  };
+
+  const scrollBy = (offset: number) => {
+    const el = noticeCarouselRef.current;
+    if (el) {
+      el.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
+
+  // Gestos táctiles para mobile
+  useEffect(() => {
+    const el = noticeCarouselRef.current;
+    if (!el) return;
+    let startX = 0;
+    let scrollLeft = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].pageX;
+      scrollLeft = el.scrollLeft;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const dx = e.touches[0].pageX - startX;
+      el.scrollLeft = scrollLeft - dx;
+    };
+    el.addEventListener('touchstart', onTouchStart);
+    el.addEventListener('touchmove', onTouchMove);
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+    };
+  }, []);
+
+  // Actualizar flechas al hacer scroll
+  useEffect(() => {
+    const el = noticeCarouselRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="home-root">
       {/* Header y barra de navegación */}
@@ -195,14 +307,14 @@ const Home: React.FC = () => {
         <div className="home-user" ref={dropdownRef}>
           <span className="notification-bell" aria-label="Notificaciones">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11 20c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6V9c0-3.07-1.63-5.64-5-6.32V2a1 1 0 1 0-2 0v.68C6.63 3.36 5 5.92 5 9v5l-1.29 1.29A1 1 0 0 0 5 17h12a1 1 0 0 0 .71-1.71L17 14zM17 15H5v-1.17l1.41-1.41C6.79 12.21 7 11.7 7 11.17V9c0-2.76 1.12-5 4-5s4 2.24 4 5v2.17c0 .53.21 1.04.59 1.42L17 13.83V15z" fill="currentColor"/>
+              <path d="M11 20c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6V9c0-3.07-1.63-5.64-5-6.32V2a1 1 0 1 0-2 0v.68C6.63 3.36 5 5.92 5 9v5l-1.29 1.29A1 1 0 0 0 5 17h12a1 1 0 0 0 .71-1.71L17 14zM17 15H5v-1.17l1.41-1.41C6.79 12.21 7 11.7 7 11.17V9c0-2.76 1.12-5 4-5s4 2.24 4 5v2.17c0 .53.21 1.04.59 1.42L17 13.83V15z" fill="currentColor" />
             </svg>
           </span>
           <span className="user-avatar">{userInfo?.initials}</span>
           <span className="user-name">{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''}</span>
           <span className="user-dropdown-arrow" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
           {dropdownOpen && (
@@ -235,7 +347,7 @@ const Home: React.FC = () => {
                   <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2" />
                   <line x1="14.4142" y1="14" x2="18" y2="17.5858" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
-            </span>
+              </span>
             )}
           </div>
         </div>
@@ -293,37 +405,67 @@ const Home: React.FC = () => {
       <section className="home-notices">
         <div className='home-notices-span'>
           <h2>Avisos Importantes</h2>
-          <div className="notice-grid">
-            <div className="notice-card">
-              <img className="notice-card-img" src={importantArticle1} alt="Dia del padre" loading="lazy" />
-              <div className="notice-card-content">
-                <span className="notice-date">15 Jun 2025</span>
-                <h4>Dia del Padre</h4>
-                <p>Celebramos a todos los padres en su día especial.</p>
-                <a href="#">Ver más</a>
+          <div className="notice-carousel-wrapper">
+            <button
+              className="notice-carousel-arrow left"
+              onClick={() => scrollBy(-320)}
+              disabled={!canScrollLeft}
+              aria-label="Anterior"
+            >
+              <ArrowBackIosNewIcon />
+            </button>
+            <div className="notice-carousel" ref={noticeCarouselRef}>
+              <div className="notice-grid notice-carousel-track">
+                <div className="notice-card">
+                  <img className="notice-card-img" src={importantArticle1} alt="Dia del padre" loading="lazy" />
+                  <div className="notice-card-content">
+                    <span className="notice-date">15 Jun 2025</span>
+                    <h4>Banner día del padre</h4>
+                    <p>Féliz día a los papás Coacharteanos!!!</p>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Banner día del padre', detail: 'Hoy celebramos a los papás que forman parte de nuestra organización.\nA ustedes, que equilibran reuniones, proyectos y responsabilidades con su papel más importante: ser guías, protectores y ejemplo de dedicación para sus familias.\n\n**¡Feliz Día del Padre!** De todos los que hacemos Coacharte.' }); }}>Ver más</a>
+                  </div>
+                </div>
+                <div className="notice-card">
+                  <img className="notice-card-img" src={importantArticle2} alt="Bono 2024" loading="lazy" />
+                  <div className="notice-card-content">
+                    <span className="notice-date">Junio 2025</span>
+                    <h4>Bono 2024</h4>
+                    <p>Bono 2024 derivado de los resultados de la evaluación.</p>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Bono 2024', detail: 'A partir de junio de 2025, todos los colaboradores **evaluados durante el período 2024** que hayan obtenido una calificación satisfactoria, según las insignias establecidas, recibirán el depósito por concepto de BONO correspondiente al ejercicio fiscal 2024.' }); }}>Ver más</a>
+                  </div>
+                </div>
+                <div className="notice-card">
+                  <img className="notice-card-img" src={importantArticle3} alt="Ajuste salarial" loading="lazy" />
+                  <div className="notice-card-content">
+                    <span className="notice-date">Junio 2025</span>
+                    <h4>Ajuste salarial</h4>
+                    <p>Ajuste salarial derivado de la inflación 2024.</p>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Ajuste salarial', detail: 'En reconocimiento a su compromiso y esfuerzo, les informamos que, **a partir de la segunda quincena del mes de MAYO 2025**, se realizará un ajuste salarial del **3.5%** derivado de la inflación correspondiente al año **2024** y al incremento recibido por nuestros clientes en el mismo mes.\n\nEste ajuste aplicará a todos los colaboradores que se han mantenido activos en nuestra nómina desde el **2024**.' }); }}>Ver más</a>
+                  </div>
+                </div>
+                <div className="notice-card">
+                  <img className="notice-card-img" src={importantArticle3} alt="Modelo de cultura integral" loading="lazy" />
+                  <div className="notice-card-content">
+                    <span className="notice-date">Junio 2025</span>
+                    <h4>Modelo de cultura integral</h4>
+                    <p>La cultura organizacional en Coacharte la hacemos todos y todas y la vivimos en cada momento.</p>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Modelo de cultura integral', detail: '**Nuestro propósito organizacional** es "Transformar cualquier reto en logro"\n**Nuestros valores** son los barandales que guían nuestras acciones y tienen un significado muy preciso:\n**PERSONAS:** lo más importante son las relaciones sanas con nuestros colegas y clientes.\n**INSPIRAMOS CONFIANZA:** actuando con honestidad, comunicándonos asertivamente y cumpliendo los acuerdos establecidos.\n**VOCACIÓN DE SERVICIO:** disponibilidad para escuchar, leer, atender y proponer siempre desde la empatía.\n\n**Los comportamientos** son las acciones precisas que están asociadas a cada valor para asegurar que tod@s los coachartean@s contribuyamos al logro de los objetivos organizacionales en cada momento clave.' }); }}>Ver más</a>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="notice-card">
-              <img className="notice-card-img" src={importantArticle2} alt="Evento de integracion" loading="lazy" />
-              <div className="notice-card-content">
-                <span className="notice-date">Proximamente</span>
-                <h4>Evento de integración</h4>
-                <p>Un espacio para fortalecer lazos y compartir experiencias.</p>
-                <a href="#">Ver más</a>
-              </div>
-            </div>
-            <div className="notice-card">
-              <img className="notice-card-img" src={importantArticle3} alt="Intranet Coacharte" loading="lazy" />
-              <div className="notice-card-content">
-                <span className="notice-date">Junio 2025</span>
-                <h4>Intranet Coacharte en desarrollo</h4>
-                <p>Estamos trabajando en el desarrollo de la intranet para ofrecerte más funcionalidades y mejorar tu experiencia.</p>
-                <a href="#">Ver más</a>
-              </div>
-            </div>
+            <button
+              className="notice-carousel-arrow right"
+              onClick={() => scrollBy(320)}
+              disabled={!canScrollRight}
+              aria-label="Siguiente"
+            >
+              <ArrowForwardIosIcon />
+            </button>
           </div>
         </div>
       </section>
+      <NoticeDetailModal open={noticeModal.open} onClose={() => setNoticeModal({ ...noticeModal, open: false })} title={noticeModal.title} detail={noticeModal.detail} />
 
       {/* Enlaces rápidos */}
       <section className="home-quicklinks">

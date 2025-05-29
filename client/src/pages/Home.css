@@ -102,7 +102,7 @@
 .home-welcome {
   display: flex;
   background-color: var(--color-primary-10);
-  background-image: url('../assets/diapadre.png');
+  background-image: url('../assets/img_banner_intra.jpg');
   background-size: 112%;
   background-position: left center;
   background-repeat: no-repeat;
@@ -147,11 +147,12 @@
   font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
   color: var(--color-primary-100);
   background: var(--color-primary-30);
-  padding: 0.25em 1.2em;
+  padding: 0.25em 1em;
   box-shadow: 0 2px 8px rgba(30,136,229,0.10);
   display: inline-block;
   margin-bottom: 1rem;
   width: fit-content;
+  border-radius: 0.5rem;
 }
 
 .home-welcome h1 {
@@ -953,5 +954,178 @@
   color: var(--color-text-title) !important;
   border-radius: 10px;
   font-weight: bold;
+}
+
+/* Carrusel horizontal para avisos importantes */
+.notice-carousel-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.notice-carousel {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.notice-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: max-content;
+}
+.notice-card {
+  min-width: 280px;
+  max-width: 320px;
+  flex: 0 0 auto;
+  /* Mantener estilos previos de la card */
+}
+@media (max-width: 900px) {
+  .notice-card {
+    min-width: 220px;
+    max-width: 260px;
+  }
+}
+
+/* Opcional: ocultar scroll horizontal en desktop */
+.notice-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.notice-carousel::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.notice-carousel {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
+
+/* Carrusel horizontal para avisos importantes con flechas */
+.notice-carousel-wrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+.notice-carousel {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+.notice-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: max-content;
+}
+.notice-card {
+  min-width: 280px;
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+.notice-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(30,136,229,0.10);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  color: var(--color-primary-100);
+  transition: background 0.2s, color 0.2s;
+}
+.notice-carousel-arrow.left {
+  left: 0.5rem;
+}
+.notice-carousel-arrow.right {
+  right: 0.5rem;
+}
+.notice-carousel-arrow {
+  background: var(--color-primary-100);
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 16px rgba(30,136,229,0.18);
+  opacity: 0.92;
+  transition: background 0.2s, color 0.2s, opacity 0.2s, box-shadow 0.2s;
+}
+.notice-carousel-arrow:hover:not(:disabled) {
+  background: var(--color-primary-70);
+  color: #fff;
+  opacity: 1;
+  box-shadow: 0 6px 24px rgba(30,136,229,0.28);
+}
+.notice-carousel-arrow:disabled {
+  opacity: 0.3;
+  background: #e0e0e0;
+  color: #bdbdbd;
+  border: 2px solid #e0e0e0;
+}
+@media (max-width: 900px) {
+  .notice-card {
+    min-width: 220px;
+    max-width: 260px;
+  }
+  .notice-carousel-arrow {
+    width: 28px;
+    height: 28px;
+  }
+}
+.notice-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.notice-carousel::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.notice-carousel {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
+
+/* Efecto hover en las notice-card del carrusel */
+.notice-card {
+  transition: box-shadow 0.25s, transform 0.22s;
+}
+.notice-card:hover {
+  box-shadow: 0 8px 32px rgba(30,136,229,0.18), 0 1.5px 8px rgba(0,0,0,0.08);
+  transform: translateY(-6px) scale(1.035);
+  z-index: 1;
+}
+
+/* Animación de entrada para las notice-card */
+.notice-card {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  animation: noticeCardFadeIn 0.7s cubic-bezier(.23,1.02,.47,.98) forwards;
+}
+.notice-card:nth-child(1) { animation-delay: 0.05s; }
+.notice-card:nth-child(2) { animation-delay: 0.15s; }
+.notice-card:nth-child(3) { animation-delay: 0.25s; }
+.notice-card:nth-child(4) { animation-delay: 0.35s; }
+.notice-card:nth-child(5) { animation-delay: 0.45s; }
+
+@keyframes noticeCardFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notice-detail-text {
+  white-space: pre-line;
+}
+.notice-detail-text strong {
+  font-weight: 700;
+  color: var(--color-text-title, #222);
+  font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
+  letter-spacing: 0.01em;
 }
 
