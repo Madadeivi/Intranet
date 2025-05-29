@@ -1,0 +1,13 @@
+{
+  "name": "@intranet/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'API development server not configured yet'",
+    "build": "echo 'API build not configured yet'",
+    "start": "echo 'API start not configured yet'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
