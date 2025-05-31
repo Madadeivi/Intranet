@@ -11,12 +11,14 @@ export function useClickOutside(
   handler: () => void,
   isActive: boolean = true
 ): void {
+  const memoizedHandler = useCallback(handler, []);
+
   useEffect(() => {
     if (!isActive) return;
 
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        handler();
+        memoizedHandler();
       }
     }
 
