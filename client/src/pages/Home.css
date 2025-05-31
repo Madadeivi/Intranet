@@ -102,7 +102,7 @@
 .home-welcome {
   display: flex;
   background-color: var(--color-primary-10);
-  background-image: url('../assets/img_banner_intra.jpg');
+  background-image: url('../assets/img_banner.png');
   background-size: 112%;
   background-position: left center;
   background-repeat: no-repeat;

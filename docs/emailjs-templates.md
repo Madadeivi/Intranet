@@ -1,3 +1,4 @@
+
 # Plantillas de EmailJS para Soporte Técnico
 
 ## Configuración en EmailJS Dashboard
@@ -7,6 +8,7 @@
 **Nombre del Template:** `support_ticket_template`
 
 **Asunto del Email:**
+
 ```
 {{subject}}
 ```
@@ -125,11 +127,13 @@
 **Nombre del Template:** `support_confirmation_template`
 
 **Asunto del Email:**
+
 ```
 Confirmación de Ticket #{{ticket_id}} - Soporte Coacharte
 ```
 
 **Contenido del Email:**
+
 ```html
 <!DOCTYPE html>
 <html>

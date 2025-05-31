@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
 import logoFooter from '../assets/coacharte-bco@4x.png';
-import importantArticle1 from '../assets/diadelpadre_img.png';
-import importantArticle2 from '../assets/evento_integracion.png';
-import importantArticle3 from '../assets/intranet_growth.svg';
+import importantArticle1 from '../assets/banner_padre.png';
+import importantArticle2 from '../assets/banner_bono.png';
+import importantArticle3 from '../assets/banner_ajuste.png';
+import importantArticle4 from '../assets/banner_modelo.png';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 // Importar iconos rellenos de Material Icons
@@ -455,7 +456,7 @@ const Home: React.FC = () => {
                   </div>
                 </div>
                 <div className="notice-card">
-                  <img className="notice-card-img" src={importantArticle3} alt="Modelo de cultura integral" loading="lazy" />
+                  <img className="notice-card-img" src={importantArticle4} alt="Modelo de cultura integral" loading="lazy" />
                   <div className="notice-card-content">
                     <span className="notice-date">Junio 2025</span>
                     <h4>Modelo de cultura integral</h4>
