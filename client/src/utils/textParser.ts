@@ -48,6 +48,6 @@ export function parseBoldAndBreaks(text: string): React.ReactNode[] {
   return parts.map((part, idx) => {
     if (part.type === 'bold') return React.createElement('strong', { key: idx }, part.content);
     if (part.type === 'br') return React.createElement('br', { key: idx });
-    return part.content;
+    return React.createElement(React.Fragment, { key: idx }, part.content);
   });
 }
