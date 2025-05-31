@@ -775,7 +775,7 @@
 
 .modal-close-button:hover {
   background: var(--color-primary-70);
-  transform: scale(1.1) rotate(90deg);
+  transform: scale(1.1);
   box-shadow: var(--shadow-lg);
 }
 
