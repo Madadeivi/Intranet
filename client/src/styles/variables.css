@@ -6,6 +6,7 @@
   --color-primary-50: rgba(52, 114, 229, 0.5);
   --color-primary-30: rgba(52, 114, 229, 0.3);
   --color-primary-10: rgba(52, 114, 229, 0.1);
+  --color-primary-5: rgba(52, 114, 229, 0.05);
 
   /* Gris oscuro #353535 */
   --color-dark-100: #353535;
