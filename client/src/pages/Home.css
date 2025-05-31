@@ -204,8 +204,7 @@
 }
 
 .home-welcome-content {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1200px;
   text-align: left;
 }
 
@@ -245,7 +244,6 @@
 .home-search-wrapper {
   position: relative;
   max-width: 500px;
-  margin: 0 auto;
 }
 
 .home-search {
@@ -974,6 +972,7 @@
 
 /* Large Desktop (1200px and up) */
 @media (min-width: 1200px) {
+  .home-welcome-content,
   .home-main-cards,
   .home-quicklinks {
     padding-left: var(--space-8);
