@@ -498,19 +498,19 @@
 /* Centrado mejorado para el contenido del formulario */
 .support-form {
   width: 100%;
-  max-width: 600px;
+  max-width: var(--max-width-form);
   margin: 0 auto;
 }
 
 .support-form-header {
   width: 100%;
-  max-width: 600px;
+  max-width: var(--max-width-form);
   margin: 0 auto 2rem;
 }
 
 .support-form-alert {
   width: 100%;
-  max-width: 600px;
+  max-width: var(--max-width-form);
   margin: 0 auto 2rem auto;
 }
 
