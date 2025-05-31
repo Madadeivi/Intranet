@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { emailService, SupportTicket } from '../services/emailService';
+import './SupportForm.css';
 
 interface SupportFormProps {
   userEmail: string;
@@ -50,7 +51,7 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
         
         setSubmitStatus({
           type: 'success',
-          message: `Ticket creado exitosamente. ID: ${response.ticketId}`,
+          message: `Ticket creado exitosamente`,
           ticketId: response.ticketId,
         });
         
@@ -77,31 +78,45 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
     }
   };
 
+  const getPriorityClass = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'priority-urgent';
+      case 'high': return 'priority-high';
+      case 'medium': return 'priority-medium';
+      case 'low': return 'priority-low';
+      default: return '';
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Soporte Técnico</h2>
+    <div className="support-form-container">
+      <div className="support-form-header">
+        <h2 className="support-form-title">Crear Ticket de Soporte</h2>
+        <p className="support-form-subtitle">
+          Completa el formulario y nuestro equipo te contactará lo antes posible
+        </p>
+      </div>
       
       {submitStatus.type && (
-        <div
-          className={`mb-4 p-4 rounded ${
-            submitStatus.type === 'success'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-700'
-          }`}
-        >
-          <p>{submitStatus.message}</p>
-          {submitStatus.ticketId && (
-            <p className="mt-2 text-sm">
-              Recibirás una confirmación en tu correo: {userEmail}
-            </p>
-          )}
+        <div className={`support-form-alert ${submitStatus.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+          <div className="alert-content">
+            <strong>{submitStatus.type === 'success' ? '✓ Éxito' : '✗ Error'}</strong>
+            <p>{submitStatus.message}</p>
+            {submitStatus.ticketId && (
+              <div className="ticket-info">
+                <span className="ticket-label">ID del Ticket:</span>
+                <span className="ticket-id">{submitStatus.ticketId}</span>
+                <p className="ticket-note">Recibirás una confirmación en: <strong>{userEmail}</strong></p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-            Asunto
+      <form onSubmit={handleSubmit} className="support-form">
+        <div className="form-group">
+          <label htmlFor="subject" className="form-label">
+            Asunto <span className="required">*</span>
           </label>
           <input
             type="text"
@@ -110,14 +125,15 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="form-input"
             placeholder="Breve descripción del problema"
+            disabled={isSubmitting}
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="category" className="form-label">
               Categoría
             </label>
             <select
@@ -125,17 +141,18 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="form-select"
+              disabled={isSubmitting}
             >
-              <option value="technical">Soporte Técnico</option>
-              <option value="general">Consulta General</option>
-              <option value="billing">Facturación</option>
-              <option value="other">Otro</option>
+              <option value="technical">🔧 Soporte Técnico</option>
+              <option value="general">💬 Consulta General</option>
+              <option value="nomina">💳 Nómina</option>
+              <option value="other">📋 Otro</option>
             </select>
           </div>
 
-          <div>
-            <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+          <div className="form-group">
+            <label htmlFor="priority" className="form-label">
               Prioridad
             </label>
             <select
@@ -143,19 +160,20 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
               name="priority"
               value={formData.priority}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className={`form-select ${getPriorityClass(formData.priority)}`}
+              disabled={isSubmitting}
             >
-              <option value="low">Baja</option>
-              <option value="medium">Media</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
+              <option value="low">🟢 Baja</option>
+              <option value="medium">🟡 Media</option>
+              <option value="high">🟠 Alta</option>
+              <option value="urgent">🔴 Urgente</option>
             </select>
           </div>
         </div>
 
-        <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-            Descripción detallada
+        <div className="form-group">
+          <label htmlFor="message" className="form-label">
+            Descripción detallada <span className="required">*</span>
           </label>
           <textarea
             id="message"
@@ -164,29 +182,48 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
             onChange={handleInputChange}
             required
             rows={6}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="form-textarea"
             placeholder="Por favor, describe tu problema o consulta en detalle..."
+            disabled={isSubmitting}
           />
+          <span className="form-hint">
+            Proporciona todos los detalles relevantes para ayudarnos a resolver tu solicitud más rápidamente
+          </span>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-600">
-            <strong>Tu información de contacto:</strong>
-          </p>
-          <p className="text-sm text-gray-600">Nombre: {userName}</p>
-          <p className="text-sm text-gray-600">Email: {userEmail}</p>
+        <div className="user-info-card">
+          <div className="user-info-header">
+            <span className="user-info-icon">👤</span>
+            <h3>Información de contacto</h3>
+          </div>
+          <div className="user-info-details">
+            <div className="info-row">
+              <span className="info-label">Nombre:</span>
+              <span className="info-value">{userName}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Email:</span>
+              <span className="info-value">{userEmail}</span>
+            </div>
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-            isSubmitting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-          }`}
+          className={`submit-button ${isSubmitting ? 'button-loading' : ''}`}
         >
-          {isSubmitting ? 'Enviando...' : 'Enviar Ticket de Soporte'}
+          {isSubmitting ? (
+            <>
+              <span className="loading-spinner"></span>
+              Enviando...
+            </>
+          ) : (
+            <>
+              <span className="button-icon">📨</span>
+              Enviar Ticket de Soporte
+            </>
+          )}
         </button>
       </form>
     </div>

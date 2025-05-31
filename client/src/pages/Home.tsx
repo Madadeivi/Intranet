@@ -24,74 +24,29 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import emailjs from '@emailjs/browser';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import SupportForm from '../components/SupportForm';
 
 const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
   const { userInfo, onClose } = props;
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
-  const [urgency, setUrgency] = useState('Normal');
-
-  const handleSend = () => {
-    if (!subject || !description) {
-      alert('Por favor, complete todos los campos antes de enviar.');
-      return;
-    }
-
-    const templateParams = {
-      subject: `[${urgency}] ${subject}`,
-      description,
-      user_name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-      user_email: userInfo?.email,
-    };
-
-    emailjs
-      .send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        templateParams,
-        import.meta.env.VITE_EMAILJS_USER_ID
-      )
-      .then(
-        (response) => {
-          console.log('Correo enviado exitosamente:', response.status, response.text);
-          alert('El ticket de soporte ha sido enviado exitosamente.');
-          onClose();
-        },
-        (error) => {
-          console.error('Error al enviar el correo:', error);
-          alert('Hubo un problema al enviar el ticket. Por favor, intente nuevamente.');
-        }
-      );
-  };
 
   return (
     <div className="modal-overlay">
-      <div className="modal" ref={ref}>
-        <h2>Crear Ticket de Soporte</h2>
-        <div className="input-group">
-          <label htmlFor="subject">Asunto:</label>
-          <input id="subject" type="text" value={subject} onChange={(e) => setSubject(e.target.value)} />
-        </div>
-        <div className="input-group">
-          <label htmlFor="description">Descripción del problema:</label>
-          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
-        <div className="input-group">
-          <label htmlFor="urgency">Nivel de urgencia:</label>
-          <select id="urgency" value={urgency} onChange={(e) => setUrgency(e.target.value)}>
-            <option value="Urgente">Urgente</option>
-            <option value="Normal">Normal</option>
-            <option value="Soporte">Soporte</option>
-            <option value="Información">Información</option>
-          </select>
-        </div>
-        <div className="button-group">
-          <button onClick={handleSend}>Enviar</button>
-          <button onClick={onClose}>Cancelar</button>
-        </div>
+      <div className="modal support-form-modal" ref={ref}>
+        <button 
+          className="modal-close-button" 
+          onClick={onClose}
+          aria-label="Cerrar modal"
+        >
+          ×
+        </button>
+        {userInfo && (
+          <SupportForm 
+            userEmail={userInfo.email}
+            userName={`${userInfo.firstName} ${userInfo.lastName}`}
+          />
+        )}
       </div>
     </div>
   );
