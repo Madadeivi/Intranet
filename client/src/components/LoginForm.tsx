@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import authService, { AuthResult, LoginCredentials } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/coacharte-logo.png';
@@ -16,6 +16,14 @@ const LoginForm: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [initials, setInitials] = useState(''); // Se usa para el avatar si se requiere en el futuro
   const navigate = useNavigate();
+
+  // Agregar clase al body para estilos específicos del login
+  useEffect(() => {
+    document.body.classList.add('login-page');
+    return () => {
+      document.body.classList.remove('login-page');
+    };
+  }, []);
 
   const validateEmail = (email: string) => {
     // Permite dominios coacharte.mx y caretra
@@ -91,6 +99,9 @@ const LoginForm: React.FC = () => {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="nombre.apellido@coacharte.mx"
+            autoComplete="email"
+            autoFocus
             required
           />
         </div>
@@ -101,10 +112,16 @@ const LoginForm: React.FC = () => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ingresa tu contraseña"
+            autoComplete="current-password"
             required
           />
         </div>
-        <button type="submit" className="login-button">
+        <button 
+          type="submit" 
+          className={`login-button ${isLoading ? 'loading' : ''}`}
+          disabled={isLoading}
+        >
           {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
       </form>
