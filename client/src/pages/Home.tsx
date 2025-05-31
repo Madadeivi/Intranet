@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import 'react-calendar/dist/Calendar.css';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
 import logoFooter from '../assets/coacharte-bco@4x.png';
@@ -7,7 +8,6 @@ import importantArticle2 from '../assets/banner_bono.png';
 import importantArticle3 from '../assets/banner_ajuste.png';
 import importantArticle4 from '../assets/banner_modelo.png';
 import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 // Importar iconos rellenos de Material Icons
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
