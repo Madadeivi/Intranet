@@ -409,7 +409,8 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
-  min-width: 280px;
+  min-width: 300px;
+  max-width: 320px;
   flex-shrink: 0;
   transition: all 0.22s ease-in-out;
 }
