@@ -750,6 +750,7 @@
   overflow-y: auto;
   width: 100%;
   max-width: 600px;
+  max-height: 90vh;
 }
 
 .modal-close-button {
