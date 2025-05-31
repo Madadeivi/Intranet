@@ -951,40 +951,35 @@
 /* Calendar and Events Section - Optimizada con design system */
 .home-calendar-events {
   display: flex;
-  gap: 0;
+  gap: var(--spacing-2xl);
   justify-content: space-between;
   align-items: stretch;
-  margin: var(--spacing-2xl) auto;
+  margin: var(--spacing-3xl) auto;
   width: 100%;
   max-width: var(--breakpoint-xl);
   padding: 0 var(--spacing-xl);
   box-sizing: border-box;
-  background: #f5f6f8;
-  border-radius: 0;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-primary-10);
 }
 
 .calendar-box,
 .events-box {
-  background: transparent;
+  background: #f5f6f8;
   padding: var(--spacing-xl);
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-height: 500px;
-  border-radius: 0;
-  box-shadow: none;
-  width: 50%;
-  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  width: calc(50% - var(--spacing-xl));
+  border: 1px solid var(--color-primary-10);
 }
 
 .calendar-box {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  border-right: 1px solid var(--color-primary-10);
 }
 
 .events-box {
@@ -1039,15 +1034,14 @@
 @media (max-width: 992px) {
   .home-calendar-events {
     padding: 0 var(--spacing-lg);
-    margin: var(--spacing-xl) auto;
-    border-radius: 0;
+    gap: var(--spacing-xl);
+    margin: var(--spacing-2xl) auto;
   }
   
   .calendar-box,
   .events-box {
     padding: var(--spacing-lg);
     min-height: 450px;
-    border-radius: 0;
   }
   
   .calendar-box h3, 
@@ -1063,16 +1057,9 @@
 @media (max-width: 768px) {
   .home-calendar-events {
     flex-direction: column;
-    gap: 0;
-    margin: var(--spacing-lg) auto;
+    gap: var(--spacing-xl);
+    margin: var(--spacing-xl) auto;
     padding: 0 var(--spacing-md);
-    border-radius: 0;
-  }
-  
-  .calendar-box {
-    border-right: none;
-    border-bottom: 1px solid var(--color-primary-10);
-    border-radius: 0;
   }
   
   .calendar-box,
@@ -1080,7 +1067,6 @@
     width: 100%;
     min-height: 400px;
     padding: var(--spacing-lg);
-    border-radius: 0;
   }
   
   .calendar-box h3, 
@@ -1096,16 +1082,16 @@
 
 @media (max-width: 576px) {
   .home-calendar-events {
-    margin: var(--spacing-md) auto;
+    margin: var(--spacing-lg) auto;
     padding: 0 var(--spacing-sm);
-    border-radius: 0;
+    gap: var(--spacing-lg);
   }
   
   .calendar-box,
   .events-box {
     min-height: 350px;
     padding: var(--spacing-md);
-    border-radius: 0;
+    border-radius: var(--radius-lg);
   }
   
   .calendar-box h3, 
@@ -1122,14 +1108,12 @@
 @media (max-width: 375px) {
   .home-calendar-events {
     padding: 0 var(--spacing-xs);
-    border-radius: 0;
   }
   
   .calendar-box,
   .events-box {
     padding: var(--spacing-sm);
     min-height: 300px;
-    border-radius: 0;
   }
   
   .calendar-box h3, 
@@ -1802,6 +1786,9 @@
     padding: 0 0.5rem !important;
     margin: 0 -0.5rem !important;
   }
+  .notice-carousel-arrow {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1850,7 +1837,6 @@
   z-index: 1000;
   padding: var(--spacing-lg);
   box-sizing: border-box;
-  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -2203,6 +2189,48 @@ html {
   }
 }
 
+/* Carrusel horizontal para avisos importantes */
+.notice-carousel-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.notice-carousel {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.notice-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: max-content;
+}
+.notice-card {
+  min-width: 280px;
+  max-width: 320px;
+  flex: 0 0 auto;
+  /* Mantener estilos previos de la card */
+}
+@media (max-width: 900px) {
+  .notice-card {
+    min-width: 220px;
+    max-width: 260px;
+  }
+}
+
+/* Opcional: ocultar scroll horizontal en desktop */
+.notice-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.notice-carousel::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.notice-carousel {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
 
 /* Notice Carousel - Completamente responsive */
 .notice-carousel-wrapper {
@@ -2436,14 +2464,7 @@ html {
     margin: 0 -0.5rem !important;
   }
   .notice-carousel-arrow {
-    width: 28px !important;
-    height: 28px !important;
-    padding: 4px !important;
-    font-size: 16px !important;
-  }
-  .notice-carousel-arrow svg {
-    width: 16px !important;
-    height: 16px !important;
+    display: none !important;
   }
 }
 
@@ -2815,5 +2836,337 @@ html {
   
   .notice-card {
     animation: none !important;
+  }
+}
+
+/* Carrusel horizontal para avisos importantes */
+.notice-carousel-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.notice-carousel {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.notice-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: max-content;
+}
+.notice-card {
+  min-width: 280px;
+  max-width: 320px;
+  flex: 0 0 auto;
+  /* Mantener estilos previos de la card */
+}
+@media (max-width: 900px) {
+  .notice-card {
+    min-width: 220px;
+    max-width: 260px;
+  }
+}
+
+/* Opcional: ocultar scroll horizontal en desktop */
+.notice-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.notice-carousel::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.notice-carousel {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
+
+/* Notice Carousel - Completamente responsive */
+.notice-carousel-wrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+
+.notice-carousel {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 0 3rem;
+  margin: 0 -3rem;
+}
+
+.notice-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: max-content;
+  padding: 0 1rem;
+}
+
+.notice-card {
+  min-width: 300px;
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+
+.notice-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  background: var(--color-primary-100);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(30,136,229,0.18);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  opacity: 0.92;
+  transition: all 0.2s ease;
+}
+
+.notice-carousel-arrow.left {
+  left: 0.5rem;
+}
+
+.notice-carousel-arrow.right {
+  right: 0.5rem;
+}
+
+.notice-carousel-arrow:hover:not(:disabled) {
+  background: var(--color-primary-70);
+  opacity: 1;
+  box-shadow: 0 6px 24px rgba(30,136,229,0.28);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.notice-carousel-arrow:disabled {
+  opacity: 0.3;
+  background: #e0e0e0;
+  color: #bdbdbd;
+  border: 2px solid #e0e0e0;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .notice-carousel {
+    padding: 0 2.5rem;
+    margin: 0 -2.5rem;
+  }
+  
+  .notice-card {
+    min-width: 280px;
+    max-width: 300px;
+  }
+  
+  .notice-carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .notice-carousel {
+    padding: 0 2rem;
+    margin: 0 -2rem;
+  }
+  
+  .notice-card {
+    min-width: 250px;
+    max-width: 280px;
+  }
+  
+  .notice-carousel-arrow {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .notice-carousel-arrow.left {
+    left: 0.25rem;
+  }
+  
+  .notice-carousel-arrow.right {
+    right: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .notice-carousel {
+    padding: 0 1.5rem;
+    margin: 0 -1.5rem;
+  }
+  
+  .notice-card {
+    min-width: 220px;
+    max-width: 250px;
+  }
+  
+  .notice-carousel-arrow {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .notice-carousel-track {
+    gap: 1rem;
+  }
+}
+.notice-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+.notice-carousel::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.notice-carousel {
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0e0 #fff;
+}
+
+/* Efecto hover en las notice-card del carrusel */
+.notice-card {
+  transition: box-shadow 0.25s, transform 0.22s;
+}
+.notice-card:hover {
+  box-shadow: 0 8px 32px rgba(30,136,229,0.18), 0 1.5px 8px rgba(0,0,0,0.08);
+  transform: translateY(-6px) scale(1.035);
+  z-index: 1;
+}
+
+/* Animación de entrada para las notice-card */
+.notice-card {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  animation: noticeCardFadeIn 0.7s cubic-bezier(.23,1.02,.47,.98) forwards;
+}
+.notice-card:nth-child(1) { animation-delay: 0.05s; }
+.notice-card:nth-child(2) { animation-delay: 0.15s; }
+.notice-card:nth-child(3) { animation-delay: 0.25s; }
+.notice-card:nth-child(4) { animation-delay: 0.35s; }
+.notice-card:nth-child(5) { animation-delay: 0.45s; }
+
+@keyframes noticeCardFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notice-detail-text {
+  white-space: pre-line;
+}
+.notice-detail-text strong {
+  font-weight: 700;
+  color: var(--color-text-title, #222);
+  font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* MEJORAS RESPONSIVAS Y MOBILE FIRST */
+
+/* 1. Ajuste de padding y márgenes para pantallas pequeñas */
+@media (max-width: 375px) {
+  .home-header,
+  .home-footer,
+  .home-welcome, .home-main-cards, .home-notices, .home-quicklinks, .home-calendar-events {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+  .main-card, .notice-card, .quicklink, .calendar-box, .events-box {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* 2. Mejoras de grid para columnas apiladas en móviles ultra pequeños */
+@media (max-width: 375px) {
+  .card-grid, .notice-grid, .quicklinks-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* 3. Ajuste de tamaño de fuente para ultra móviles */
+@media (max-width: 375px) {
+  .home-welcome h1, .home-notices-span h2, .home-quicklinks h2, .calendar-box h3, .events-box h3 {
+    font-size: 1.1rem !important;
+  }
+  .main-card h3, .event-title, .quicklink {
+    font-size: 0.95rem !important;
+  }
+  .main-card p, .event-date, .notice-card p {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* 4. Mejoras de scroll horizontal para carrusel en móviles */
+@media (max-width: 600px) {
+  .notice-carousel {
+    padding: 0 0.5rem !important;
+    margin: 0 -0.5rem !important;
+  }
+  .notice-carousel-arrow {
+    display: none !important;
+  }
+}
+
+/* 5. Mejoras de accesibilidad: foco visible en todos los elementos interactivos */
+*:focus-visible {
+  outline: 2px solid var(--color-primary-100);
+  outline-offset: 2px;
+}
+
+/* 6. Mejoras de usabilidad: aumentar área de toque en botones y menú usuario */
+@media (max-width: 480px) {
+  .user-dropdown-item {
+    min-height: 44px;
+    font-size: 1rem;
+    padding: 0.7rem 1rem;
+  }
+  .notice-card-content a {
+    min-height: 36px;
+    font-size: 0.95rem;
+    padding: 0.4em 1em;
+  }
+}
+
+/* 7. Mejoras de separación visual en eventos */
+@media (max-width: 480px) {
+  .events-list li {
+    margin-bottom: 0.75rem;
+    gap: 0.4rem;
+  }
+}
+
+/* 8. Mejoras de imagen: evitar que imágenes de eventos y avisos se deformen */
+.event-img, .notice-card-img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* 9. Ajuste de min-width para cards en carrusel en móviles */
+@media (max-width: 480px) {
+  .notice-card {
+    min-width: 180px !important;
+    max-width: 220px !important;
+  }
+}
+
+/* 10. Mejoras de legibilidad en ultra móviles */
+@media (max-width: 340px) {
+  .home-welcome h1, .home-notices-span h2, .home-quicklinks h2, .calendar-box h3, .events-box h3 {
+    font-size: 0.95rem !important;
+  }
+  .main-card h3, .event-title, .quicklink {
+    font-size: 0.85rem !important;
   }
 }

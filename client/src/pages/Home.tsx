@@ -22,11 +22,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import authService from '../services/authService';
-import { useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 import SupportForm from '../components/SupportForm';
+import { parseBoldAndBreaks } from '../utils/textParser';
 
 const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
   const { userInfo, onClose } = props;
@@ -77,49 +78,6 @@ const NoticeDetailModal: React.FC<{ open: boolean; onClose: () => void; title: s
     </div>
   );
 };
-
-// Utilidad para parsear **negrita** y saltos de línea a JSX seguro
-type ParsedPart = { type: 'text' | 'bold' | 'br'; content: string };
-function parseBoldAndBreaks(text: string): React.ReactNode[] {
-  const parts: ParsedPart[] = [];
-  let buffer = '';
-  let i = 0;
-  while (i < text.length) {
-    if (text[i] === '\\' && text[i + 1] === 'n') {
-      if (buffer) parts.push({ type: 'text', content: buffer });
-      parts.push({ type: 'br', content: '' });
-      buffer = '';
-      i += 2;
-    } else if (text[i] === '\n') {
-      if (buffer) parts.push({ type: 'text', content: buffer });
-      parts.push({ type: 'br', content: '' });
-      buffer = '';
-      i++;
-    } else if (text[i] === '*' && text[i + 1] === '*' ) {
-      // Detectar inicio de negrita
-      if (buffer) parts.push({ type: 'text', content: buffer });
-      buffer = '';
-      i += 2;
-      let boldText = '';
-      while (i < text.length && !(text[i] === '*' && text[i + 1] === '*')) {
-        boldText += text[i];
-        i++;
-      }
-      if (i < text.length) i += 2; // Saltar cierre **
-      parts.push({ type: 'bold', content: boldText });
-    } else {
-      buffer += text[i];
-      i++;
-    }
-  }
-  if (buffer) parts.push({ type: 'text', content: buffer });
-  // Convertir a JSX
-  return parts.map((part, idx) => {
-    if (part.type === 'bold') return <strong key={idx}>{part.content}</strong>;
-    if (part.type === 'br') return <br key={idx} />;
-    return part.content;
-  });
-}
 
 const Home: React.FC = () => {
   const [searchActive, setSearchActive] = useState(false);
@@ -415,7 +373,7 @@ const Home: React.FC = () => {
                   <div className="notice-card-content">
                     <span className="notice-date">Junio 2025</span>
                     <h4>Modelo de cultura integral</h4>
-                    <p>La cultura organizacional en Coacharte la hacemos todos y todas y la vivimos en cada momento.</p>
+                    <p>La cultura organizacional en Coacharte la hacemos todos y todas.</p>
                     <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Modelo de cultura integral', detail: '**Nuestro propósito organizacional** es "Transformar cualquier reto en logro"\n**Nuestros valores** son los barandales que guían nuestras acciones y tienen un significado muy preciso:\n**PERSONAS:** lo más importante son las relaciones sanas con nuestros colegas y clientes.\n**INSPIRAMOS CONFIANZA:** actuando con honestidad, comunicándonos asertivamente y cumpliendo los acuerdos establecidos.\n**VOCACIÓN DE SERVICIO:** disponibilidad para escuchar, leer, atender y proponer siempre desde la empatía.\n\n**Los comportamientos** son las acciones precisas que están asociadas a cada valor para asegurar que tod@s los coachartean@s contribuyamos al logro de los objetivos organizacionales en cada momento clave.' }); }}>Ver más</a>
                   </div>
                 </div>
