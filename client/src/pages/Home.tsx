@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, RefObject } from 'react'; // Importar RefObject
 import 'react-calendar/dist/Calendar.css';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
@@ -28,6 +28,9 @@ import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import SupportForm from '../components/SupportForm';
 import { parseBoldAndBreaks } from '../utils/textParser';
+import { getCurrentMonthYear } from '../utils/dateUtils';
+import { scrollCarousel, checkCarouselScrollability, setupTouchGestures } from '../utils/carouselUtils';
+import { DISABLED_CARDS, CALENDAR_EVENTS, CAROUSEL_SCROLL_OFFSET, NOMINA_BASE_URL } from '../utils/constants';
 
 const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
   const { userInfo, onClose } = props;
@@ -84,8 +87,8 @@ const Home: React.FC = () => {
   const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string; email: string } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  const [disabledCards, setDisabledCards] = useState<string[]>([]); // Estado para controlar las tarjetas deshabilitadas
-  const [eventDates, setEventDates] = useState<Date[]>([]);
+  const [disabledCards] = useState<string[]>(DISABLED_CARDS); // Utilizar constante, remover setDisabledCards si no se usa
+  const [eventDates] = useState<Date[]>(CALENDAR_EVENTS.map(event => event.date)); // Utilizar constante, remover setEventDates si no se usa
   const [noticeModal, setNoticeModal] = useState<{ open: boolean; title: string; detail: string }>({ open: false, title: '', detail: '' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -100,20 +103,6 @@ const Home: React.FC = () => {
     } else {
       console.log('No se encontraron datos de usuario.'); // Depuración
     }
-  }, []);
-
-  useEffect(() => {
-    setDisabledCards(["Mi Cuenta", "Recursos Humanos", "Procesos y Documentación", "Soporte y Comunicación", "Calendario y Eventos", "Conoce Coacharte"]);
-  }, []);
-
-  useEffect(() => {
-    const events = [
-      new Date(2025, 5, 15), // Día del Padre
-      new Date(2025, 5, 3),  // Evento de Integración
-      new Date(2025, 5, 13), // Pago de Nómina
-      new Date(2025, 5, 30), // Pago de Nómina
-    ];
-    setEventDates(events);
   }, []);
 
   // Cerrar menú si se hace clic fuera
@@ -155,10 +144,7 @@ const Home: React.FC = () => {
     navigate('/');
   };
 
-  const currentDate = new Date();
-  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const currentMonth = monthNames[currentDate.getMonth()];
-  const currentYear = currentDate.getFullYear();
+  const currentMonthYearText = getCurrentMonthYear(); // Utilizar función de dateUtils
 
   const tileClassName = ({ date }: { date: Date }) => {
     if (eventDates.some(eventDate => eventDate.toDateString() === date.toDateString())) {
@@ -168,46 +154,31 @@ const Home: React.FC = () => {
   };
 
   // Carrusel de avisos importantes
-  const noticeCarouselRef = useRef<HTMLDivElement>(null);
+  const noticeCarouselRef = useRef<HTMLDivElement>(null); // Mantener como HTMLDivElement para el div
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const handleScroll = () => {
     const el = noticeCarouselRef.current;
-    if (el) {
-      setCanScrollLeft(el.scrollLeft > 0);
-      setCanScrollRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 1);
-    }
+    // checkCarouselScrollability espera HTMLElement | null, HTMLDivElement | null es compatible
+    const { canScrollLeft: newCanScrollLeft, canScrollRight: newCanScrollRight } = checkCarouselScrollability(el);
+    setCanScrollLeft(newCanScrollLeft);
+    setCanScrollRight(newCanScrollRight);
   };
 
   const scrollBy = (offset: number) => {
-    const el = noticeCarouselRef.current;
-    if (el) {
-      el.scrollBy({ left: offset, behavior: 'smooth' });
-    }
+    // scrollCarousel espera RefObject<HTMLElement>
+    // Hacemos un type assertion aquí. Las funciones de utilidad ya manejan el caso de .current null.
+    scrollCarousel(noticeCarouselRef as RefObject<HTMLElement>, offset);
   };
 
   // Gestos táctiles para mobile
   useEffect(() => {
-    const el = noticeCarouselRef.current;
-    if (!el) return;
-    let startX = 0;
-    let scrollLeft = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0].pageX;
-      scrollLeft = el.scrollLeft;
-    };
-    const onTouchMove = (e: TouchEvent) => {
-      const dx = e.touches[0].pageX - startX;
-      el.scrollLeft = scrollLeft - dx;
-    };
-    el.addEventListener('touchstart', onTouchStart);
-    el.addEventListener('touchmove', onTouchMove);
-    return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchmove', onTouchMove);
-    };
-  }, []);
+    // setupTouchGestures espera RefObject<HTMLElement>
+    // Hacemos un type assertion. Las funciones de utilidad ya manejan el caso de .current null.
+    const cleanup = setupTouchGestures(noticeCarouselRef as RefObject<HTMLElement>);
+    return cleanup;
+  }, [noticeCarouselRef]); // Añadir noticeCarouselRef a las dependencias
 
   // Actualizar flechas al hacer scroll
   useEffect(() => {
@@ -225,6 +196,7 @@ const Home: React.FC = () => {
         <div className="logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" loading="lazy" /></div>
         <nav className="home-nav">
           <a href="#" onClick={e => { e.preventDefault(); navigate('/home'); }}>Inicio</a>
+          {/* Los siguientes enlaces deberían ser actualizados o eliminados si no se usan o si DISABLED_CARDS los controla */}
           <a href="#">Mi Cuenta</a>
           <a href="#">Recursos Humanos</a>
           <a href="#">Procesos</a>
@@ -254,7 +226,7 @@ const Home: React.FC = () => {
       <section className="home-welcome">
         <div className="home-welcome-content">
           <div className="home-welcome-month">
-            <span>{`${currentMonth} ${currentYear}`}</span>
+            <span>{currentMonthYearText}</span>
           </div>
           <h1>Bienvenido a tu Intranet</h1>
           <p>Tu espacio central para acceder a todos los recursos y herramientas de Coacharte</p>
@@ -333,7 +305,7 @@ const Home: React.FC = () => {
           <div className="notice-carousel-wrapper">
             <button
               className="notice-carousel-arrow left"
-              onClick={() => scrollBy(-320)}
+              onClick={() => scrollBy(-CAROUSEL_SCROLL_OFFSET)} // Utilizar constante y función de utilidad
               disabled={!canScrollLeft}
               aria-label="Anterior"
             >
@@ -381,7 +353,7 @@ const Home: React.FC = () => {
             </div>
             <button
               className="notice-carousel-arrow right"
-              onClick={() => scrollBy(320)}
+              onClick={() => scrollBy(CAROUSEL_SCROLL_OFFSET)} // Utilizar constante y función de utilidad
               disabled={!canScrollRight}
               aria-label="Siguiente"
             >
@@ -404,7 +376,7 @@ const Home: React.FC = () => {
             <a href="#" className="quicklink" onClick={(e) => { e.preventDefault(); setIsSupportModalOpen(true); }}>
               <span className="quicklink-icon" aria-label="Soporte Técnico"><HeadsetMicIcon fontSize="inherit" /></span>Soporte Técnico
             </a>
-            <a href={`https://nomina.coacharte.mx/user.php?email=${userInfo?.email}`} className="quicklink" target="_blank" rel="noopener noreferrer">
+            <a href={`${NOMINA_BASE_URL}?email=${userInfo?.email}`} className="quicklink" target="_blank" rel="noopener noreferrer">
               <span className="quicklink-icon" aria-label="Consulta Nómina">
                 <SettingsIcon fontSize="inherit" />
               </span>
