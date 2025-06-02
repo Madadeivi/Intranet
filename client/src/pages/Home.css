@@ -57,7 +57,7 @@
 
 .mobile-nav-menu {
   position: absolute;
-  top: 100%; /* Debajo del header */
+  top: 4rem; /* Asumiendo que la altura del header es consistentemente 4rem. */
   left: 0;
   right: 0;
   background: white;

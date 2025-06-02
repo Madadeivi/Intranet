@@ -96,12 +96,17 @@ const Home: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para el menú de hamburguesa
-  const [disabledCards] = useState<string[]>(DISABLED_CARDS); // Utilizar constante, remover setDisabledCards si no se usa
-  const [eventDates] = useState<Date[]>(CALENDAR_EVENTS.map(event => event.date)); // Utilizar constante, remover setEventDates si no se usa
+  const [disabledCards] = useState<string[]>(DISABLED_CARDS);
+  const [eventDates] = useState<Date[]>(CALENDAR_EVENTS.map(event => event.date));
   const [noticeModal, setNoticeModal] = useState<{ open: boolean; title: string; detail: string }>({ open: false, title: '', detail: '' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const noticeCarouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref para el menú móvil
+  const hamburgerMenuRef = useRef<HTMLDivElement>(null); // Ref para el botón de hamburguesa
 
   useEffect(() => {
     const stored = localStorage.getItem('coacharteUserInfo');
@@ -147,17 +152,25 @@ const Home: React.FC = () => {
   // Cerrar menú móvil si se hace clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      // Si el clic es en el propio botón de hamburguesa, su onClick se encargará.
+      if (hamburgerMenuRef.current && hamburgerMenuRef.current.contains(event.target as Node)) {
+        return;
+      }
+      // Si el clic es fuera del menú móvil (y no en el botón de hamburguesa), ciérralo.
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setIsMobileMenuOpen(false);
       }
     }
+
     if (isMobileMenuOpen) {
-      console.log('Menú móvil abierto, escuchando clics fuera');
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isMobileMenuOpen]);
 
   const handleLogout = async () => {
@@ -176,11 +189,6 @@ const Home: React.FC = () => {
     }
     return null;
   };
-
-  const noticeCarouselRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref para el menú móvil
 
   const handleScroll = () => {
     const el = noticeCarouselRef.current;
@@ -246,7 +254,7 @@ const Home: React.FC = () => {
             </div>
           )}
           {/* Menú de hamburguesa para mobile */}
-          <div className="hamburger-menu" onClick={() => setIsMobileMenuOpen(v => !v)}>
+          <div className="hamburger-menu" ref={hamburgerMenuRef} onClick={() => setIsMobileMenuOpen(v => !v)}>
             <MenuIcon />
           </div>
         </div>
