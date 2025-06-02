@@ -664,7 +664,7 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
       error: error instanceof Error ? error.message : String(error)
     });
     
-    console.error(`Error al obtener detalles del colaborador ${email} desde Zoho CRM:`, error);
+    console.error('Error al obtener detalles del colaborador %s desde Zoho CRM:', email, error);
     if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
       console.error('COQL Query para obtener detalles es inválida. Revisa los nombres de módulos/campos y la sintaxis.');
     }
