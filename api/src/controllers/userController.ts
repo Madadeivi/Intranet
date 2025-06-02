@@ -60,13 +60,7 @@ export class UserController {
     try {
       const { email, password } = req.body;
 
-      if (!email || !password) {
-        res.status(400).json({
-          success: false,
-          message: 'El correo electrónico y la contraseña son obligatorios.'
-        });
-        return;
-      }
+// Removed redundant manual validation of email and password fields.
 
       const collaborator = await verifyCollaboratorPassword(email, password);
 
