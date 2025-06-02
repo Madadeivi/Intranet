@@ -29,12 +29,15 @@ router.get('/', (_req, res) => {
       users: '/api/users',
       health: '/health',
       sendEmail: '/api/email/send',
+      supportTicket: '/api/email/support-ticket',
       // Zoho CRM
       getZohoRecords: '/api/zoho/:moduleName',
       getZohoRecordById: '/api/zoho/:moduleName/:recordId',
       createZohoRecord: '/api/zoho/:moduleName',
       updateZohoRecord: '/api/zoho/:moduleName/:recordId',
       deleteZohoRecord: '/api/zoho/:moduleName/:recordId',
+      // Zoho Desk
+      zohoDeskTickets: '/api/zoho/desk/*'
     }
   });
 });

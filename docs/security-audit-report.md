@@ -8,7 +8,7 @@
 
 ## 📋 Resumen Ejecutivo
 
-Se identificaron y corrigieron **4 vulnerabilidades críticas de inyección SQL**, **1 vulnerabilidad de bypass de autenticación**, y **1 problema de logging inseguro** en el servicio `zohoCRMService.ts` y `loadEnv.ts`. Todas las vulnerabilidades han sido mitigadas mediante la implementación de sanitización robusta de datos de entrada, **monitoreo de seguridad integral**, y **logging seguro de variables de entorno**.
+Se identificaron y corrigieron **4 vulnerabilidades críticas de inyección SQL**, **1 vulnerabilidad de bypass de autenticación**, **1 problema de logging inseguro**, y **1 vulnerabilidad de rate limiting** en el servicio `zohoCRMService.ts`, `loadEnv.ts`, y rutas de autenticación. Todas las vulnerabilidades han sido mitigadas mediante la implementación de sanitización robusta de datos de entrada, **monitoreo de seguridad integral**, **logging seguro de variables de entorno**, y **rate limiting empresarial**.
 
 ### ⚠️ Vulnerabilidades Críticas Identificadas y Corregidas
 
@@ -20,6 +20,7 @@ Se identificaron y corrigieron **4 vulnerabilidades críticas de inyección SQL*
 | SQL-003 | `getCollaboratorDetailsByEmail` | Inyección SQL en consulta COQL | **CRÍTICO** | ✅ **CORREGIDO** |
 | SQL-004 | `getCollaboratorByResetToken` | Inyección SQL en consulta COQL | **CRÍTICO** | ✅ **CORREGIDO** |
 | **AUTH-001** | **`verifyCollaboratorPassword`** | **Bypass de autenticación con cuentas inactivas** | **ALTO** | ✅ **CORREGIDO** |
+| **RATE-001** | **Endpoints de autenticación** | **Ausencia de Rate Limiting** | **ALTO** | ✅ **CORREGIDO** |
 
 ### 🚀 **NUEVA FUNCIONALIDAD IMPLEMENTADA**
 
@@ -165,6 +166,33 @@ if (collaborator.Activo !== 1) {
 }
 ```
 
+### **RATE-001: Ausencia de Rate Limiting en Endpoints de Autenticación**
+- **Ubicación:** Rutas `/api/users/login`, `/api/users/set-password`, `/api/users/request-password-reset`
+- **Problema:** Endpoints de autenticación sin limitación de velocidad (rate limiting)
+- **Vector de Ataque:** Ataques de fuerza bruta ilimitados y ataques de denegación de servicio
+- **Riesgo:** ALTO - Permite ataques automatizados contra credenciales
+- **Corrección Implementada:**
+  - Middleware de rate limiting con `express-rate-limit`
+  - Rate limiting estricto para login: 5 intentos por 15 minutos
+  - Rate limiting para set-password: 5 intentos por 15 minutos  
+  - Rate limiting para password reset: 3 intentos por hora
+  - Identificación por IP + User-Agent para prevenir evasión
+  - Logging completo de violaciones de rate limiting
+  - Headers HTTP estándar (RateLimit-*) en respuestas
+
+**Antes (Vulnerable):**
+```typescript
+router.post('/login', validateRequest(loginSchema, 'body'), userController.login);
+router.post('/set-password', validateRequest(setPasswordSchema, 'body'), userController.setPassword);
+```
+
+**Después (Seguro):**
+```typescript
+router.post('/login', authRateLimit, validateRequest(loginSchema, 'body'), userController.login);
+router.post('/set-password', authRateLimit, validateRequest(setPasswordSchema, 'body'), userController.setPassword);
+router.post('/request-password-reset', passwordResetRateLimit, userController.requestPasswordReset);
+```
+
 ---
 
 ## ✅ Verificación de Correcciones
@@ -213,8 +241,9 @@ const maliciousInputs = [
 
 | Métrica | Estado Anterior | Estado Actual | Mejora |
 |---------|----------------|---------------|---------|
-| Vulnerabilidades Críticas | 5 | 0 | **-100%** |
+| Vulnerabilidades Críticas | 6 | 0 | **-100%** |
 | Funciones con Sanitización | 0% | 100% | **+100%** |
+| Rate Limiting | No | Sí | **✅** |
 | Logging Seguro | No | Sí | **✅** |
 | Validación de Entrada | No | Sí | **✅** |
 | Nivel de Riesgo | **CRÍTICO** | **BAJO** | **🟢** |
@@ -240,7 +269,7 @@ const maliciousInputs = [
 
 ### 4. **Mejoras Técnicas Adicionales**
 - Considerar el uso de ORMs con consultas parametrizadas
-- Implementar rate limiting en endpoints críticos
+- ✅ **Rate limiting implementado en endpoints críticos**
 - Añadir autenticación de dos factores para administradores
 
 ---
@@ -314,4 +343,4 @@ Las vulnerabilidades críticas de inyección SQL han sido completamente mitigada
 **Auditor:** GitHub Copilot  
 **Fecha de Implementación Completa:** `2 de junio de 2025`  
 **Clasificación:** 🔒 **CONFIDENCIAL**  
-**Versión del Reporte:** 2.0 - **MONITOREO INTEGRAL IMPLEMENTADO**
+**Versión del Reporte:** 3.0 - **RATE LIMITING IMPLEMENTADO + PROTECCIÓN COMPLETA**
