@@ -90,7 +90,7 @@ export class AuthService {
       
       if (data.success) {
         if (data.token && !data.requiresPasswordChange) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem(this.tokenKey, data.token); // Usar this.tokenKey
           // Opcional: decodificar token para obtener info del usuario si es necesario aquí
         }
         // Si requiresPasswordChange es true, el token principal no se guarda aún.

@@ -37,10 +37,10 @@ export class UserController {
       const collaborator = await verifyCollaboratorPassword(email, password);
 
       if (collaborator) {
-        // Asume que 'Password_Personalizada_Establecida' es el nombre API correcto
+        // Asume que 'Contrasena_Personalizada_Establecida' es el nombre API correcto
         // y que verifyCollaboratorPassword lo devuelve.
         // El valor por defecto si el campo no existe en el registro o no se seleccionó sería undefined.
-        const passwordIsCustomized = collaborator.Password_Personalizada_Establecida === true;
+        const passwordIsCustomized = collaborator.Contrasena_Personalizada_Establecida === true;
 
         const payload = {
           id: collaborator.id, 
