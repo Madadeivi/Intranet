@@ -226,45 +226,6 @@ export class UserController {
     }
   }
 
-  // POST /api/users/reset-password
-  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { token, newPassword } = req.body as ResetPasswordPayload;
-
-      if (!token || !newPassword) {
-        res.status(400).json({ success: false, message: 'El token y la nueva contraseña son obligatorios.' });
-        return;
-      }
-
-      if (newPassword.length < 8) {
-        res.status(400).json({ success: false, message: 'La nueva contraseña debe tener al menos 8 caracteres.' });
-        return;
-      }
-
-      const collaborator = await getCollaboratorByResetToken(token);
-
-      if (!collaborator || !collaborator.id || !collaborator.Email) {
-        res.status(400).json({ success: false, message: 'Token inválido o expirado.' });
-        return;
-      }
-
-      const passwordSet = await setCollaboratorPasswordByEmail(collaborator.Email, newPassword);
-      if (!passwordSet) {
-        res.status(500).json({ success: false, message: 'No se pudo actualizar la contraseña.' });
-        return;
-      }
-
-      await clearPasswordResetToken(collaborator.id); // Limpiar el token después de usarlo
-
-      res.json({ success: true, message: 'Contraseña restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.' });
-
-    } catch (error) {
-      console.error('Error en resetPassword controller:', error);
-      const err = error instanceof Error ? error : new Error('Ocurrió un error al restablecer la contraseña.');
-      next(err);
-    }
-  }
-
   // GET /api/users
   async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> { 
     try {

@@ -14,9 +14,6 @@ router.post('/set-password', validateRequest(setPasswordSchema, 'body'), userCon
 // POST /api/users/request-password-reset
 router.post('/request-password-reset', userController.requestPasswordReset); // TODO: Add validation schema if needed
 
-// POST /api/users/reset-password
-router.post('/reset-password', userController.resetPassword); // TODO: Add validation schema if needed
-
 // GET /api/users
 router.get('/', userController.getAll);
 
