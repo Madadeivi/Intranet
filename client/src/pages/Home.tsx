@@ -144,7 +144,7 @@ const Home: React.FC = () => {
     navigate('/');
   };
 
-  const currentMonthYearText = getCurrentMonthYear(); // Utilizar función de dateUtils
+  const currentMonthYearText = getCurrentMonthYear();
 
   const tileClassName = ({ date }: { date: Date }) => {
     if (eventDates.some(eventDate => eventDate.toDateString() === date.toDateString())) {
@@ -153,34 +153,26 @@ const Home: React.FC = () => {
     return null;
   };
 
-  // Carrusel de avisos importantes
-  const noticeCarouselRef = useRef<HTMLDivElement>(null); // Mantener como HTMLDivElement para el div
+  const noticeCarouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const handleScroll = () => {
     const el = noticeCarouselRef.current;
-    // checkCarouselScrollability espera HTMLElement | null, HTMLDivElement | null es compatible
     const { canScrollLeft: newCanScrollLeft, canScrollRight: newCanScrollRight } = checkCarouselScrollability(el);
     setCanScrollLeft(newCanScrollLeft);
     setCanScrollRight(newCanScrollRight);
   };
 
   const scrollBy = (offset: number) => {
-    // scrollCarousel espera RefObject<HTMLElement>
-    // Hacemos un type assertion aquí. Las funciones de utilidad ya manejan el caso de .current null.
     scrollCarousel(noticeCarouselRef as RefObject<HTMLElement>, offset);
   };
 
-  // Gestos táctiles para mobile
   useEffect(() => {
-    // setupTouchGestures espera RefObject<HTMLElement>
-    // Hacemos un type assertion. Las funciones de utilidad ya manejan el caso de .current null.
     const cleanup = setupTouchGestures(noticeCarouselRef as RefObject<HTMLElement>);
     return cleanup;
-  }, [noticeCarouselRef]); // Añadir noticeCarouselRef a las dependencias
+  }, [noticeCarouselRef]);
 
-  // Actualizar flechas al hacer scroll
   useEffect(() => {
     const el = noticeCarouselRef.current;
     if (!el) return;
@@ -196,7 +188,6 @@ const Home: React.FC = () => {
         <div className="logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" loading="lazy" /></div>
         <nav className="home-nav">
           <a href="#" onClick={e => { e.preventDefault(); navigate('/home'); }}>Inicio</a>
-          {/* Los siguientes enlaces deberían ser actualizados o eliminados si no se usan o si DISABLED_CARDS los controla */}
           <a href="#">Mi Cuenta</a>
           <a href="#">Recursos Humanos</a>
           <a href="#">Procesos</a>
@@ -353,7 +344,7 @@ const Home: React.FC = () => {
             </div>
             <button
               className="notice-carousel-arrow right"
-              onClick={() => scrollBy(CAROUSEL_SCROLL_OFFSET)} // Utilizar constante y función de utilidad
+              onClick={() => scrollBy(CAROUSEL_SCROLL_OFFSET)}
               disabled={!canScrollRight}
               aria-label="Siguiente"
             >
@@ -395,14 +386,13 @@ const Home: React.FC = () => {
           <Calendar
             className="coacharte-calendar"
             locale="es-MX"
-            tileClassName={tileClassName} // Pasar la función para marcar días
+            tileClassName={tileClassName}
           />
         </div>
         <div className="events-box">
           <h3>Próximos Eventos</h3>
           <div className="events-carousel-vertical">
             <ul className="events-list">
-              {/* Ordenar eventos por fecha */}
               {[
                 {
                   date: new Date(2025, 5, 2),
