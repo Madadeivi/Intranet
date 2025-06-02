@@ -41,6 +41,44 @@
   --shadow-xl: 0 20px 25px -5px rgba(30, 136, 229, 0.1), 0 10px 10px -5px rgba(30, 136, 229, 0.04);
 }
 
+/* Estilo para el menú de hamburguesa */
+.hamburger-menu {
+  display: none; /* Oculto por defecto */
+  cursor: pointer;
+  padding: var(--space-2);
+  margin-left: var(--space-2); /* Espacio entre nombre/avatar y hamburguesa */
+}
+
+.hamburger-menu svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--color-text-secondary);
+}
+
+.mobile-nav-menu {
+  position: absolute;
+  top: 4rem; /* Asumiendo que la altura del header es consistentemente 4rem. */
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: var(--shadow-lg);
+  z-index: 90; /* Debajo del dropdown de usuario pero encima de otro contenido */
+  padding: var(--space-4) 0;
+}
+
+.mobile-nav-menu a {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-title);
+  text-decoration: none;
+  font-size: var(--text-base);
+}
+
+.mobile-nav-menu a:hover {
+  background: var(--color-primary-5);
+  color: var(--color-primary-100);
+}
+
 /* ==============================================
    BASE STYLES
    ============================================== */
@@ -50,7 +88,7 @@
   color: var(--color-text-secondary);
   min-height: 100vh;
   overflow-x: hidden;
-  width: 100%;
+  width: 100vw;
 }
 
 /* ==============================================
@@ -66,7 +104,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  width: 100%;
+  width: 100%; /* Asegurar que ocupe todo el ancho */
   box-sizing: border-box;
   min-height: 4rem;
 }
@@ -87,7 +125,7 @@
 }
 
 .home-nav {
-  display: none; /* Hidden on mobile by default */
+  display: none; /* Oculto en mobile por defecto, se mostrará en desktop */
   align-items: center;
   gap: var(--space-6);
   flex: 1;
@@ -148,7 +186,7 @@
   font-weight: 500;
   color: var(--color-text-title);
   font-size: var(--text-sm);
-  display: none; /* Hidden on mobile */
+  display: block; /* Mostrar siempre nombre e iniciales */
 }
 
 .user-dropdown-arrow {
@@ -201,10 +239,16 @@
   background: url('../assets/img_banner.png') center/cover no-repeat;
   padding: var(--space-8) var(--space-4);
   position: relative;
+  width: 100%; /* Asegurar que ocupe todo el ancho */
+  box-sizing: border-box; /* Incluir padding y border en el ancho total */
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .home-welcome-content {
-  max-width: 1200px;
+  max-width: 100%; /* Ajustar al ancho del contenedor padre */
+  margin: 0 auto; /* Centrar si hay un max-width menor al 100% en el futuro */
   text-align: left;
 }
 
@@ -243,7 +287,7 @@
 
 .home-search-wrapper {
   position: relative;
-  max-width: 500px;
+  max-width: 100%; /* Ajustar al ancho del contenedor padre */
 }
 
 .home-search {
@@ -281,8 +325,11 @@
    ============================================== */
 .home-main-cards {
   padding: var(--space-8) var(--space-4);
-  max-width: var(--bp-xl);
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card-grid {
@@ -365,12 +412,16 @@
    ============================================== */
 .home-notices {
   background: #fafafa;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-8) var(--space-4); /* Padding aplicado aquí */
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .home-notices-span {
-  max-width: var(--bp-xl);
-  margin: 0 auto;
+  width: 100%; /* Asegurar que ocupe el espacio del padre con padding */
 }
 
 .home-notices-span h2 {
@@ -391,11 +442,11 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-bottom: var(--space-2);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
 }
 
-.notice-carousel::-webkit-scrollbar {
+.notice-carousel::-webkit-scrollbar { /* Webkit (Chrome, Safari, newer Opera) */
   display: none;
 }
 
@@ -510,8 +561,11 @@
    ============================================== */
 .home-quicklinks {
   padding: var(--space-8) var(--space-4);
-  max-width: var(--bp-xl);
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .home-quicklinks-span h2 {
@@ -524,7 +578,8 @@
 
 .quicklinks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* Por defecto (móvil), una columna */
+  grid-template-columns: 1fr;
   gap: var(--space-4);
 }
 
@@ -577,6 +632,8 @@
   gap: var(--space-6);
   margin: 0 auto;
   box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .home-calendar-events .calendar-box h3,
@@ -661,11 +718,12 @@
   background: var(--color-dark-100);
   color: white;
   padding: var(--space-8) var(--space-4) var(--space-6);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-content {
-  max-width: var(--bp-xl);
-  margin: 0 auto;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-6);
@@ -918,15 +976,23 @@
    RESPONSIVE DESIGN - TABLET & DESKTOP
    ============================================== */
 
-/* Tablet (768px and up) */
-@media (min-width: 768px) {
+/* Tablet (920px and up) */
+@media (min-width: 920px) {
   .home-logo-img {
     width: 10rem;
     height: 2rem;
   }
   
   .home-nav {
-    display: flex;
+    display: flex; /* Mostrar navegación normal en tablet y desktop */
+  }
+
+  .hamburger-menu {
+    display: none; /* Ocultar hamburguesa en tablet y desktop */
+  }
+
+  .mobile-nav-menu {
+    display: none !important; /* Asegurar que el menú móvil esté oculto */
   }
   
   .user-name {
@@ -943,6 +1009,11 @@
   
   .home-welcome p {
     font-size: var(--text-lg);
+  }
+
+  .quicklinks-grid {
+    /* En tablet y superior, permitir auto-fit */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
   
   .card-grid {
@@ -994,6 +1065,18 @@
 
 /* Desktop (992px and up) */
 @media (min-width: 992px) {
+  .home-header,
+  .home-footer {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .home-search-wrapper {
+    max-width: 600px; /* O un valor que prefieras */
+    margin-left: 0;
+    margin-right: auto;
+  }
+
   .card-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1033,22 +1116,114 @@
    EVENTS VERTICAL SCROLL
    ============================================== */
 .events-carousel-vertical {
-  max-height: 300px;   /* altura fija con scroll */
+  max-height: 400px; /* Altura máxima antes de que aparezca el scroll */
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary-30) transparent;
-  -ms-overflow-style: none; /* IE 10+ */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  align-items: center;
+  padding-right: var(--space-2); /* Espacio para el scrollbar para que no solape contenido */
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: var(--color-primary-30) transparent; /* thumb and track color */
 }
+
+/* For Webkit browsers */
 .events-carousel-vertical::-webkit-scrollbar {
-  width: 0.5rem;
+  width: 8px;
 }
+
+.events-carousel-vertical::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .events-carousel-vertical::-webkit-scrollbar-thumb {
-  background: var(--color-primary-30);
-  border-radius: var(--radius-sm);
+  background-color: var(--color-primary-30);
+  border-radius: 10px;
+  border: 2px solid transparent; /* Similar to padding around thumb */
+  background-clip: content-box; /* Ensures border/padding is outside thumb color */
+}
+
+/* Mobile specific adjustments (max-width: 919px) */
+@media (max-width: 919px) {
+  .home-nav {
+    display: none; /* Ocultar navegación normal en mobile */
+  }
+
+  .hamburger-menu {
+    display: flex; /* Mostrar hamburguesa en mobile */
+    align-items: center;
+  }
+
+  .home-welcome-content {
+    padding-left: var(--space-2); /* Pequeño ajuste para que no pegue al borde */
+    padding-right: var(--space-2);
+  }
+
+  .home-search-wrapper {
+    padding-left: 0; /* Resetear padding si es necesario */
+    padding-right: 0;
+  }
+}
+
+/* ==============================================
+   SMALL MOBILE ADJUSTMENTS (max-width: 429px)
+   ============================================== */
+@media (max-width: 429px) {
+  /* Aquí puedes agregar estilos específicos para pantallas muy pequeñas */
+  
+  /* Ejemplo: Reducir un poco el padding general de las secciones */
+  .home-welcome,
+  .home-main-cards,
+  .home-notices,
+  .home-quicklinks,
+  .home-calendar-events {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .home-welcome h1 {
+    font-size: var(--text-xl); /* Reducir tamaño de H1 */
+  }
+
+  .home-welcome p {
+    font-size: var(--text-sm); /* Reducir tamaño de párrafo en bienvenida */
+    margin-bottom: var(--space-6);
+  }
+
+  .home-logo-img {
+    width: 6rem; /* Reducir tamaño del logo */
+  }
+
+  .user-name {
+    display: none; /* Ocultar nombre de usuario si es muy largo */
+  }
+
+  .main-card {
+    padding: var(--space-4);
+  }
+
+  .main-card h3 {
+    font-size: var(--text-base);
+  }
+
+  .main-card p {
+    font-size: var(--text-xs);
+  }
+
+  .notice-card {
+    min-width: 280px; /* Ajustar ancho mínimo de tarjetas de aviso */
+  }
+
+  .home-calendar-events .calendar-box h3,
+  .home-calendar-events .events-box h3,
+  .home-notices-span h2,
+  .home-quicklinks-span h2 {
+    font-size: var(--text-xl);
+  }
+
+  .footer-col h4 {
+    font-size: var(--text-sm);
+  }
+
+  .footer-slogan,
+  .footer-links-list a,
+  .footer-copy {
+    font-size: var(--text-xs);
+  }
 }

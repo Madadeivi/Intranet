@@ -1,8 +1,24 @@
-// Ejemplo de función para hacer peticiones a una API
-export async function fetchData(url: string) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Error al obtener los datos');
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptor para añadir el token de autenticación a las cabeceras
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token'); // o donde sea que almacenes tu token
+  if (token) {
+    if (!config.headers) {
+      config.headers = {};
+    }
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return response.json();
-}
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+export default api;

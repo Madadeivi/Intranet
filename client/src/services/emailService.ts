@@ -1,150 +1,67 @@
-import emailjs from '@emailjs/browser';
-
-// Configuración de EmailJS
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const EMAILJS_USER_ID = import.meta.env.VITE_EMAILJS_USER_ID;
-
-// Inicializar EmailJS
-emailjs.init(EMAILJS_USER_ID);
-
 export interface SupportTicket {
   userEmail: string;
   userName: string;
   subject: string;
-  category: 'technical' | 'general' | 'billing' | 'other';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  // category: 'technical' | 'general' | 'billing' | 'other'; // Se manejará como string genérico
+  category: string;
+  // priority: 'low' | 'medium' | 'high' | 'urgent'; // Se usará el enum de ZohoDesk
+  priority: string; // Cambiado a string para que coincida con el select del formulario
   message: string;
-  attachments?: File[];
+  // attachments?: File[]; // No implementado en el backend actual
 }
 
-export interface EmailResponse {
+export interface SupportTicketResponse {
   success: boolean;
   message: string;
   ticketId?: string;
+  ticketNumber?: string;
+  webUrl?: string;
+  categoryReceived?: string;
 }
 
 class EmailService {
   /**
-   * Envía un ticket de soporte técnico
+   * Envía un ticket de soporte técnico a través del backend API.
    */
-  async sendSupportTicket(ticket: SupportTicket): Promise<EmailResponse> {
+  async sendSupportTicket(ticket: SupportTicket): Promise<SupportTicketResponse> {
     try {
-      // Generar ID único para el ticket
-      const ticketId = this.generateTicketId();
+      const response = await fetch('/api/email/support-ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Aquí podrías añadir cabeceras de autenticación si son necesarias
+        },
+        body: JSON.stringify(ticket),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Error al enviar el ticket desde el cliente');
+      }
       
-      // Preparar los parámetros del template
-      const templateParams = {
-        to_email: 'support@coacharte.zohodesk.com',
-        from_email: ticket.userEmail,
-        from_name: ticket.userName,
-        ticket_id: ticketId,
-        subject: `[Ticket #${ticketId}] ${ticket.subject}`,
-        category: this.getCategoryLabel(ticket.category),
-        priority: this.getPriorityLabel(ticket.priority),
-        message: ticket.message,
-        reply_to: ticket.userEmail,
+      return {
+        success: true,
+        message: result.message || 'Ticket enviado exitosamente al backend',
+        ticketId: result.ticketId,
+        ticketNumber: result.ticketNumber,
+        webUrl: result.webUrl,
+        categoryReceived: result.categoryReceived,
       };
 
-      // Enviar el email
-      const response = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams
-      );
-
-      if (response.status === 200) {
-        return {
-          success: true,
-          message: 'Ticket enviado exitosamente',
-          ticketId,
-        };
-      }
-
-      throw new Error('Error al enviar el ticket');
     } catch (error) {
-      console.error('Error enviando ticket de soporte:', error);
+      console.error('Error enviando ticket de soporte desde el cliente:', error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Error desconocido al enviar el ticket',
+        message: error instanceof Error ? error.message : 'Error desconocido al enviar el ticket desde el cliente',
       };
     }
   }
 
-  /**
-   * Envía un correo de confirmación al usuario
-   */
-  async sendConfirmationToUser(
-    userEmail: string,
-    userName: string,
-    ticketId: string
-  ): Promise<EmailResponse> {
-    try {
-      const templateParams = {
-        to_email: userEmail,
-        to_name: userName,
-        ticket_id: ticketId,
-        support_email: 'support@coacharte.zohodesk.com',
-      };
-
-      // Aquí podrías usar un template diferente para la confirmación
-      const response = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID, // Deberías tener un template específico para confirmaciones
-        templateParams
-      );
-
-      if (response.status === 200) {
-        return {
-          success: true,
-          message: 'Confirmación enviada',
-        };
-      }
-
-      throw new Error('Error al enviar confirmación');
-    } catch (error) {
-      console.error('Error enviando confirmación:', error);
-      return {
-        success: false,
-        message: 'Error al enviar confirmación',
-      };
-    }
-  }
-
-  /**
-   * Genera un ID único para el ticket
-   */
-  private generateTicketId(): string {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `${timestamp}${random}`;
-  }
-
-  /**
-   * Obtiene la etiqueta legible para la categoría
-   */
-  private getCategoryLabel(category: SupportTicket['category']): string {
-    const labels = {
-      technical: 'Soporte Técnico',
-      general: 'Consulta General',
-      billing: 'Facturación',
-      other: 'Otro',
-    };
-    return labels[category] || 'Sin categoría';
-  }
-
-  /**
-   * Obtiene la etiqueta legible para la prioridad
-   */
-  private getPriorityLabel(priority: SupportTicket['priority']): string {
-    const labels = {
-      low: 'Baja',
-      medium: 'Media',
-      high: 'Alta',
-      urgent: 'Urgente',
-    };
-    return labels[priority] || 'Sin prioridad';
-  }
+  // La función sendConfirmationToUser ya no es necesaria aquí, el backend la maneja.
+  // private generateTicketId(): string { ... } // Ya no es necesaria aquí
+  // private getCategoryLabel(...): string { ... } // Ya no es necesaria aquí
+  // private getPriorityLabel(...): string { ... } // Ya no es necesaria aquí
 }
 
 // Exportar una instancia única del servicio

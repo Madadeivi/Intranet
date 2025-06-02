@@ -43,6 +43,7 @@ body {
   align-items: center;
   justify-content: center;
   font-family: 'Geometria', sans-serif;
+  margin: 0;
 }
 
 h1 {
