@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_jwt_super_seguro_por_defecto';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('ERROR CRÍTICO: La variable de entorno JWT_SECRET no está definida en authMiddleware.');
+  console.error('La aplicación no puede iniciarse de forma segura sin JWT_SECRET.');
+  throw new Error('JWT_SECRET es requerido para el middleware de autenticación');
+}
 
 export interface AuthenticatedRequest extends Request {
   user?: {

@@ -2,6 +2,59 @@
 import axios from 'axios';
 import bcrypt from 'bcrypt'; // Importar bcrypt
 
+// 🔒 FUNCIONES DE SEGURIDAD PARA PREVENIR INYECCIÓN SQL EN CONSULTAS COQL
+// =======================================================================
+
+/**
+ * Sanitiza strings para prevenir inyección SQL en consultas COQL
+ * @param input - String a sanitizar
+ * @returns String sanitizado y seguro para usar en consultas COQL
+ * @throws Error si el input no es un string
+ */
+const sanitizeStringForCOQL = (input: string): string => {
+  if (typeof input !== 'string') {
+    throw new Error('Input must be a string');
+  }
+  
+  // Escapar comillas simples duplicándolas (estándar SQL)
+  // Remover caracteres peligrosos que podrían usarse para inyección
+  return input
+    .replace(/'/g, "''")  // Escapar comillas simples
+    .replace(/[\x00\x08\x09\x1a\n\r"\\%]/g, '') // Remover caracteres de control y especiales
+    .trim();
+};
+
+/**
+ * Valida y sanitiza email antes de usar en consultas COQL
+ * @param email - Email a validar y sanitizar
+ * @returns Email sanitizado y válido
+ * @throws Error si el formato del email es inválido
+ */
+const validateAndSanitizeEmail = (email: string): string => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format');
+  }
+  return sanitizeStringForCOQL(email);
+};
+
+/**
+ * Valida y sanitiza tokens antes de usar en consultas COQL
+ * @param token - Token a validar y sanitizar
+ * @returns Token sanitizado y válido
+ * @throws Error si el formato del token es inválido
+ */
+const validateAndSanitizeToken = (token: string): string => {
+  // Los tokens deben ser alfanuméricos o con caracteres seguros
+  const tokenRegex = /^[a-zA-Z0-9\-_]+$/;
+  if (!tokenRegex.test(token)) {
+    throw new Error('Invalid token format');
+  }
+  return sanitizeStringForCOQL(token);
+};
+
+// =======================================================================
+
 // Variables de entorno para la autenticación y configuración de Zoho
 const ZOHO_API_URL = process.env.ZOHO_API_URL; // ej. https://www.zohoapis.com/crm/v2/
 const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID;
@@ -259,11 +312,14 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
   const nombreAPICampoPasswordEstablecida = 'Contrasena_Personalizada_Establecida'; // <--- ACTUALIZADO
 
   try {
+    // 🔒 SEGURIDAD: Validar y sanitizar el email antes de usarlo en la consulta COQL
+    const sanitizedEmail = validateAndSanitizeEmail(email);
+    
     // Zoho CRM no permite filtrar directamente por email en una sola llamada GET para todos los registros de forma estándar y eficiente.
     // La forma más común es buscar/consultar. Usaremos COQL (CRM Object Query Language) para esto.
     // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
 
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida} from ${moduleName} where Email = '${email}' limit 1`; // <--- MODIFICADO: Usando la variable actualizada
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida} from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // <--- MODIFICADO: Usando email sanitizado
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -295,8 +351,11 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
   const moduleName = 'Colaboradores';
   const nombreAPICampoPasswordEstablecida = 'Contrasena_Personalizada_Establecida'; // <--- ACTUALIZADO
   try {
+    // 🔒 SEGURIDAD: Validar y sanitizar el email antes de usarlo en la consulta COQL
+    const sanitizedEmail = validateAndSanitizeEmail(email);
+    
     // 1. Encontrar al colaborador por email para obtener su ID
-    const query = `select id from ${moduleName} where Email = '${email}' limit 1`;
+    const query = `select id from ${moduleName} where Email = '${sanitizedEmail}' limit 1`;
     const coqlResponse = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (!coqlResponse.data || !Array.isArray(coqlResponse.data) || coqlResponse.data.length === 0) {
@@ -359,11 +418,14 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
   ].join(',');
 
   try {
+    // 🔒 SEGURIDAD: Validar y sanitizar el email antes de usarlo en la consulta COQL
+    const sanitizedEmail = validateAndSanitizeEmail(email);
+    
     // Convertir el email de entrada a minúsculas para la comparación
     // const lowercasedEmail = email.toLowerCase(); // Eliminado para prueba
     // Modificar la consulta para usar lower(Email) para una búsqueda insensible a mayúsculas/minúsculas
     // const query = `select ${fieldsToSelect} from ${moduleName} where lower(Email) = '${lowercasedEmail}' limit 1`;
-    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${email}' limit 1`; // Búsqueda directa sensible a mayúsculas
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' and Activo = 0 limit 1`; // Búsqueda directa usando email sanitizado
     
     console.log(`Executing COQL query: ${query}`); // Log para ver la consulta exacta
 
@@ -413,8 +475,11 @@ export const storePasswordResetToken = async (userId: string, token: string, exp
 export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRecord | null> => {
   const moduleName = 'Colaboradores';
   try {
+    // 🔒 SEGURIDAD: Validar y sanitizar el token antes de usarlo en la consulta COQL
+    const sanitizedToken = validateAndSanitizeToken(token);
+    
     // Importante: Asegúrate de que los campos Password_Reset_Token y Password_Reset_Token_Expiry estén disponibles para COQL.
-    const query = `select id, Email, ${PASSWORD_RESET_TOKEN_FIELD}, ${PASSWORD_RESET_EXPIRY_FIELD} from ${moduleName} where ${PASSWORD_RESET_TOKEN_FIELD} = \'${token}\' limit 1`;
+    const query = `select id, Email, ${PASSWORD_RESET_TOKEN_FIELD}, ${PASSWORD_RESET_EXPIRY_FIELD} from ${moduleName} where ${PASSWORD_RESET_TOKEN_FIELD} = '${sanitizedToken}' limit 1`;
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {

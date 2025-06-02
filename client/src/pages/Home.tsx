@@ -22,7 +22,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import YouTubeIcon from '@mui/icons-material/YouTube';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import MenuIcon from '@mui/icons-material/Menu'; // Importar MenuIcon
@@ -523,7 +523,7 @@ const Home: React.FC = () => {
         <div className="footer-content">
           <div className="footer-col footer-col-logo">
             <img src={logoFooter} alt="Logo Coacharte" className="home-logo-img" loading="lazy" />
-            <div className="footer-slogan">Transformando el futuro a través del desarrollo humano</div>
+            <div className="footer-slogan">Inspirados para transformar cualquier reto en logro</div>
           </div>
           <div className="footer-col footer-col-links">
             <h4>Enlaces Útiles</h4>
@@ -541,14 +541,14 @@ const Home: React.FC = () => {
           <div className="footer-col footer-col-social">
             <h4>Síguenos</h4>
             <div className="footer-social-icons">
-              <a href="#" aria-label="Facebook" className="footer-social-icon">
+              <a href="https://www.facebook.com/CoacharteMX/" aria-label="Facebook" className="footer-social-icon">
                 <FacebookIcon fontSize="inherit" />
               </a>
-              <a href="#" aria-label="Instagram" className="footer-social-icon">
+              <a href="https://www.instagram.com/coachartemx/" aria-label="Instagram" className="footer-social-icon">
                 <InstagramIcon fontSize="inherit" />
               </a>
-              <a href="#" aria-label="YouTube" className="footer-social-icon">
-                <YouTubeIcon fontSize="inherit" />
+              <a href="https://www.linkedin.com/company/coacharte/" aria-label="LinkedIn" className="footer-social-icon">
+                <LinkedInIcon fontSize="inherit" />
               </a>
             </div>
           </div>

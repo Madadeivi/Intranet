@@ -3,7 +3,6 @@ import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail, getCollabor
 import { sendEmail } from '../services/emailService.js'; // Importar sendEmail desde emailService
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
-const DEFAULT_INSECURE_JWT_SECRET = 'tu_secreto_jwt_super_seguro_por_defecto';
 const JWT_SECRET_FROM_ENV = process.env.JWT_SECRET;
 
 if (!JWT_SECRET_FROM_ENV) {
@@ -13,11 +12,32 @@ if (!JWT_SECRET_FROM_ENV) {
   process.exit(1); // Salir del proceso si JWT_SECRET no está definido
 }
 
-if (JWT_SECRET_FROM_ENV === DEFAULT_INSECURE_JWT_SECRET) {
-  console.error('ERROR CRÍTICO: JWT_SECRET está configurado con un valor por defecto inseguro.');
-  console.error('Este valor no es adecuado para producción y representa un riesgo de seguridad.');
-  console.error('Por favor, defina un JWT_SECRET único y seguro en las variables de entorno y reinicie la aplicación.');
-  process.exit(1); // Salir del proceso si se usa el default inseguro
+// Validar que JWT_SECRET tenga una longitud mínima segura
+if (JWT_SECRET_FROM_ENV.length < 32) {
+  console.error('ERROR CRÍTICO: JWT_SECRET debe tener al menos 32 caracteres para ser seguro.');
+  console.error('Por favor, defina un JWT_SECRET más largo y complejo en las variables de entorno.');
+  process.exit(1);
+}
+
+// Validar que JWT_SECRET no contenga valores comunes inseguros
+const INSECURE_PATTERNS = [
+  'secret',
+  'password',
+  'default',
+  'jwt',
+  'token',
+  '123456',
+  'qwerty',
+  'admin'
+];
+
+const jwtSecretLower = JWT_SECRET_FROM_ENV.toLowerCase();
+const hasInsecurePattern = INSECURE_PATTERNS.some(pattern => jwtSecretLower.includes(pattern));
+
+if (hasInsecurePattern) {
+  console.error('ERROR CRÍTICO: JWT_SECRET contiene patrones inseguros comunes.');
+  console.error('Por favor, use un JWT_SECRET único y complejo sin palabras comunes.');
+  process.exit(1);
 }
 
 const JWT_SECRET: jwt.Secret = JWT_SECRET_FROM_ENV;
