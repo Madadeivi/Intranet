@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/userController.js';
-import { validateRequest, loginSchema } from '../middleware/validationMiddleware.js'; // Importar loginSchema
+import { validateRequest, loginSchema, setPasswordSchema } from '../middleware/validationMiddleware.js'; // Importar loginSchema y setPasswordSchema
 
 const router = Router();
 const userController = new UserController();
 
 // POST /api/users/login
 router.post('/login', validateRequest(loginSchema, 'body'), userController.login);
+
+// POST /api/users/set-password
+router.post('/set-password', validateRequest(setPasswordSchema, 'body'), userController.setPassword);
 
 // GET /api/users
 router.get('/', userController.getAll);

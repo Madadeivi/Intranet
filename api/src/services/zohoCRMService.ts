@@ -282,6 +282,39 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
   }
 };
 
+// Nueva función para establecer/actualizar la contraseña de un colaborador por email
+export const setCollaboratorPasswordByEmail = async (email: string, newPlainPassword: string): Promise<boolean> => {
+  const moduleName = 'Colaboradores';
+  try {
+    // 1. Encontrar al colaborador por email para obtener su ID
+    const query = `select id from ${moduleName} where Email = '${email}' limit 1`;
+    const coqlResponse = await makeZohoAPIRequest('post', '/coql', { select_query: query });
+
+    if (!coqlResponse.data || !Array.isArray(coqlResponse.data) || coqlResponse.data.length === 0) {
+      console.warn(`Colaborador con email ${email} no encontrado.`);
+      return false; // Colaborador no encontrado
+    }
+
+    const collaboratorId = coqlResponse.data[0].id;
+    if (!collaboratorId) {
+      console.error('No se pudo obtener el ID del colaborador.');
+      return false;
+    }
+
+    // 2. Actualizar el registro del colaborador con la nueva contraseña.
+    // La función `updateRecord` se encargará de hashear `Password_Intranet`.
+    await updateRecord(moduleName, collaboratorId, { Password_Intranet: newPlainPassword });
+    
+    console.log(`Contraseña actualizada exitosamente para el colaborador con email: ${email}`);
+    return true;
+
+  } catch (error) {
+    console.error(`Error al establecer la contraseña para el colaborador con email ${email}:`, error);
+    return false;
+  }
+};
+
+
 // Example usage (optional, for testing)
 /*
 if (process.env.NODE_ENV === 'development' && ZOHO_API_URL && ZOHO_ACCESS_TOKEN) {

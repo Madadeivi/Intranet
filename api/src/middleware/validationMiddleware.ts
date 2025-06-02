@@ -75,3 +75,17 @@ export const validateRequest = (
     next();
   };
 };
+
+// Esquema para la solicitud de establecer/cambiar contraseña
+export const setPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'El correo electrónico es obligatorio.',
+    'string.email': 'Debe proporcionar un correo electrónico válido.',
+    'any.required': 'El correo electrónico es obligatorio.'
+  }),
+  newPassword: Joi.string().min(8).required().messages({
+    'string.empty': 'La nueva contraseña es obligatoria.',
+    'string.min': 'La nueva contraseña debe tener al menos {#limit} caracteres.',
+    'any.required': 'La nueva contraseña es obligatoria.'
+  })
+});

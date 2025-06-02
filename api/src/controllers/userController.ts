@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyCollaboratorPassword } from '../services/zohoCRMService.js'; // Importar el servicio
+import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail } from '../services/zohoCRMService.js'; // Importar el nuevo servicio
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
 const JWT_SECRET: jwt.Secret = process.env.JWT_SECRET || 'tu_secreto_jwt_super_seguro_por_defecto'; 
@@ -70,6 +70,50 @@ export class UserController {
       console.error('Error en el login:', error);
       next(new Error('Ocurrió un error durante el inicio de sesión.'));
       return;
+    }
+  }
+
+  // POST /api/users/set-password
+  async setPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email, newPassword } = req.body;
+
+      if (!email || !newPassword) {
+        res.status(400).json({
+          success: false,
+          message: 'El correo electrónico y la nueva contraseña son obligatorios.'
+        });
+        return;
+      }
+
+      // Aquí podrías añadir validación para la fortaleza de la contraseña si lo deseas
+      if (newPassword.length < 8) { // Ejemplo de validación simple
+        res.status(400).json({
+          success: false,
+          message: 'La nueva contraseña debe tener al menos 8 caracteres.'
+        });
+        return;
+      }
+
+      const success = await setCollaboratorPasswordByEmail(email, newPassword);
+
+      if (success) {
+        res.json({
+          success: true,
+          message: 'Contraseña actualizada exitosamente.'
+        });
+      } else {
+        // El servicio ya loguea errores específicos, aquí damos una respuesta genérica
+        res.status(500).json({
+          success: false,
+          message: 'No se pudo actualizar la contraseña. Verifica el correo electrónico o inténtalo más tarde.'
+        });
+      }
+    } catch (error) {
+      console.error('Error en setPassword controller:', error);
+      // Asegurarse de que `next` se llame con un objeto Error
+      const err = error instanceof Error ? error : new Error('Ocurrió un error al establecer la contraseña.');
+      next(err);
     }
   }
 
