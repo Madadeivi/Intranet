@@ -8,12 +8,13 @@
 
 ## 📋 Resumen Ejecutivo
 
-Se identificaron y corrigieron **4 vulnerabilidades críticas de inyección SQL** y **1 vulnerabilidad de bypass de autenticación** en el servicio `zohoCRMService.ts`. Todas las vulnerabilidades han sido mitigadas mediante la implementación de sanitización robusta de datos de entrada y **monitoreo de seguridad integral**.
+Se identificaron y corrigieron **4 vulnerabilidades críticas de inyección SQL**, **1 vulnerabilidad de bypass de autenticación**, y **1 problema de logging inseguro** en el servicio `zohoCRMService.ts` y `loadEnv.ts`. Todas las vulnerabilidades han sido mitigadas mediante la implementación de sanitización robusta de datos de entrada, **monitoreo de seguridad integral**, y **logging seguro de variables de entorno**.
 
 ### ⚠️ Vulnerabilidades Críticas Identificadas y Corregidas
 
 | ID | Función Afectada | Tipo de Vulnerabilidad | Riesgo | Estado |
 |----|------------------|----------------------|--------|--------|
+| LOG-001 | `loadEnv.ts` | Logging de variables sensibles en texto claro | **MEDIO** | ✅ **CORREGIDO** |
 | SQL-001 | `verifyCollaboratorPassword` | Inyección SQL en consulta COQL | **CRÍTICO** | ✅ **CORREGIDO** |
 | SQL-002 | `setCollaboratorPasswordByEmail` | Inyección SQL en consulta COQL | **CRÍTICO** | ✅ **CORREGIDO** |
 | SQL-003 | `getCollaboratorDetailsByEmail` | Inyección SQL en consulta COQL | **CRÍTICO** | ✅ **CORREGIDO** |
@@ -86,6 +87,32 @@ const query = `select id, Email from Colaboradores where Email = '${sanitizedEma
 ---
 
 ## 🎯 Detalles de las Vulnerabilidades Corregidas
+
+### **LOG-001: loadEnv.ts - Logging de Variables Sensibles**
+- **Ubicación:** `api/src/loadEnv.ts`
+- **Problema:** Variables sensibles como `ZOHO_REFRESH_TOKEN`, `ZOHO_CLIENT_ID`, y `ZOHO_CRM_ORG_ID` se mostraban en texto claro en los logs
+- **Vector de Ataque:** Exposición de credenciales en logs del sistema, archivos de log, o consola
+- **Riesgo:** MEDIO - Exposición de credenciales que podrían ser utilizadas para acceso no autorizado
+- **Corrección Implementada:**
+  - Reemplazado logging directo de variables con función `logEnvironmentStatus()`
+  - Solo se muestra el estado de carga (✓ Cargada / ✗ NO Cargada)
+  - URLs solo se muestran en desarrollo (no contienen secretos)
+  - Eliminada completamente la exposición de tokens y secretos
+
+**Antes (Inseguro):**
+```typescript
+console.log('ZOHO_CLIENT_ID:', process.env.ZOHO_CLIENT_ID);
+console.log('ZOHO_REFRESH_TOKEN:', process.env.ZOHO_REFRESH_TOKEN);
+console.log('ZOHO_CRM_ORG_ID:', process.env.ZOHO_CRM_ORG_ID);
+```
+
+**Después (Seguro):**
+```typescript
+requiredVars.forEach(varName => {
+  const value = process.env[varName];
+  console.log(`${varName}: ${value ? '✓ Cargada' : '✗ NO Cargada'}`);
+});
+```
 
 ### **SQL-001: verifyCollaboratorPassword**
 - **Ubicación:** Línea 268 (original)
@@ -186,8 +213,9 @@ const maliciousInputs = [
 
 | Métrica | Estado Anterior | Estado Actual | Mejora |
 |---------|----------------|---------------|---------|
-| Vulnerabilidades Críticas | 4 | 0 | **-100%** |
+| Vulnerabilidades Críticas | 5 | 0 | **-100%** |
 | Funciones con Sanitización | 0% | 100% | **+100%** |
+| Logging Seguro | No | Sí | **✅** |
 | Validación de Entrada | No | Sí | **✅** |
 | Nivel de Riesgo | **CRÍTICO** | **BAJO** | **🟢** |
 

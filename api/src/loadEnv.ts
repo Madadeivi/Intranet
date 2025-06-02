@@ -2,11 +2,36 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log('--- Variables de entorno en loadEnv.ts (después de dotenv.config()) ---');
-console.log('ZOHO_API_URL:', process.env.ZOHO_API_URL);
-console.log('ZOHO_CLIENT_ID:', process.env.ZOHO_CLIENT_ID);
-console.log('ZOHO_CLIENT_SECRET:', process.env.ZOHO_CLIENT_SECRET ? '****' + process.env.ZOHO_CLIENT_SECRET.slice(-4) : 'NO Cargado');
-console.log('ZOHO_REFRESH_TOKEN:', process.env.ZOHO_REFRESH_TOKEN);
-console.log('ZOHO_CRM_ORG_ID:', process.env.ZOHO_CRM_ORG_ID);
-console.log('JWT_SECRET (loadEnv.ts):', process.env.JWT_SECRET ? 'Cargado' : 'NO Cargado');
-console.log('-------------------------------------------------------------------');
+// Función para logging seguro de variables de entorno
+function logEnvironmentStatus() {
+  const requiredVars = [
+    'ZOHO_API_URL',
+    'ZOHO_CLIENT_ID', 
+    'ZOHO_CLIENT_SECRET',
+    'ZOHO_REFRESH_TOKEN',
+    'ZOHO_CRM_ORG_ID',
+    'JWT_SECRET'
+  ];
+
+  console.log('--- Estado de Variables de Entorno ---');
+  
+  // Solo mostrar si las variables están cargadas, sin exponer valores
+  requiredVars.forEach(varName => {
+    const value = process.env[varName];
+    if (value) {
+      console.log(`${varName}: ✓ Cargada`);
+    } else {
+      console.log(`${varName}: ✗ NO Cargada`);
+    }
+  });
+
+  // Solo mostrar URLs en desarrollo (no contienen secretos)
+  if (process.env.NODE_ENV === 'development' && process.env.ZOHO_API_URL) {
+    console.log(`ZOHO_API_URL: ${process.env.ZOHO_API_URL}`);
+  }
+
+  console.log('----------------------------------------');
+}
+
+// Ejecutar logging seguro
+logEnvironmentStatus();
