@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import userRoutes from './users';
-import zohoDeskRoutes from './zohoDeskRoutes'; // <--- Añadir esta línea
-import { handleSendEmail } from '../controllers/emailController.js';
+import zohoDeskRoutes from './zohoDeskRoutes';
+import { handleSendEmail, createSupportTicket } from '../controllers/emailController.js'; // <--- MODIFICAR ESTA LÍNEA
 import { 
   fetchZohoRecords, 
   fetchZohoRecordById, 
@@ -47,6 +47,9 @@ router.use('/zoho/desk', zohoDeskRoutes); // <--- Añadir estas líneas
 
 // Ruta para enviar correos
 router.post('/email/send', validateRequest(emailSchema, 'body'), handleSendEmail);
+
+// Nueva ruta para crear tickets de soporte
+router.post('/email/support-ticket', createSupportTicket); // <--- AÑADIR ESTA LÍNEA (asumiendo que createSupportTicket ya maneja la validación o no la necesita aquí)
 
 // Rutas para Zoho CRM
 // GET all records for a module

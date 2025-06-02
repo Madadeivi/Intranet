@@ -11,6 +11,12 @@ router.post('/login', validateRequest(loginSchema, 'body'), userController.login
 // POST /api/users/set-password
 router.post('/set-password', validateRequest(setPasswordSchema, 'body'), userController.setPassword);
 
+// POST /api/users/request-password-reset
+router.post('/request-password-reset', userController.requestPasswordReset); // TODO: Add validation schema if needed
+
+// POST /api/users/reset-password
+router.post('/reset-password', userController.resetPassword); // TODO: Add validation schema if needed
+
 // GET /api/users
 router.get('/', userController.getAll);
 

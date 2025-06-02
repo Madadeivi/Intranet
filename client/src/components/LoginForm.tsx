@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import authService, { AuthResult, LoginCredentials } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Importar Link
 import logo from '../assets/coacharte-logo.png';
 import './LoginForm.css';
 
@@ -147,7 +147,7 @@ const LoginForm: React.FC = () => {
           {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
         <div className="forgot-password-link">
-          <a href="/request-password-reset">¿Olvidaste tu contraseña?</a>
+          <Link to="/request-password-reset">¿Olvidaste tu contraseña?</Link> {/* Cambiado a Link */}
         </div>
       </form>
       

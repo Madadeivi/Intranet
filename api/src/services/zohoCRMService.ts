@@ -347,24 +347,34 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
   // Asegúrate de que los nombres de los campos API sean correctos.
   const fieldsToSelect = [
     'id',
-    'Name',
+    'Name', // Asegúrate que 'Name' es el API name correcto si es un campo combinado como Nombre y Apellido.
+            // Si son campos separados (ej. First_Name, Last_Name), inclúyelos individualmente.
     'Email', 
-    'Nombre_completo',
-    'Celular',
-    'Record_Image',
-    'Activo',
-    'Clientes',
-    'Sexo',
+    'Nombre_completo', // Verifica el API Name exacto. Podría ser Nombre_Completo.
+    'Celular',         // Verifica el API Name exacto.
+    'Record_Image',    // Verifica el API Name exacto.
+    'Activo',          // Verifica el API Name exacto.
+    'Clientes',        // Verifica el API Name exacto. (Si es un lookup o multi-select, considera cómo se devuelve)
+    'Sexo',            // Verifica el API Name exacto.
   ].join(',');
 
   try {
-    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${email}' and Activo = true limit 1`;
+    // Convertir el email de entrada a minúsculas para la comparación
+    // const lowercasedEmail = email.toLowerCase(); // Eliminado para prueba
+    // Modificar la consulta para usar lower(Email) para una búsqueda insensible a mayúsculas/minúsculas
+    // const query = `select ${fieldsToSelect} from ${moduleName} where lower(Email) = '${lowercasedEmail}' limit 1`;
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${email}' limit 1`; // Búsqueda directa sensible a mayúsculas
+    
+    console.log(`Executing COQL query: ${query}`); // Log para ver la consulta exacta
+
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       return response.data[0] as ZohoRecord;
     }
-    console.warn(`No se encontraron detalles para el colaborador con email ${email} en Zoho CRM.`);
+    
+    // Si no se encontraron datos, registrar la respuesta completa para depuración
+    console.warn(`No se encontraron detalles para el colaborador con email ${email} en Zoho CRM. Respuesta de Zoho:`, JSON.stringify(response, null, 2));
     return null;
   } catch (error) {
     console.error(`Error al obtener detalles del colaborador ${email} desde Zoho CRM:`, error);
@@ -374,6 +384,83 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     return null; // O lanza el error si prefieres manejarlo más arriba
   }
 };
+
+// Funciones para el restablecimiento de contraseña
+const PASSWORD_RESET_TOKEN_FIELD = 'Password_Reset_Token';
+const PASSWORD_RESET_EXPIRY_FIELD = 'Password_Reset_Token_Expiry';
+
+export const storePasswordResetToken = async (userId: string, token: string, expiryDate: Date): Promise<boolean> => {
+  const moduleName = 'Colaboradores';
+  try {
+    const updatePayload = {
+      [PASSWORD_RESET_TOKEN_FIELD]: token,
+      [PASSWORD_RESET_EXPIRY_FIELD]: expiryDate.toISOString(), // Zoho espera formato ISO para DateTime
+    };
+    const response = await makeZohoAPIRequest('put', `/${moduleName}/${userId}`, { data: [updatePayload] });
+    if (response.data && Array.isArray(response.data) && response.data.length > 0 && response.data[0].code === 'SUCCESS') {
+      console.log(`Token de restablecimiento de contraseña almacenado para el usuario ${userId}.`);
+      return true;
+    } else {
+      console.error(`Error al almacenar el token de restablecimiento para ${userId}:`, response.data?.[0]?.message || response);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Excepción al almacenar el token de restablecimiento para ${userId}:`, error);
+    return false;
+  }
+};
+
+export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRecord | null> => {
+  const moduleName = 'Colaboradores';
+  try {
+    // Importante: Asegúrate de que los campos Password_Reset_Token y Password_Reset_Token_Expiry estén disponibles para COQL.
+    const query = `select id, Email, ${PASSWORD_RESET_TOKEN_FIELD}, ${PASSWORD_RESET_EXPIRY_FIELD} from ${moduleName} where ${PASSWORD_RESET_TOKEN_FIELD} = \'${token}\' limit 1`;
+    const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
+
+    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      const collaborator = response.data[0] as ZohoRecord;
+      const expiryTime = collaborator[PASSWORD_RESET_EXPIRY_FIELD] ? new Date(collaborator[PASSWORD_RESET_EXPIRY_FIELD]).getTime() : 0;
+      
+      if (expiryTime > Date.now()) {
+        return collaborator; // Token válido y no expirado
+      } else {
+        console.warn(`Token de restablecimiento encontrado para ${token} pero ha expirado.`);
+        return null; // Token expirado
+      }
+    }
+    return null; // Token no encontrado
+  } catch (error) {
+    console.error(`Error al buscar colaborador por token de restablecimiento ${token}:`, error);
+    if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
+      console.error('COQL Query para buscar por token es inválida. Revisa los nombres de módulos/campos y la sintaxis.');
+    }
+    return null;
+  }
+};
+
+export const clearPasswordResetToken = async (userId: string): Promise<boolean> => {
+  const moduleName = 'Colaboradores';
+  try {
+    const updatePayload = {
+      [PASSWORD_RESET_TOKEN_FIELD]: null,
+      [PASSWORD_RESET_EXPIRY_FIELD]: null,
+    };
+    // Usamos PUT para actualizar el registro, estableciendo los campos a null.
+    // Zoho CRM maneja los campos nulos eliminando su valor.
+    const response = await makeZohoAPIRequest('put', `/${moduleName}/${userId}`, { data: [updatePayload] });
+    if (response.data && Array.isArray(response.data) && response.data.length > 0 && response.data[0].code === 'SUCCESS') {
+      console.log(`Token de restablecimiento de contraseña limpiado para el usuario ${userId}.`);
+      return true;
+    } else {
+      console.error(`Error al limpiar el token de restablecimiento para ${userId}:`, response.data?.[0]?.message || response);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Excepción al limpiar el token de restablecimiento para ${userId}:`, error);
+    return false;
+  }
+};
+
 
 // Example usage (optional, for testing)
 /*

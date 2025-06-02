@@ -1,8 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail } from '../services/zohoCRMService.js'; // Importar el nuevo servicio
+import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail, getCollaboratorDetailsByEmail, storePasswordResetToken, getCollaboratorByResetToken, clearPasswordResetToken } from '../services/zohoCRMService.js'; // Importar el nuevo servicio
+import { sendEmail } from '../services/emailService.js'; // Importar sendEmail desde emailService
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
-const JWT_SECRET: jwt.Secret = process.env.JWT_SECRET || 'tu_secreto_jwt_super_seguro_por_defecto'; 
+const DEFAULT_INSECURE_JWT_SECRET = 'tu_secreto_jwt_super_seguro_por_defecto';
+const JWT_SECRET_FROM_ENV = process.env.JWT_SECRET;
+
+if (!JWT_SECRET_FROM_ENV) {
+  console.error('ERROR CRÍTICO: La variable de entorno JWT_SECRET no está definida.');
+  console.error('La aplicación no puede iniciarse de forma segura sin JWT_SECRET.');
+  console.error('Por favor, defina la variable de entorno JWT_SECRET y reinicie la aplicación.');
+  process.exit(1); // Salir del proceso si JWT_SECRET no está definido
+}
+
+if (JWT_SECRET_FROM_ENV === DEFAULT_INSECURE_JWT_SECRET) {
+  console.error('ERROR CRÍTICO: JWT_SECRET está configurado con un valor por defecto inseguro.');
+  console.error('Este valor no es adecuado para producción y representa un riesgo de seguridad.');
+  console.error('Por favor, defina un JWT_SECRET único y seguro en las variables de entorno y reinicie la aplicación.');
+  process.exit(1); // Salir del proceso si se usa el default inseguro
+}
+
+const JWT_SECRET: jwt.Secret = JWT_SECRET_FROM_ENV;
 const JWT_EXPIRES_IN_ENV = process.env.JWT_EXPIRES_IN; // Puede ser string o undefined
 
 // Determinar expiresIn: si JWT_EXPIRES_IN_ENV es un número en string, parsearlo. Sino, usarlo como string o el default '1h'
@@ -14,10 +32,6 @@ if (JWT_EXPIRES_IN_ENV) {
   } else {
     expiresInValue = JWT_EXPIRES_IN_ENV; // Es un string como '1d', '2h'
   }
-}
-
-if (JWT_SECRET === 'tu_secreto_jwt_super_seguro_por_defecto') {
-  console.warn('ADVERTENCIA: JWT_SECRET no está configurado en las variables de entorno. Usando valor por defecto inseguro.');
 }
 
 export class UserController {
@@ -145,6 +159,112 @@ export class UserController {
     }
   }
 
+  // POST /api/users/request-password-reset
+  async requestPasswordReset(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email } = req.body as RequestPasswordResetPayload;
+
+      if (!email) {
+        res.status(400).json({ success: false, message: 'El correo electrónico es obligatorio.' });
+        return;
+      }
+
+      const collaborator = await getCollaboratorDetailsByEmail(email);
+      if (!collaborator || !collaborator.id) {
+        // No revelar si el email existe o no por seguridad, pero sí loguearlo.
+        console.warn(`Solicitud de restablecimiento para email no encontrado o sin ID: ${email}`);
+        // Devolver una respuesta genérica para evitar la enumeración de usuarios
+        res.status(200).json({ 
+          success: true, 
+          message: 'Si tu correo electrónico está registrado, recibirás un enlace para restablecer tu contraseña.' 
+        });
+        return;
+      }
+
+      const crypto = await import('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const expiryDate = new Date(Date.now() + 3600000); // 1 hora de expiración
+
+      const stored = await storePasswordResetToken(collaborator.id, resetToken, expiryDate);
+
+      if (!stored) {
+        res.status(500).json({ success: false, message: 'No se pudo procesar la solicitud de restablecimiento de contraseña.' });
+        return;
+      }
+
+      const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+      // Enviar correo electrónico
+      try {
+        await sendEmail({
+          to: email,
+          subject: 'Restablecimiento de Contraseña - Coacharte Intranet',
+          html: `
+            <p>Hola,</p>
+            <p>Has solicitado restablecer tu contraseña para la Intranet de Coacharte.</p>
+            <p>Por favor, haz clic en el siguiente enlace para crear una nueva contraseña:</p>
+            <p><a href="${resetUrl}">${resetUrl}</a></p>
+            <p>Este enlace expirará en 1 hora.</p>
+            <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+            <p>Saludos,<br>El equipo de Coacharte</p>
+          `,
+        });
+        res.status(200).json({ 
+          success: true, 
+          message: 'Si tu correo electrónico está registrado, recibirás un enlace para restablecer tu contraseña.' 
+        });
+      } catch (emailError) {
+        console.error('Error enviando email de restablecimiento:', emailError);
+        // Aunque el email falle, el token se guardó. Podría ser un problema del servicio de correo.
+        // Considerar si se debe invalidar el token aquí o manejarlo de otra forma.
+        res.status(500).json({ success: false, message: 'Error al enviar el correo de restablecimiento.' });
+      }
+
+    } catch (error) {
+      console.error('Error en requestPasswordReset controller:', error);
+      const err = error instanceof Error ? error : new Error('Ocurrió un error al solicitar el restablecimiento de contraseña.');
+      next(err);
+    }
+  }
+
+  // POST /api/users/reset-password
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { token, newPassword } = req.body as ResetPasswordPayload;
+
+      if (!token || !newPassword) {
+        res.status(400).json({ success: false, message: 'El token y la nueva contraseña son obligatorios.' });
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        res.status(400).json({ success: false, message: 'La nueva contraseña debe tener al menos 8 caracteres.' });
+        return;
+      }
+
+      const collaborator = await getCollaboratorByResetToken(token);
+
+      if (!collaborator || !collaborator.id || !collaborator.Email) {
+        res.status(400).json({ success: false, message: 'Token inválido o expirado.' });
+        return;
+      }
+
+      const passwordSet = await setCollaboratorPasswordByEmail(collaborator.Email, newPassword);
+      if (!passwordSet) {
+        res.status(500).json({ success: false, message: 'No se pudo actualizar la contraseña.' });
+        return;
+      }
+
+      await clearPasswordResetToken(collaborator.id); // Limpiar el token después de usarlo
+
+      res.json({ success: true, message: 'Contraseña restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.' });
+
+    } catch (error) {
+      console.error('Error en resetPassword controller:', error);
+      const err = error instanceof Error ? error : new Error('Ocurrió un error al restablecer la contraseña.');
+      next(err);
+    }
+  }
+
   // GET /api/users
   async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> { 
     try {
@@ -232,4 +352,15 @@ export class UserController {
       return;
     }
   }
+}
+
+// Interfaz para el payload de solicitud de restablecimiento de contraseña
+interface RequestPasswordResetPayload {
+  email: string;
+}
+
+// Interfaz para el payload de restablecimiento de contraseña
+interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
 }

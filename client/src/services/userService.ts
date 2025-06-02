@@ -1,3 +1,5 @@
+import api from './api';
+
 export interface UserInfo {
   firstName: string;
   lastName: string;
@@ -50,3 +52,21 @@ export function clearUserInfo(): void {
     console.error('Error al eliminar información del usuario:', error);
   }
 }
+
+interface RequestPasswordResetResponse {
+  message: string;
+}
+
+interface ResetPasswordResponse {
+  message: string;
+}
+
+export const requestPasswordReset = async (email: string): Promise<RequestPasswordResetResponse> => {
+  const response = await api.post<RequestPasswordResetResponse>('/users/request-password-reset', { email });
+  return response.data;
+};
+
+export const resetPassword = async (token: string, newPassword: string): Promise<ResetPasswordResponse> => {
+  const response = await api.post<ResetPasswordResponse>('/users/reset-password', { token, newPassword });
+  return response.data;
+};
