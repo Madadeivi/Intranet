@@ -17,25 +17,32 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   let token;
+  
+  // Verificar si hay header de autorización con Bearer token
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string, iat: number, exp: number }; // Asegúrate que el payload coincida
-      
-      // Aquí podrías verificar si el usuario aún existe en la BD si es necesario,
-      // pero para este caso, confiar en el token es suficiente si no ha expirado.
-      req.user = { id: decoded.id, email: decoded.email }; // Adjuntar usuario al request
-      next();
-    } catch (error) {
-      console.error('Error de autenticación de token:', error);
-      res.status(401).json({ success: false, message: 'No autorizado, token falló' });
-    }
+    token = req.headers.authorization.split(' ')[1];
   }
 
+  // Si no hay token, enviar respuesta de no autorizado
   if (!token) {
     res.status(401).json({ success: false, message: 'No autorizado, no hay token' });
+    return;
+  }
+
+  try {
+    // Verificar y decodificar el token
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string, iat: number, exp: number };
+    
+    // Aquí podrías verificar si el usuario aún existe en la BD si es necesario,
+    // pero para este caso, confiar en el token es suficiente si no ha expirado.
+    req.user = { id: decoded.id, email: decoded.email }; // Adjuntar usuario al request
+    next();
+  } catch (error) {
+    console.error('Error de autenticación de token:', error);
+    res.status(401).json({ success: false, message: 'No autorizado, token falló' });
+    return;
   }
 };
 
