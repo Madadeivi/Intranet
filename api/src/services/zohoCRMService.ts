@@ -510,7 +510,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
       error: error instanceof Error ? error.message : String(error)
     });
     
-    console.error(`Error verifying collaborator password for email ${email}:`, error);
+    console.error('Error verifying collaborator password for email %s:', email, error);
     // Podrías querer manejar errores específicos de Zoho aquí de forma diferente
     if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
         console.error('COQL Query is invalid. Check module/field names and syntax.');
