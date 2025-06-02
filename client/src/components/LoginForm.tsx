@@ -146,6 +146,9 @@ const LoginForm: React.FC = () => {
         >
           {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
+        <div className="forgot-password-link">
+          <a href="/request-password-reset">¿Olvidaste tu contraseña?</a>
+        </div>
       </form>
       
       {message.text && (
