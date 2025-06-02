@@ -24,6 +24,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import MenuIcon from '@mui/icons-material/Menu'; // Importar MenuIcon
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import SupportForm from '../components/SupportForm';
@@ -31,6 +32,13 @@ import { parseBoldAndBreaks } from '../utils/textParser';
 import { getCurrentMonthYear } from '../utils/dateUtils';
 import { scrollCarousel, checkCarouselScrollability, setupTouchGestures } from '../utils/carouselUtils';
 import { DISABLED_CARDS, CALENDAR_EVENTS, CAROUSEL_SCROLL_OFFSET, NOMINA_BASE_URL } from '../utils/constants';
+
+const navItems = [
+  { label: 'Inicio', href: '/home', action: (navigate: Function) => navigate('/home') },
+  { label: 'Mi Cuenta', href: '#' },
+  { label: 'Recursos Humanos', href: '#' },
+  { label: 'Procesos', href: '#' },
+];
 
 const SupportModal = React.forwardRef<HTMLDivElement, { userInfo: { firstName: string; lastName: string; email: string } | null; onClose: () => void }>((props, ref) => {
   const { userInfo, onClose } = props;
@@ -87,6 +95,7 @@ const Home: React.FC = () => {
   const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string; initials: string; email: string } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para el menú de hamburguesa
   const [disabledCards] = useState<string[]>(DISABLED_CARDS); // Utilizar constante, remover setDisabledCards si no se usa
   const [eventDates] = useState<Date[]>(CALENDAR_EVENTS.map(event => event.date)); // Utilizar constante, remover setEventDates si no se usa
   const [noticeModal, setNoticeModal] = useState<{ open: boolean; title: string; detail: string }>({ open: false, title: '', detail: '' });
@@ -105,7 +114,6 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  // Cerrar menú si se hace clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -136,6 +144,22 @@ const Home: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isSupportModalOpen]);
 
+  // Cerrar menú móvil si se hace clic fuera
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+    if (isMobileMenuOpen) {
+      console.log('Menú móvil abierto, escuchando clics fuera');
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileMenuOpen]);
+
   const handleLogout = async () => {
     await authService.logout();
     localStorage.removeItem('coacharteUserInfo');
@@ -156,6 +180,7 @@ const Home: React.FC = () => {
   const noticeCarouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const mobileMenuRef = useRef<HTMLDivElement>(null); // Ref para el menú móvil
 
   const handleScroll = () => {
     const el = noticeCarouselRef.current;
@@ -187,10 +212,20 @@ const Home: React.FC = () => {
       <header className="home-header">
         <div className="logo"><img src={logo} alt="Logo Coacharte" className="home-logo-img" loading="lazy" /></div>
         <nav className="home-nav">
-          <a href="#" onClick={e => { e.preventDefault(); navigate('/home'); }}>Inicio</a>
-          <a href="#">Mi Cuenta</a>
-          <a href="#">Recursos Humanos</a>
-          <a href="#">Procesos</a>
+          {navItems.map(item => (
+            <a 
+              key={item.label} 
+              href={item.href} 
+              onClick={e => { 
+                if (item.action) {
+                  e.preventDefault();
+                  item.action(navigate);
+                }
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
         </nav>
         <div className="home-user" ref={dropdownRef}>
           <span className="notification-bell" aria-label="Notificaciones">
@@ -210,8 +245,33 @@ const Home: React.FC = () => {
               <button className="user-dropdown-item" onClick={handleLogout}>Cerrar sesión</button>
             </div>
           )}
+          {/* Menú de hamburguesa para mobile */}
+          <div className="hamburger-menu" onClick={() => setIsMobileMenuOpen(v => !v)}>
+            <MenuIcon />
+          </div>
         </div>
       </header>
+      {/* Menú de navegación móvil */}
+      {isMobileMenuOpen && (
+        <div className="mobile-nav-menu" ref={mobileMenuRef}>
+          {navItems.map(item => (
+            <a 
+              key={item.label} 
+              href={item.href} 
+              onClick={e => { 
+                if (item.action) {
+                  e.preventDefault();
+                  item.action(navigate);
+                }
+                setIsMobileMenuOpen(false); 
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+          {/* Considerar añadir "Cerrar Sesión" aquí también o solo en el dropdown de usuario */}
+        </div>
+      )}
 
       {/* Bienvenida y buscador */}
       <section className="home-welcome">
