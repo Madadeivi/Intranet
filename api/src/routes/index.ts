@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import userRoutes from './users';
 import zohoDeskRoutes from './zohoDeskRoutes';
-import { handleSendEmail, createSupportTicket } from '../controllers/emailController.js'; // <--- MODIFICAR ESTA LÍNEA
+import { handleSendEmail, createSupportTicket } from '../controllers/emailController.js';
 import { 
   fetchZohoRecords, 
   fetchZohoRecordById, 
