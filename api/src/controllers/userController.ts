@@ -37,20 +37,47 @@ export class UserController {
       const collaborator = await verifyCollaboratorPassword(email, password);
 
       if (collaborator) {
+        // Asume que 'Password_Personalizada_Establecida' es el nombre API correcto
+        // y que verifyCollaboratorPassword lo devuelve.
+        // El valor por defecto si el campo no existe en el registro o no se seleccionó sería undefined.
+        const passwordIsCustomized = collaborator.Password_Personalizada_Establecida === true;
+
         const payload = {
           id: collaborator.id, 
-          email: collaborator.Email, 
+          email: collaborator.Email,
         };
 
+        // Si la contraseña no ha sido personalizada, se requiere cambio.
+        if (!passwordIsCustomized) {
+          const tempOptions: SignOptions = {
+            algorithm: 'HS256',
+            expiresIn: '15m', // Token temporal corto para el cambio
+          };
+          const tempToken = jwt.sign({...payload, action: 'PENDING_PASSWORD_CHANGE'}, JWT_SECRET, tempOptions);
+          
+          res.status(200).json({
+            success: true,
+            requiresPasswordChange: true,
+            message: 'Inicio de sesión exitoso. Se requiere cambio de contraseña.',
+            tempToken: tempToken, 
+            user: { 
+              id: collaborator.id,
+              email: collaborator.Email,
+            }
+          });
+          return;
+        }
+
+        // Si la contraseña ya es personalizada, proceder con el login normal.
         const options: SignOptions = {
-          algorithm: 'HS256', // Especificar algoritmo explícitamente
-          expiresIn: expiresInValue as any, // Usar el valor procesado
+          algorithm: 'HS256',
+          expiresIn: expiresInValue as any, 
         };
-
         const token = jwt.sign(payload, JWT_SECRET, options);
 
         res.json({
           success: true,
+          requiresPasswordChange: false,
           message: 'Inicio de sesión exitoso.',
           token: token,
           user: { 
@@ -68,8 +95,9 @@ export class UserController {
       }
     } catch (error) {
       console.error('Error en el login:', error);
-      next(new Error('Ocurrió un error durante el inicio de sesión.'));
-      return;
+      // Asegurarse de que `next` se llame con un objeto Error
+      const err = error instanceof Error ? error : new Error('Ocurrió un error durante el inicio de sesión.');
+      next(err); 
     }
   }
 
