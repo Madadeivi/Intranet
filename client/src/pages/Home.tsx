@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, RefObject } from 'react'; // Importar RefObject
+import { Link, useNavigate } from 'react-router-dom'; // <--- AÑADIDO: Para navegación y enlace
 import 'react-calendar/dist/Calendar.css';
 import './Home.css';
 import logo from '../assets/coacharte-logo.png';
@@ -26,7 +27,6 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import MenuIcon from '@mui/icons-material/Menu'; // Importar MenuIcon
 import authService from '../services/authService';
-import { useNavigate } from 'react-router-dom';
 import SupportForm from '../components/SupportForm';
 import { parseBoldAndBreaks } from '../utils/textParser';
 import { getCurrentMonthYear } from '../utils/dateUtils';
@@ -429,7 +429,12 @@ const Home: React.FC = () => {
           <h2>Enlaces Rápidos</h2>
           <div className="quicklinks-grid">
             <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Solicitud de Vacaciones"><DescriptionIcon fontSize="inherit" /></span>Solicitud de Vacaciones</a>
-            <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Cambio de Contraseña"><GppGoodIcon fontSize="inherit" /></span>Cambio de Contraseña</a>
+            <Link to="/set-new-password" state={{ fromHome: true }} className="quicklink"> {/* <--- MODIFICADO: Añadido estado fromHome */}
+              <span className="quicklink-icon" aria-label="Cambio de Contraseña">
+                <GppGoodIcon fontSize="inherit" />
+              </span>
+              Cambio de Contraseña
+            </Link>
             <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Portal de Capacitación"><SchoolIcon fontSize="inherit" /></span>Portal de Capacitación</a>
             <a href="#" className="quicklink disabled"><span className="quicklink-icon" aria-label="Directorio Empresarial"><GroupsIcon fontSize="inherit" /></span>Directorio Empresarial</a>
             <a href="#" className="quicklink" onClick={(e) => { e.preventDefault(); setIsSupportModalOpen(true); }}>

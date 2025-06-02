@@ -1,4 +1,3 @@
-// filepath: /Users/madadeivi/Developer/Coacharte/Intranet/client/src/components/RequestPasswordResetForm.tsx
 import React, { useState } from 'react';
 import api from '../services/api';
 import './RequestPasswordResetForm.css';

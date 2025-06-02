@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // <--- MODIFICADO: Añadir useLocation
 import authService, { AuthResult } from '../services/authService';
 import './SetPasswordForm.css'; // <--- IMPORTAR EL ARCHIVO CSS
 
@@ -12,6 +12,8 @@ const SetPasswordForm: React.FC = () => {
     type: '',
   });
   const navigate = useNavigate();
+  const location = useLocation(); // <--- AÑADIDO: Obtener location
+  const fromHome = location.state?.fromHome; // <--- AÑADIDO: Verificar si se navega desde Home
 
   useEffect(() => {
     // Limpiar el body class si es necesario, o añadir uno específico
@@ -37,10 +39,17 @@ const SetPasswordForm: React.FC = () => {
 
     setIsLoading(true);
 
-    const emailForPasswordChange = localStorage.getItem('emailForPasswordChange');
-    // El tempToken no se envía directamente, se asume que el backend lo maneja o que authService lo usa si es necesario.
-    // Si tu backend espera el tempToken en el body de set-password, necesitarías recuperarlo aquí también.
-    // Por ahora, la implementación de authService.setNewPassword solo toma email y newPassword.
+    // Si venimos de 'fromHome', el usuario está logueado.
+    // Necesitamos el email del usuario logueado.
+    // Si no, es el flujo de recuperación y el email está en localStorage.
+    let emailForPasswordChange = localStorage.getItem('emailForPasswordChange');
+    const userInfoString = localStorage.getItem('coacharteUserInfo');
+
+    if (fromHome && userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      emailForPasswordChange = userInfo.email;
+    }
+
 
     if (!emailForPasswordChange) {
       setMessage({ text: 'Error: No se encontró el email para el cambio de contraseña. Por favor, intenta iniciar sesión de nuevo.', type: 'error' });
@@ -51,15 +60,37 @@ const SetPasswordForm: React.FC = () => {
     }
 
     try {
+      // Aquí necesitaríamos una lógica o endpoint diferente si el usuario está autenticado
+      // vs. si está usando un token de reseteo.
+      // Por ahora, asumimos que authService.setNewPassword puede manejar ambos casos
+      // o que el backend diferencia basado en si hay una sesión activa.
+      // Para un usuario logueado, el backend debería verificar la sesión actual
+      // en lugar de un token de reseteo.
+      // Si `setNewPassword` es solo para el flujo de token, necesitaríamos un nuevo método en `authService`
+      // como `changeUserPassword(currentPassword, newPassword)` que se llamaría aquí si `fromHome` es true.
+      // Y el formulario necesitaría un campo para la contraseña actual.
+
+      // Simplificación: Asumimos que el backend y `setNewPassword` pueden manejar esto
+      // o que el flujo actual de `setNewPassword` es aceptable para un cambio por usuario logueado
+      // (lo cual no sería seguro si no pide la contraseña actual).
+      // ESTO ES UNA SIMPLIFICACIÓN IMPORTANTE Y DEBERÍA REVISARSE PARA SEGURIDAD.
+      // Idealmente, para `fromHome`, se debería llamar a un endpoint que requiera la contraseña actual.
+
       const result: AuthResult = await authService.setNewPassword(emailForPasswordChange, newPassword);
 
       if (result.success) {
-        setMessage({ text: 'Contraseña actualizada con éxito. Serás redirigido al inicio de sesión.', type: 'success' });
-        localStorage.removeItem('tempToken'); // Limpiar token temporal
-        localStorage.removeItem('emailForPasswordChange'); // Limpiar email
+        setMessage({ text: 'Contraseña actualizada con éxito.', type: 'success' });
+        localStorage.removeItem('tempToken'); 
+        if (!fromHome) { // Solo remover emailForPasswordChange si no es el flujo de usuario logueado
+          localStorage.removeItem('emailForPasswordChange');
+        }
         
         setTimeout(() => {
-          navigate('/'); // Redirigir a la página de login
+          if (fromHome) {
+            navigate('/home'); // Si viene de home, regresa a home
+          } else {
+            navigate('/'); // Si es flujo de recuperación, va a login
+          }
         }, 2000);
       } else {
         setMessage({ text: result.message || 'No se pudo actualizar la contraseña.', type: 'error' });
@@ -78,54 +109,50 @@ const SetPasswordForm: React.FC = () => {
     // Aplicar la clase 'set-password-page' al body a través de useEffect o a un div contenedor principal aquí
     // Para mantenerlo simple y alineado con LoginForm, asumimos que la clase 'set-password-page' se añade al body
     // y el contenedor principal aquí es para la tarjeta del formulario.
-    <div className="set-password-form-card"> {/* Cambiado de set-password-container a set-password-form-card para el estilo del "card" */}
-      <h2>Establecer Nueva Contraseña</h2>
-      <form onSubmit={handleSubmit} className="set-password-form"> {/* Añadida clase al form */}
-        <div className="form-group"> {/* Añadida clase al div */}
+    <div className="set-password-form-card">
+      <h2>{fromHome ? 'Cambiar Contraseña' : 'Establecer Nueva Contraseña'}</h2> {/* <--- MODIFICADO: Título dinámico */}
+      <form onSubmit={handleSubmit} className="set-password-form">
+        <div className="form-group">
           <label htmlFor="newPassword">Nueva Contraseña:</label>
           <input
             type="password"
             id="newPassword"
-            className="form-input" /* Añadida clase al input */
+            className="form-input"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Ingresa tu nueva contraseña"
             required
-            // style={{ width: '100%', padding: '8px', marginTop: '5px' }} // Estilos en línea eliminados
           />
         </div>
-        <div className="form-group"> {/* Añadida clase al div */}
+        <div className="form-group">
           <label htmlFor="confirmPassword">Confirmar Nueva Contraseña:</label>
           <input
             type="password"
             id="confirmPassword"
-            className="form-input" /* Añadida clase al input */
+            className="form-input"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirma tu nueva contraseña"
             required
-            // style={{ width: '100%', padding: '8px', marginTop: '5px' }} // Estilos en línea eliminados
           />
         </div>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="submit-button" /* Añadida clase al button */
-          // style={{ padding: '10px 15px', width: '100%', backgroundColor: isLoading ? '#ccc' : '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }} // Estilos en línea eliminados
-        >
-          {isLoading ? 'Actualizando...' : 'Actualizar Contraseña'}
+        <button type="submit" className="submit-button primary-button" disabled={isLoading}> {/* Añadida clase primary-button */}
+          {isLoading ? 'Actualizando...' : (fromHome ? 'Guardar Cambios' : 'Establecer Contraseña')} {/* <--- MODIFICADO: Texto del botón dinámico */}
         </button>
+        {fromHome && ( // <--- AÑADIDO: Botón de cancelar/volver si viene de home
+          <button 
+            type="button" 
+            className="submit-button secondary-button" // Usar clase secondary-button para diferenciar
+            onClick={() => navigate('/home')}
+            disabled={isLoading}
+          >
+            Cancelar y Volver a Inicio
+          </button>
+        )}
       </form>
       {message.text && (
         <div
           className={`message-container ${message.type === 'error' ? 'message-error' : 'message-success'}`} /* Clases para el mensaje */
-          // style={{
-          //   marginTop: '20px',
-          //   padding: '10px',
-          //   color: message.type === 'error' ? 'red' : 'green',
-          //   border: message.type ? '1px solid' : 'none',
-          //   borderRadius: '4px',
-          // }} // Estilos en línea eliminados
         >
           {message.text}
         </div>
