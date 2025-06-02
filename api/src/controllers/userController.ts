@@ -206,7 +206,7 @@ export class UserController {
         return;
       }
 
-      const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+      const resetUrl = `${CLIENT_URL_FROM_ENV}/reset-password?token=${resetToken}`;
       // Enviar correo electrónico
       try {
         await sendEmail({
