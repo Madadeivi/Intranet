@@ -13,16 +13,25 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  username: string;
+  username: string; // email
   password: string;
 }
 
+// Actualizar AuthResult para incluir los nuevos campos
 export interface AuthResult {
   success: boolean;
-  user?: User;
-  token?: string;
   message?: string;
+  token?: string; // Token de sesión normal
+  tempToken?: string; // Token para el cambio de contraseña
+  requiresPasswordChange?: boolean;
+  user?: {
+    id: string;
+    email: string;
+    // Podrías añadir más campos del usuario si los devuelves y los necesitas
+  };
 }
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Singleton AuthService class for handling authentication
@@ -70,42 +79,28 @@ export class AuthService {
    */
   public async login(credentials: LoginCredentials): Promise<AuthResult> {
     try {
-      // In a real app, this would be an API call
-      // For now, we'll simulate a successful login with a timeout
-      
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Mock successful login
-          const user: User = {
-            id: '1',
-            username: credentials.username,
-            fullName: 'David Dorantes',
-            email: `${credentials.username}@coacharte.com`,
-            role: 'admin'
-          };
-          
-          const token = 'mock_jwt_token_' + Math.random().toString(36).substring(2);
-          
-          // Store in localStorage
-          localStorage.setItem(this.tokenKey, token);
-          localStorage.setItem(this.userKey, JSON.stringify(user));
-          
-          // Update current user
-          this.currentUser = user;
-          
-          resolve({
-            success: true,
-            user,
-            token
-          });
-        }, 800); // simulate network delay
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: credentials.username, password: credentials.password }),
       });
+      const data: AuthResult = await response.json(); // Esperamos que la respuesta coincida con AuthResult
+      
+      if (data.success) {
+        if (data.token && !data.requiresPasswordChange) {
+          localStorage.setItem('token', data.token);
+          // Opcional: decodificar token para obtener info del usuario si es necesario aquí
+        }
+        // Si requiresPasswordChange es true, el token principal no se guarda aún.
+        // El tempToken será manejado por el componente que llama.
+      }
+      return data;
     } catch (error) {
-      console.error('Login failed:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
+      console.error('Login error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error de conexión o respuesta no válida.';
+      return { success: false, message: errorMessage };
     }
   }
 
@@ -154,9 +149,28 @@ export class AuthService {
   public getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
-}
 
-// Export a default instance for easier importing
-const authService = AuthService.getInstance();
-export default authService;
+  // Nueva función para establecer la contraseña
+  async setNewPassword(email: string, newPassword: string): Promise<AuthResult> {
+    try {
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      const response = await fetch(`${API_URL}/users/set-password`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ email, newPassword }),
+      });
+      const data: AuthResult = await response.json(); 
+      return data;
+    } catch (error) {
+      console.error('Set new password error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error de conexión o respuesta no válida.';
+      return { success: false, message: errorMessage };
+    }
+  }
+};
+
+export default AuthService.getInstance();
 

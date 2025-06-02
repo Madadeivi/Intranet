@@ -54,16 +54,38 @@ const LoginForm: React.FC = () => {
     try {
       const credentials: LoginCredentials = { username: email, password };
       const result: AuthResult = await authService.login(credentials);
-      if (result.success && result.user) {
-        setMessage({ 
-          text: `Bienvenido, ${firstNameValue} ${lastNameValue}!`, 
-          type: 'success' 
-        });
-        setTimeout(() => {
-          navigate('/home');
-        }, 1000);
-        setEmail('');
-        setPassword('');
+
+      if (result.success) {
+        if (result.requiresPasswordChange && result.tempToken && result.user?.email) {
+          // Guardar el token temporal y el email para el cambio de contraseña
+          localStorage.setItem('tempToken', result.tempToken);
+          localStorage.setItem('emailForPasswordChange', result.user.email);
+          setMessage({ 
+            text: 'Se requiere cambio de contraseña. Redirigiendo...', 
+            type: 'success' 
+          });
+          setTimeout(() => {
+            navigate('/set-new-password');
+          }, 1000);
+        } else if (result.token && result.user) {
+          // Inicio de sesión normal, el token ya se guarda en authService si no hay cambio de contraseña
+          // coacharteUserInfo ya se guardó antes
+          setMessage({ 
+            text: `Bienvenido, ${firstNameValue} ${lastNameValue}!`, 
+            type: 'success' 
+          });
+          setTimeout(() => {
+            navigate('/home');
+          }, 1000);
+          setEmail('');
+          setPassword('');
+        } else {
+          // Caso inesperado si success es true pero no hay token ni tempToken
+          setMessage({ 
+            text: result.message || 'Respuesta inesperada del servidor.', 
+            type: 'error' 
+          });
+        }
       } else {
         setMessage({ 
           text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 

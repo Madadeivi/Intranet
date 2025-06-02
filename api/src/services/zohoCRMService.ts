@@ -36,7 +36,7 @@ interface ZohoTokenResponse {
 
 interface ZohoRecord {
   id?: string;
-  Password_Personalizada_Establecida?: boolean; // <--- AÑADIDO: Para el nuevo campo
+  Contrasena_Personalizada_Establecida?: boolean; // <--- ACTUALIZADO
   [key: string]: any;
 }
 
@@ -251,14 +251,14 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
   // Asume que el nombre del módulo es 'Colaboradores' y el campo de email es 'Email'
   // Necesitarás ajustar esto si los nombres API son diferentes.
   const moduleName = 'Colaboradores'; 
-  const nombreAPICampoPasswordEstablecida = 'Password_Personalizada_Establecida'; // <--- AÑADIDO: Nombre API del nuevo campo
+  const nombreAPICampoPasswordEstablecida = 'Contrasena_Personalizada_Establecida'; // <--- ACTUALIZADO
 
   try {
     // Zoho CRM no permite filtrar directamente por email en una sola llamada GET para todos los registros de forma estándar y eficiente.
     // La forma más común es buscar/consultar. Usaremos COQL (CRM Object Query Language) para esto.
     // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
 
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida} from ${moduleName} where Email = '${email}' limit 1`; // <--- MODIFICADO: Añadido el nuevo campo a la consulta
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida} from ${moduleName} where Email = '${email}' limit 1`; // <--- MODIFICADO: Usando la variable actualizada
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -288,7 +288,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
 // Nueva función para establecer/actualizar la contraseña de un colaborador por email
 export const setCollaboratorPasswordByEmail = async (email: string, newPlainPassword: string): Promise<boolean> => {
   const moduleName = 'Colaboradores';
-  const nombreAPICampoPasswordEstablecida = 'Password_Personalizada_Establecida'; // <--- AÑADIDO: Nombre API del nuevo campo
+  const nombreAPICampoPasswordEstablecida = 'Contrasena_Personalizada_Establecida'; // <--- ACTUALIZADO
   try {
     // 1. Encontrar al colaborador por email para obtener su ID
     const query = `select id from ${moduleName} where Email = '${email}' limit 1`;
@@ -300,23 +300,35 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
     }
 
     const collaboratorId = coqlResponse.data[0].id;
-    if (!collaboratorId) {
-      console.error('No se pudo obtener el ID del colaborador.');
+
+    // 2. Hashear la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPlainPassword, SALT_ROUNDS);
+
+    // 3. Actualizar la contraseña y el campo Password_Personalizada_Establecida en Zoho
+    // El payload para la actualización debe ser un objeto con los campos a modificar.
+    const updatePayload = {
+      Password_Intranet: hashedPassword,
+      [nombreAPICampoPasswordEstablecida]: true // <--- ACTUALIZADO: Usando la variable y seteando a true
+    };
+    
+    // La API de actualización espera un array de registros dentro de un objeto "data"
+    const updateResponse = await makeZohoAPIRequest('put', `/${moduleName}/${collaboratorId}`, { data: [updatePayload] });
+
+    // Verificar si la actualización fue exitosa
+    // Zoho devuelve un array 'data' con los resultados de cada operación.
+    if (updateResponse.data && Array.isArray(updateResponse.data) && updateResponse.data.length > 0) {
+      const result = updateResponse.data[0];
+      if (result.code === 'SUCCESS') {
+        console.log(`Contraseña para ${email} actualizada y ${nombreAPICampoPasswordEstablecida} establecida a true.`);
+        return true;
+      } else {
+        console.error(`Error al actualizar el registro de Zoho para ${email}:`, result.message, result.details);
+        return false;
+      }
+    } else {
+      console.error(`Respuesta inesperada de Zoho al actualizar el registro para ${email}:`, updateResponse);
       return false;
     }
-
-    // 2. Actualizar el registro del colaborador con la nueva contraseña.
-    // La función `updateRecord` se encargará de hashear `Password_Intranet`.
-    await updateRecord(moduleName, collaboratorId, { Password_Intranet: newPlainPassword });
-    
-    // 3. Marcar que la contraseña personalizada ha sido establecida. <--- AÑADIDO
-    // Esta llamada a updateRecord NO debería hashear el valor booleano.
-    // La lógica de hasheo en updateRecord es específica para el campo Password_Intranet.
-    await updateRecord(moduleName, collaboratorId, { [nombreAPICampoPasswordEstablecida]: true });
-    
-    console.log(`Contraseña actualizada y marcada como personalizada para el colaborador con email: ${email}`); // <--- MODIFICADO: Mensaje de log
-    return true;
-
   } catch (error) {
     console.error(`Error al establecer la contraseña y marcar como personalizada para el email ${email}:`, error); // <--- MODIFICADO: Mensaje de log
     return false;
