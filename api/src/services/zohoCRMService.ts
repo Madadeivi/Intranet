@@ -8,7 +8,7 @@ const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID;
 const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET;
 const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN;
 const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token'; // URL del endpoint de token de Zoho
-const ZOHO_CRM_ORG_ID = process.env.ZOHO_CRM_ORG_ID; // Añadir ZOHO_CRM_ORG_ID
+// const ZOHO_CRM_ORG_ID = process.env.ZOHO_CRM_ORG_ID; // Añadir ZOHO_CRM_ORG_ID (comentado porque no se usa actualmente)
 
 const SALT_ROUNDS = 10; // Número de rondas de sal para bcrypt
 

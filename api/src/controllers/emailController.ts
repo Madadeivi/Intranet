@@ -28,19 +28,21 @@ export const handleSendEmail = async (req: Request, res: Response, next: NextFun
   }
 };
 
-export async function createSupportTicket(req: Request, res: Response, next: NextFunction) {
+export async function createSupportTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { userEmail, userName, subject, message, priority, category } = req.body as SupportTicketPayload;
 
     if (!userEmail || !userName || !subject || !message) {
-      return res.status(400).json({ message: 'Faltan campos obligatorios: userEmail, userName, subject, message son requeridos.' });
+      res.status(400).json({ message: 'Faltan campos obligatorios: userEmail, userName, subject, message son requeridos.' });
+      return;
     }
 
     const coacharteDepartmentId = process.env.ZOHO_DESK_COACHARTE_DEPARTMENT_ID;
     if (!coacharteDepartmentId) {
       console.error('Error: ZOHO_DESK_COACHARTE_DEPARTMENT_ID no está configurado en .env');
       // Considera no exponer detalles internos del error al cliente en producción
-      return res.status(500).json({ message: 'Error de configuración del servidor.' });
+      res.status(500).json({ message: 'Error de configuración del servidor.' });
+      return;
     }
 
     // Datos para crear el ticket en Zoho Desk
@@ -84,6 +86,7 @@ export async function createSupportTicket(req: Request, res: Response, next: Nex
       webUrl: ticketResult.webUrl,
       categoryReceived: category, // Devolver la categoría recibida para confirmación si es necesario
     });
+    return;
 
   } catch (error) {
     console.error('Error al crear el ticket de soporte via API Desk:', error);

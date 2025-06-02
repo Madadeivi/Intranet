@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail, getCollaboratorDetailsByEmail, storePasswordResetToken, getCollaboratorByResetToken, clearPasswordResetToken } from '../services/zohoCRMService.js'; // Importar el nuevo servicio
+import { verifyCollaboratorPassword, setCollaboratorPasswordByEmail, getCollaboratorDetailsByEmail, storePasswordResetToken } from '../services/zohoCRMService.js'; // Importar el nuevo servicio
 import { sendEmail } from '../services/emailService.js'; // Importar sendEmail desde emailService
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
@@ -318,10 +318,4 @@ export class UserController {
 // Interfaz para el payload de solicitud de restablecimiento de contraseña
 interface RequestPasswordResetPayload {
   email: string;
-}
-
-// Interfaz para el payload de restablecimiento de contraseña
-interface ResetPasswordPayload {
-  token: string;
-  newPassword: string;
 }
