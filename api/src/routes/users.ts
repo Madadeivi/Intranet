@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/userController.js';
+import { validateRequest, loginSchema } from '../middleware/validationMiddleware.js'; // Importar loginSchema
 
 const router = Router();
 const userController = new UserController();
+
+// POST /api/users/login
+router.post('/login', validateRequest(loginSchema, 'body'), userController.login);
 
 // GET /api/users
 router.get('/', userController.getAll);

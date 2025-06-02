@@ -1,6 +1,22 @@
 import Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 
+// Esquema para la validación del login
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.base': 'El correo electrónico debe ser una cadena de texto.',
+    'string.email': 'El correo electrónico debe tener un formato válido.',
+    'string.empty': 'El correo electrónico no puede estar vacío.',
+    'any.required': 'El correo electrónico es obligatorio.'
+  }),
+  password: Joi.string().min(6).required().messages({
+    'string.base': 'La contraseña debe ser una cadena de texto.',
+    'string.min': 'La contraseña debe tener al menos {#limit} caracteres.',
+    'string.empty': 'La contraseña no puede estar vacía.',
+    'any.required': 'La contraseña es obligatoria.'
+  })
+});
+
 // Define Joi Schemas for your request bodies, params, or queries
 // Example for sending an email:
 export const emailSchema = Joi.object({

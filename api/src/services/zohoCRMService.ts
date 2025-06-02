@@ -1,20 +1,37 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
+import bcrypt from 'bcrypt'; // Importar bcrypt
 
-dotenv.config();
+dotenv.config(); // Asegúrate de que esto se llame para cargar las variables de entorno
 
-const ZOHO_API_URL = process.env.ZOHO_API_URL; // e.g., https://www.zohoapis.com/crm/v2/
-const ZOHO_ACCESS_TOKEN = process.env.ZOHO_ACCESS_TOKEN; // OAuth2 Access Token
+// Variables de entorno para la autenticación y configuración de Zoho
+const ZOHO_API_URL = process.env.ZOHO_API_URL; // ej. https://www.zohoapis.com/crm/v2/
+const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID;
+const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET;
+const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN;
+const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token'; // URL del endpoint de token de Zoho
 
-if (!ZOHO_API_URL || !ZOHO_ACCESS_TOKEN) {
-  console.warn('Zoho CRM API URL or Access Token is not configured. Zoho CRM service will not be available.');
+const SALT_ROUNDS = 10; // Número de rondas de sal para bcrypt
+
+// Almacenamiento en memoria para el access_token y su expiración
+let currentAccessToken: string | null = null;
+let tokenExpiresAt: number | null = null; // Timestamp de cuándo expira el token
+
+// Comprobación inicial de configuración
+if (!ZOHO_API_URL || !ZOHO_CLIENT_ID || !ZOHO_CLIENT_SECRET || !ZOHO_REFRESH_TOKEN) {
+  console.error(
+    'Error: Faltan variables de entorno críticas para Zoho CRM. ' +
+    'Asegúrate de que ZOHO_API_URL, ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, y ZOHO_REFRESH_TOKEN están configuradas en tu archivo .env.'
+  );
+  // Podrías lanzar un error aquí o manejarlo de otra forma para prevenir que el servicio intente operar sin configuración.
 }
 
-interface ZohoErrorResponse {
-  code: string;
-  details: Record<string, unknown>;
-  message: string;
-  status: string;
+// Interfaz para la respuesta de la solicitud de token de Zoho
+interface ZohoTokenResponse {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+  // Puede haber otros campos, pero estos son los esenciales
 }
 
 interface ZohoRecord {
@@ -42,45 +59,110 @@ interface CustomAxiosError extends Error {
   request?: any;
 }
 
-const makeZohoAPIRequest = async (method: string, url: string, data?: any) => {
-  if (!ZOHO_API_URL || !ZOHO_ACCESS_TOKEN) {
-    // Devolver una promesa rechazada explícitamente o lanzar un error
-    return Promise.reject(new Error('Zoho API URL or Access Token not configured in environment variables.'));
+// Nueva función para refrescar el access token
+const refreshAccessToken = async (): Promise<string> => {
+  if (!ZOHO_CLIENT_ID || !ZOHO_CLIENT_SECRET || !ZOHO_REFRESH_TOKEN) {
+    throw new Error('Faltan credenciales de cliente de Zoho para refrescar el token.');
   }
+
   try {
+    console.log('Refrescando el access token de Zoho...');
+    const response = await axios.post<ZohoTokenResponse>( // Especificar el tipo de respuesta aquí
+      ZOHO_TOKEN_URL,
+      new URLSearchParams({ // Usar URLSearchParams para formatear como x-www-form-urlencoded
+        grant_type: 'refresh_token',
+        client_id: ZOHO_CLIENT_ID,
+        client_secret: ZOHO_CLIENT_SECRET,
+        refresh_token: ZOHO_REFRESH_TOKEN,
+      }).toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    const { access_token, expires_in } = response.data; // Ahora TypeScript conoce los tipos
+    if (!access_token || typeof expires_in !== 'number') {
+      // Esta comprobación puede ser redundante si el tipo ZohoTokenResponse es estricto, pero es una buena práctica
+      throw new Error('Respuesta inválida del servidor de tokens de Zoho al refrescar.');
+    }
+
+    currentAccessToken = access_token;
+    // Guardar el tiempo de expiración como un timestamp (milisegundos)
+    // Restar un pequeño buffer (ej. 60 segundos) para refrescar antes de que expire realmente
+    tokenExpiresAt = Date.now() + (expires_in - 60) * 1000; 
+    console.log('Access token de Zoho refrescado exitosamente.');
+    return currentAccessToken; // currentAccessToken es string aquí debido a la lógica anterior
+  } catch (error: any) {
+    console.error('Error al refrescar el access token de Zoho:', error.response?.data || error.message);
+    // Invalidar el token actual si el refresco falla para forzar un nuevo intento la próxima vez
+    currentAccessToken = null;
+    tokenExpiresAt = null;
+    throw new Error(`No se pudo refrescar el access token de Zoho: ${error.response?.data?.error || error.message}`);
+  }
+};
+
+// Nueva función para obtener un access token válido (existente o refrescado)
+const getValidAccessToken = async (): Promise<string> => {
+  // Si no hay token o si el token ha expirado (o está a punto de expirar)
+  if (!currentAccessToken || !tokenExpiresAt || Date.now() >= tokenExpiresAt) {
+    // refreshAccessToken devolverá un string o lanzará un error.
+    // Si lanza un error, la ejecución de getValidAccessToken se detendrá.
+    // Si tiene éxito, currentAccessToken se actualizará y se devolverá.
+    return await refreshAccessToken();
+  }
+  // Si llegamos aquí, currentAccessToken es un string no nulo y no expirado.
+  return currentAccessToken;
+};
+
+
+// Modificar makeZohoAPIRequest para usar getValidAccessToken
+const makeZohoAPIRequest = async (method: string, path: string, payload?: any) => { // Renombrado url a path para claridad
+  if (!ZOHO_API_URL) {
+    // Esta comprobación ya está arriba, pero es bueno tenerla cerca de donde se usa.
+    return Promise.reject(new Error('Zoho API URL no está configurada.'));
+  }
+
+  try {
+    const accessToken = await getValidAccessToken(); // Obtener token válido
+    const fullUrl = `${ZOHO_API_URL}${path}`; // Construir URL completa
+
     const response = await axios({
       method,
-      url: `${ZOHO_API_URL}${url}`,
+      url: fullUrl,
       headers: {
-        Authorization: `Zoho-oauthtoken ${ZOHO_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json', // Asegurar que el content type sea json
+        Authorization: `Zoho-oauthtoken ${accessToken}`, // Usar el token obtenido
+        'Content-Type': 'application/json',
       },
-      data,
+      data: payload, // Renombrado data a payload para evitar confusión con response.data
     });
     return response.data;
   } catch (error) {
-    const axiosError = error as CustomAxiosError; // Usar el tipo renombrado
+    const axiosError = error as CustomAxiosError;
     console.error(
-      'Error making Zoho API request to:', `${ZOHO_API_URL}${url}`,
+      'Error making Zoho API request to:', `${ZOHO_API_URL}${path}`,
       'Method:', method,
       'Response Status:', axiosError.response?.status,
-      'Response Data:', JSON.stringify(axiosError.response?.data, null, 2) // Stringify para mejor visualización
+      'Response Data:', JSON.stringify(axiosError.response?.data, null, 2)
     );
 
-    // Intentar extraer un mensaje de error más específico de la respuesta de Zoho
-    // La estructura de error de Zoho puede variar.
-    // A veces el error principal está en response.data directamente, otras en response.data.data[0]
     let zohoSpecificError: ZohoErrorDetail | undefined;
     if (axiosError.response?.data) {
       if (axiosError.response.data.data && Array.isArray(axiosError.response.data.data) && axiosError.response.data.data.length > 0) {
         zohoSpecificError = axiosError.response.data.data[0] as ZohoErrorDetail;
       } else if (axiosError.response.data.code && axiosError.response.data.message) {
-        // Caso donde el error está directamente en response.data
         zohoSpecificError = axiosError.response.data as ZohoErrorDetail;
       }
     }
 
     if (zohoSpecificError && zohoSpecificError.message) {
+      // Si el error es 'INVALID_TOKEN', podría ser útil invalidar el token local para forzar un refresco
+      if (zohoSpecificError.code === 'INVALID_TOKEN' || zohoSpecificError.code === 'OAUTH_SCOPE_MISMATCH') {
+        console.warn('Token inválido o problema de scope detectado por Zoho. Forzando refresco en la próxima llamada.');
+        currentAccessToken = null;
+        tokenExpiresAt = null;
+      }
       throw new Error(`Zoho API Error (${zohoSpecificError.code || 'N/A'}): ${zohoSpecificError.message}`);
     }
     
@@ -100,7 +182,20 @@ export const getRecordById = async (moduleName: string, recordId: string): Promi
 };
 
 export const createRecord = async (moduleName: string, recordData: ZohoRecord): Promise<ZohoRecord> => {
-  const response = await makeZohoAPIRequest('post', `/${moduleName}`, { data: [recordData] });
+  const dataToCreate = { ...recordData };
+  // Hashear la contraseña si está presente y es para el módulo de Colaboradores
+  // Asegúrate de que 'Colaboradores' es el nombre API correcto de tu módulo
+  // y 'Password_Intranet' el nombre API correcto del campo.
+  if (moduleName === 'Colaboradores' && dataToCreate.Password_Intranet && typeof dataToCreate.Password_Intranet === 'string') {
+    try {
+      dataToCreate.Password_Intranet = await bcrypt.hash(dataToCreate.Password_Intranet, SALT_ROUNDS);
+    } catch (hashError) {
+      console.error('Error hashing password during create:', hashError);
+      throw new Error('Failed to hash password before creating record.');
+    }
+  }
+
+  const response = await makeZohoAPIRequest('post', `/${moduleName}`, { data: [dataToCreate] });
   const recordResponse = response.data?.[0]; // La respuesta de creación exitosa está en data[0]
   if (recordResponse && recordResponse.code === 'SUCCESS') {
     return { id: recordResponse.details.id, ...recordData };
@@ -112,7 +207,18 @@ export const createRecord = async (moduleName: string, recordData: ZohoRecord): 
 };
 
 export const updateRecord = async (moduleName: string, recordId: string, recordData: Partial<ZohoRecord>): Promise<ZohoRecord> => {
-  const response = await makeZohoAPIRequest('put', `/${moduleName}/${recordId}`, { data: [recordData] });
+  const dataToUpdate = { ...recordData };
+  // Hashear la contraseña si se está actualizando y es para el módulo de Colaboradores
+  if (moduleName === 'Colaboradores' && dataToUpdate.Password_Intranet && typeof dataToUpdate.Password_Intranet === 'string') {
+    try {
+      dataToUpdate.Password_Intranet = await bcrypt.hash(dataToUpdate.Password_Intranet, SALT_ROUNDS);
+    } catch (hashError) {
+      console.error('Error hashing password during update:', hashError);
+      throw new Error('Failed to hash password before updating record.');
+    }
+  }
+
+  const response = await makeZohoAPIRequest('put', `/${moduleName}/${recordId}`, { data: [dataToUpdate] });
   const recordResponse = response.data?.[0]; // La respuesta de actualización exitosa está en data[0]
   if (recordResponse && recordResponse.code === 'SUCCESS') {
     return { id: recordResponse.details.id, ...recordData } as ZohoRecord;
@@ -136,6 +242,43 @@ export const deleteRecord = async (moduleName: string, recordId: string): Promis
     const errorMessage = recordResponse?.message || response.message || 'Failed to delete record in Zoho CRM';
     console.error('Error deleting Zoho record, response:', JSON.stringify(response, null, 2));
     throw new Error(errorMessage);
+  }
+};
+
+// Nueva función para verificar la contraseña de un colaborador
+export const verifyCollaboratorPassword = async (email: string, plainPassword: string): Promise<ZohoRecord | null> => {
+  // Asume que el nombre del módulo es 'Colaboradores' y el campo de email es 'Email'
+  // Necesitarás ajustar esto si los nombres API son diferentes.
+  const moduleName = 'Colaboradores'; 
+  try {
+    // Zoho CRM no permite filtrar directamente por email en una sola llamada GET para todos los registros de forma estándar y eficiente.
+    // La forma más común es buscar/consultar. Usaremos COQL (CRM Object Query Language) para esto.
+    // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
+
+    const query = `select id, Email, Password_Intranet from ${moduleName} where Email = '${email}' limit 1`;
+    
+    // El endpoint para COQL es /coql
+    const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
+
+    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      const collaborator = response.data[0] as ZohoRecord;
+      if (collaborator.Password_Intranet && typeof collaborator.Password_Intranet === 'string') {
+        const match = await bcrypt.compare(plainPassword, collaborator.Password_Intranet);
+        if (match) {
+          // No devolver el hash de la contraseña
+          const { Password_Intranet, ...collaboratorData } = collaborator;
+          return collaboratorData as ZohoRecord;
+        }
+      }
+    }
+    return null; // Email no encontrado o contraseña no coincide
+  } catch (error) {
+    console.error(`Error verifying collaborator password for email ${email}:`, error);
+    // Podrías querer manejar errores específicos de Zoho aquí de forma diferente
+    if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
+        console.error('COQL Query is invalid. Check module/field names and syntax.');
+    }
+    return null; // O lanzar el error si prefieres manejarlo más arriba
   }
 };
 
