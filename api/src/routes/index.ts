@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import userRoutes from './users';
+import zohoDeskRoutes from './zohoDeskRoutes'; // <--- Añadir esta línea
 import { handleSendEmail } from '../controllers/emailController.js';
 import { 
   fetchZohoRecords, 
@@ -40,6 +41,9 @@ router.get('/', (_req, res) => {
 
 // Rutas de usuarios
 router.use('/users', userRoutes);
+
+// Rutas para Zoho Desk  // <--- Añadir estas líneas
+router.use('/zoho/desk', zohoDeskRoutes); // <--- Añadir estas líneas
 
 // Ruta para enviar correos
 router.post('/email/send', validateRequest(emailSchema, 'body'), handleSendEmail);

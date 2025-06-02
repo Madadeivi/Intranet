@@ -1,8 +1,5 @@
-import dotenv from 'dotenv';
 import axios from 'axios';
 import bcrypt from 'bcrypt'; // Importar bcrypt
-
-dotenv.config(); // Asegúrate de que esto se llame para cargar las variables de entorno
 
 // Variables de entorno para la autenticación y configuración de Zoho
 const ZOHO_API_URL = process.env.ZOHO_API_URL; // ej. https://www.zohoapis.com/crm/v2/
@@ -10,6 +7,7 @@ const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID;
 const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET;
 const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN;
 const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token'; // URL del endpoint de token de Zoho
+const ZOHO_CRM_ORG_ID = process.env.ZOHO_CRM_ORG_ID; // Añadir ZOHO_CRM_ORG_ID
 
 const SALT_ROUNDS = 10; // Número de rondas de sal para bcrypt
 
@@ -21,7 +19,7 @@ let tokenExpiresAt: number | null = null; // Timestamp de cuándo expira el toke
 if (!ZOHO_API_URL || !ZOHO_CLIENT_ID || !ZOHO_CLIENT_SECRET || !ZOHO_REFRESH_TOKEN) {
   console.error(
     'Error: Faltan variables de entorno críticas para Zoho CRM. ' +
-    'Asegúrate de que ZOHO_API_URL, ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, y ZOHO_REFRESH_TOKEN están configuradas en tu archivo .env.'
+    'Asegúrate de que ZOHO_API_URL, ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN y ZOHO_CRM_ORG_ID están configuradas en tu archivo .env.' // Añadir ZOHO_CRM_ORG_ID al mensaje
   );
   // Podrías lanzar un error aquí o manejarlo de otra forma para prevenir que el servicio intente operar sin configuración.
 }
@@ -124,6 +122,10 @@ const makeZohoAPIRequest = async (method: string, path: string, payload?: any) =
     // Esta comprobación ya está arriba, pero es bueno tenerla cerca de donde se usa.
     return Promise.reject(new Error('Zoho API URL no está configurada.'));
   }
+  // Añadir comprobación para ZOHO_CRM_ORG_ID si es necesario para todas las llamadas de CRM
+  // if (!ZOHO_CRM_ORG_ID) {
+  //   return Promise.reject(new Error('Zoho CRM Org ID no está configurado.'));
+  // }
 
   try {
     const accessToken = await getValidAccessToken(); // Obtener token válido
@@ -133,8 +135,10 @@ const makeZohoAPIRequest = async (method: string, path: string, payload?: any) =
       method,
       url: fullUrl,
       headers: {
-        Authorization: `Zoho-oauthtoken ${accessToken}`, // Usar el token obtenido
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
         'Content-Type': 'application/json',
+        // Si Zoho CRM requiere orgId en las cabeceras para algunas/todas las llamadas, añadirlo aquí:
+        // 'orgId': ZOHO_CRM_ORG_ID 
       },
       data: payload, // Renombrado data a payload para evitar confusión con response.data
     });
@@ -335,6 +339,40 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
   }
 };
 
+// Nueva función para obtener detalles de un colaborador por email
+export const getCollaboratorDetailsByEmail = async (email: string): Promise<ZohoRecord | null> => {
+  const moduleName = 'Colaboradores';
+  // Especifica los campos que quieres obtener. Ajusta según sea necesario.
+  // Asegúrate de que los nombres de los campos API sean correctos.
+  const fieldsToSelect = [
+    'id',
+    'Name',
+    'Email', 
+    'Nombre_completo',
+    'Celular',
+    'Record_Image',
+    'Activo',
+    'Clientes',
+    'Sexo',
+  ].join(',');
+
+  try {
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${email}' and Activo = true limit 1`;
+    const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
+
+    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      return response.data[0] as ZohoRecord;
+    }
+    console.warn(`No se encontraron detalles para el colaborador con email ${email} en Zoho CRM.`);
+    return null;
+  } catch (error) {
+    console.error(`Error al obtener detalles del colaborador ${email} desde Zoho CRM:`, error);
+    if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
+      console.error('COQL Query para obtener detalles es inválida. Revisa los nombres de módulos/campos y la sintaxis.');
+    }
+    return null; // O lanza el error si prefieres manejarlo más arriba
+  }
+};
 
 // Example usage (optional, for testing)
 /*

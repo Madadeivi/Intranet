@@ -7,18 +7,21 @@ interface SupportFormProps {
   userName: string;
 }
 
+interface SubmitStatus {
+  type: 'success' | 'error' | null;
+  message: string;
+  ticketNumber?: string; // Cambiado de ticketId a ticketNumber
+  webUrl?: string; // Añadido para el enlace al ticket
+}
+
 const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string;
-    ticketId?: string;
-  }>({ type: null, message: '' });
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>({ type: null, message: '' });
 
   const [formData, setFormData] = useState<Omit<SupportTicket, 'userEmail' | 'userName'>>({
     subject: '',
-    category: 'technical',
-    priority: 'medium',
+    category: 'technical', 
+    priority: 'Medium', // Valor inicial que coincide con ZohoDeskTicketPriority y el select
     message: '',
   });
 
@@ -45,21 +48,19 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
         userName,
       });
 
-      if (response.success && response.ticketId) {
-        // Enviar confirmación al usuario
-        await emailService.sendConfirmationToUser(userEmail, userName, response.ticketId);
-        
+      if (response.success && response.ticketNumber) {
         setSubmitStatus({
           type: 'success',
-          message: `Ticket creado exitosamente`,
-          ticketId: response.ticketId,
+          message: response.message || `Ticket ${response.ticketNumber} creado exitosamente.`,
+          ticketNumber: response.ticketNumber,
+          webUrl: response.webUrl,
         });
         
         // Limpiar el formulario
         setFormData({
           subject: '',
           category: 'technical',
-          priority: 'medium',
+          priority: 'Medium',
           message: '',
         });
       } else {
@@ -102,10 +103,13 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
           <div className="alert-content">
             <strong>{submitStatus.type === 'success' ? '✓ Éxito' : '✗ Error'}</strong>
             <p>{submitStatus.message}</p>
-            {submitStatus.ticketId && (
+            {submitStatus.type === 'success' && submitStatus.ticketNumber && (
               <div className="ticket-info">
-                <span className="ticket-label">ID del Ticket:</span>
-                <span className="ticket-id">{submitStatus.ticketId}</span>
+                <span className="ticket-label">Nº Ticket:</span>
+                <span className="ticket-id">{submitStatus.ticketNumber}</span>
+                {submitStatus.webUrl && 
+                  <p className="ticket-note">Puedes ver tu ticket <a href={submitStatus.webUrl} target="_blank" rel="noopener noreferrer">aquí</a>.</p>
+                }
                 <p className="ticket-note">Recibirás una confirmación en: <strong>{userEmail}</strong></p>
               </div>
             )}
@@ -163,10 +167,10 @@ const SupportForm: React.FC<SupportFormProps> = ({ userEmail, userName }) => {
               className={`form-select ${getPriorityClass(formData.priority)}`}
               disabled={isSubmitting}
             >
-              <option value="low">🟢 Baja</option>
-              <option value="medium">🟡 Media</option>
-              <option value="high">🟠 Alta</option>
-              <option value="urgent">🔴 Urgente</option>
+              <option value="Low">🟢 Baja</option>
+              <option value="Medium">🟡 Media</option>
+              <option value="High">🟠 Alta</option>
+              <option value="Urgent">🔴 Urgente</option>
             </select>
           </div>
         </div>
