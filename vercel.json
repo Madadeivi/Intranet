@@ -1,10 +1,22 @@
 {
   "version": 2,
-  "functions": {
-    "api/[...path].ts": {
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "devCommand": "npm run dev --prefix client",
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/[...path].ts",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     }
-  },
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
