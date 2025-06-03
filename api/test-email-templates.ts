@@ -8,9 +8,7 @@ import {
   generateGeneralEmail, 
   generatePasswordResetEmail, 
   generateWelcomeEmail,
-  TicketConfirmationData,
-  GeneralEmailData 
-} from './src/services/emailTemplateService.js';
+} from './src/services/emailTemplateService';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,7 +21,7 @@ if (!fs.existsSync(outputDir)) {
 console.log('🎨 Generando previsualizaciones de plantillas de email...\n');
 
 // 1. Plantilla de confirmación de ticket
-const ticketData: TicketConfirmationData = {
+const ticketData = {
   userName: 'María González',
   ticketNumber: 'TCK-2024-001234',
   subject: 'Problema con acceso a nómina digital',
@@ -39,7 +37,7 @@ fs.writeFileSync(path.join(outputDir, 'ticket-confirmation.html'), ticketEmailHt
 console.log('✅ Plantilla de confirmación de ticket: ticket-confirmation.html');
 
 // 2. Plantilla de email general
-const generalData: GeneralEmailData = {
+const generalData = {
   userName: 'Carlos Rodríguez',
   userEmail: 'carlos.rodriguez@coacharte.mx',
   subject: 'Actualización de políticas de la empresa',
