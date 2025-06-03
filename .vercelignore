@@ -54,6 +54,8 @@ Thumbs.db
 *.swo
 *~
 
-# Mantener solo el punto de entrada de la API
-api/src/
-!api/index.ts
+# Exclude non-essential files in the API source directory
+api/src/**/*.test.ts
+api/src/**/*.spec.ts
+api/src/test-*
+!api/src/**/*.ts
