@@ -12,12 +12,6 @@ export default function Home() {
           <li>
             <strong>POST</strong> /api/users/login - User authentication
           </li>
-          <li>
-            <strong>POST</strong> /api/users/set-password - Set user password
-          </li>
-          <li>
-            <strong>GET</strong> /api/users/profile - Get user profile
-          </li>
         </ul>
       </div>
       <div>
