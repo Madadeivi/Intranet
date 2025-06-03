@@ -4,7 +4,7 @@ node_modules/
 .vercel/
 .env*
 
-# Excluir TODA la carpeta src para evitar funciones adicionales
+# Exclude the entire src folder to avoid additional functions
 api/src/
 
 # Test files
