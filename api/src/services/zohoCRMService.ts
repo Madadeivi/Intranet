@@ -458,7 +458,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
 
     // 🔒 SEGURIDAD: Incluir verificación de estado activo para prevenir login de cuentas inactivas
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' and Activo = 1 limit 1`; // <--- MODIFICADO: Agregado verificación de Activo = 1
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' and Activo = true limit 1`; // <--- MODIFICADO: Agregado verificación de Activo = true
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -467,7 +467,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
       const collaborator = response.data[0] as ZohoRecord;
       
       // 🔒 SEGURIDAD: Verificación adicional del estado activo a nivel de aplicación
-      if (collaborator.Activo !== 1) {
+      if (collaborator.Activo !== true) {
         logSecurityEvent('WARNING', 'Inactive account login attempt', { email: email.substring(0, 3) + '***' });
         console.warn(`Intento de login con cuenta inactiva para email: ${email}`);
         // 🔒 SEGURIDAD: Delay para prevenir timing attacks en cuentas inactivas
@@ -634,7 +634,7 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     // const lowercasedEmail = email.toLowerCase(); // Eliminado para prueba
     // Modificar la consulta para usar lower(Email) para una búsqueda insensible a mayúsculas/minúsculas
     // const query = `select ${fieldsToSelect} from ${moduleName} where lower(Email) = '${lowercasedEmail}' limit 1`;
-    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' and Activo = 1 limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = 1)
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' and Activo = true limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = true)
     
     console.log(`Executing COQL query: ${query}`); // Log para ver la consulta exacta
 

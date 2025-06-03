@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import * as zohoDeskService from '../services/zohoDeskService';
-import { ZohoDeskTicketPriority } from '../services/zohoDeskService';
-import { sendEmail } from '../services/emailService'; // Importar sendEmail directamente
+import * as zohoDeskService from '../services/zohoDeskService.js';
+import { ZohoDeskTicketPriority } from '../services/zohoDeskService.js';
+import { sendEmail } from '../services/emailService.js'; // Importar sendEmail directamente
 
 interface SupportTicketPayload {
   userEmail: string;

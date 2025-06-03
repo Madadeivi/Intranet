@@ -4,12 +4,20 @@ import { sendEmail } from '../services/emailService.js'; // Importar sendEmail d
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
 const JWT_SECRET_FROM_ENV = process.env.JWT_SECRET;
+const CLIENT_URL_FROM_ENV = process.env.CLIENT_URL_FROM_ENV;
 
 if (!JWT_SECRET_FROM_ENV) {
   console.error('ERROR CRÍTICO: La variable de entorno JWT_SECRET no está definida.');
   console.error('La aplicación no puede iniciarse de forma segura sin JWT_SECRET.');
   console.error('Por favor, defina la variable de entorno JWT_SECRET y reinicie la aplicación.');
   process.exit(1); // Salir del proceso si JWT_SECRET no está definido
+}
+
+if (!CLIENT_URL_FROM_ENV) {
+  console.error('ERROR CRÍTICO: La variable de entorno CLIENT_URL_FROM_ENV no está definida.');
+  console.error('Esta variable es necesaria para generar URLs de redirección para reset de contraseña.');
+  console.error('Por favor, defina la variable de entorno CLIENT_URL_FROM_ENV y reinicie la aplicación.');
+  process.exit(1); // Salir del proceso si CLIENT_URL_FROM_ENV no está definido
 }
 
 // Validar que JWT_SECRET tenga una longitud mínima segura

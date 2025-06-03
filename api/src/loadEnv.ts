@@ -1,6 +1,13 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+// Obtener el directorio actual del módulo ES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configurar dotenv para buscar el .env en el directorio api
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Función para logging seguro de variables de entorno
 function logEnvironmentStatus() {
@@ -10,7 +17,8 @@ function logEnvironmentStatus() {
     'ZOHO_CLIENT_SECRET',
     'ZOHO_REFRESH_TOKEN',
     'ZOHO_CRM_ORG_ID',
-    'JWT_SECRET'
+    'JWT_SECRET',
+    'CLIENT_URL_FROM_ENV'
   ];
 
   console.log('--- Estado de Variables de Entorno ---');
@@ -26,8 +34,13 @@ function logEnvironmentStatus() {
   });
 
   // Solo mostrar URLs en desarrollo (no contienen secretos)
-  if (process.env.NODE_ENV === 'development' && process.env.ZOHO_API_URL) {
-    console.log(`ZOHO_API_URL: ${process.env.ZOHO_API_URL}`);
+  if (process.env.NODE_ENV === 'development') {
+    if (process.env.ZOHO_API_URL) {
+      console.log(`ZOHO_API_URL: ${process.env.ZOHO_API_URL}`);
+    }
+    if (process.env.CLIENT_URL_FROM_ENV) {
+      console.log(`CLIENT_URL_FROM_ENV: ${process.env.CLIENT_URL_FROM_ENV}`);
+    }
   }
 
   console.log('----------------------------------------');
