@@ -40,8 +40,7 @@ module.exports = function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
   
   try {
-    const appInstance = require('./src/server'); // O la app configurada aquí
-    return appInstance(req, res);
+    return app(req, res);
   } catch (error) {
     console.error('Handler error:', error);
     res.status(500).json({ 

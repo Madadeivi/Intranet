@@ -1,6 +1,5 @@
-// import dotenv from 'dotenv'; // Ya no es necesario aquí si se maneja en loadEnv.ts
 import axios from 'axios';
-import bcrypt from 'bcrypt'; // Importar bcrypt
+import bcrypt from 'bcryptjs';
 
 // 🔒 FUNCIONES DE SEGURIDAD Y LOGGING
 // =======================================================================

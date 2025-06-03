@@ -1,33 +1,43 @@
-# Node modules y build outputs
+# Build outputs y cache
 node_modules/
 dist/
 build/
 .vercel/
 *.log
 
+# OS y IDE files
+.DS_Store
+.vscode/
+.idea/
+.git/
+
 # Environment files
 .env*
 !.env.example
 
-# Excluir archivos de configuración que podrían generar funciones
+# CRÍTICO: Excluir TODO el directorio api/src para evitar detección de funciones
+api/src/
+
+# Excluir archivos de configuración en api/
 api/tsconfig.json
+api/package.json
+api/package-lock.json
+api/yarn.lock
 api/.env*
+api/dist/
+api/node_modules/
 
 # Test files
 api/**/*.test.ts
 api/**/*.spec.ts
 api/test-*
 
-# OS y IDE files
-.DS_Store
-.vscode/
-.idea/
-*.swp
-*.swo
+# Documentación
+*.md
+docs/
 
-# MANTENER SOLO el punto de entrada principal
+# SOLO permitir el punto de entrada principal
 api/*.ts
 api/*.js
 !api/index.ts
-
-# NO excluir api/src/ completamente ya que index.ts lo necesita
+!api/index.js
