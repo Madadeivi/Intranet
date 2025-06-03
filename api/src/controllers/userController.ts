@@ -205,7 +205,7 @@ export class UserController {
       const collaborator = await getCollaboratorDetailsByEmail(email);
       if (!collaborator || !collaborator.id) {
         // No revelar si el email existe o no por seguridad, pero sí loguearlo.
-        console.warn(`Solicitud de restablecimiento para email no encontrado o sin ID: ${email}`);
+        console.warn('Solicitud de restablecimiento para email no encontrado o sin ID: %s', email);
         // Devolver una respuesta genérica para evitar la enumeración de usuarios
         res.status(200).json({ 
           success: true, 
