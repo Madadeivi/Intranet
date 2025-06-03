@@ -30,13 +30,25 @@ coverage/
 api/node_modules/
 api/dist/
 
+# Excluir TODA la carpeta src para evitar que Vercel detecte funciones
+api/src/
+
+# Excluir archivos de configuración
+api/tsconfig.json
+api/package.json
+api/.env*
+api/dist/
+api/node_modules/
+
 # Test files
 api/**/*.test.ts
 api/**/*.spec.ts
 api/test-*
 
-# Source maps
-*.map
+# Mantener SOLO el punto de entrada
+api/*.ts
+api/*.js
+!api/index.ts
 
 # OS generated files
 .DS_Store

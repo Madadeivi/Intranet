@@ -1,13 +1,11 @@
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const dotenv = require('dotenv');
+const path = require('path');
 
-// Obtener el directorio actual del módulo ES
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// En CommonJS, __dirname ya está disponible
+const envPath = path.join(__dirname, '..', '.env');
 
-// Configurar dotenv para buscar el .env en el directorio api
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+// Configurar dotenv
+dotenv.config({ path: envPath });
 
 // Función para logging seguro de variables de entorno
 function logEnvironmentStatus() {
@@ -23,8 +21,7 @@ function logEnvironmentStatus() {
 
   console.log('--- Estado de Variables de Entorno ---');
   
-  // Solo mostrar si las variables están cargadas, sin exponer valores
-  requiredVars.forEach(varName => {
+  requiredVars.forEach((varName: string) => {
     const value = process.env[varName];
     if (value) {
       console.log('%s: ✓ Cargada', varName);
@@ -33,7 +30,7 @@ function logEnvironmentStatus() {
     }
   });
 
-  // Solo mostrar URLs en desarrollo (no contienen secretos)
+  // Solo mostrar URLs en desarrollo
   if (process.env.NODE_ENV === 'development') {
     if (process.env.ZOHO_API_URL) {
       console.log('ZOHO_API_URL: %s', process.env.ZOHO_API_URL);
@@ -46,5 +43,8 @@ function logEnvironmentStatus() {
   console.log('----------------------------------------');
 }
 
-// Ejecutar logging seguro
+// Ejecutar logging
 logEnvironmentStatus();
+
+// Exportar usando CommonJS
+module.exports = {};
