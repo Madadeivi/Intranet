@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import app from '../api/src/server.js';
+import app from './src/server.js';  // Cambiado de '../api/src/server.js' a './src/server.js'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   console.log('API called:', req.method, req.url);
