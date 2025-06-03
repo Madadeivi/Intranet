@@ -24,6 +24,5 @@ app.get('/health', (_req, res) => {
 app.use(errorHandler);
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  console.log('API called:', req.method, req.url);
   return app(req as any, res as any);
 }
