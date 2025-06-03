@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas
-app.use('/', routes);
+app.use('/api', routes);
 
 // Health check
 app.get('/health', (_req, res) => {
