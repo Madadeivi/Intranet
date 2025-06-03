@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "moduleResolution": "node",
     "outDir": "./dist",
+    "rootDir": "./",
     "strict": false,
     "noImplicitAny": false,
     "esModuleInterop": true,
@@ -13,8 +14,32 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "declaration": false
+    "declaration": false,
+    "sourceMap": false,
+    "removeComments": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/middleware/*": ["./src/middleware/*"],
+      "@/routes/*": ["./src/routes/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/controllers/*": ["./src/controllers/*"]
+    }
   },
-  "include": ["index.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "src/**/*",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".vercel",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }

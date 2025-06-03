@@ -29,10 +29,14 @@ app.post('/users/login', (req: any, res: any) => {
 
 // Catch-all
 app.use('*', (req: any, res: any) => {
-  res.status(404).json({ error: 'Route not found', path: req.path });
+  res.status(404).json({ 
+    error: 'Route not found', 
+    path: req.path,
+    method: req.method 
+  });
 });
 
 export default function handler(req: Request, res: Response) {
   console.log('API called:', req.method, req.url);
   return app(req, res);
-}
+};

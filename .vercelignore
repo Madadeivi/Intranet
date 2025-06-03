@@ -1,14 +1,25 @@
+# Build artifacts
 dist/
 node_modules/
 .vercel/
 .env*
+
+# Excluir TODA la carpeta src para evitar funciones adicionales
 api/src/
+
+# Test files
 api/test-*
-api/*.test.ts
-api/*.spec.ts
-!api/index.ts
+api/**/*.test.ts
+api/**/*.spec.ts
+
+# Config files que pueden generar funciones
 api/tsconfig.json
-api/package.json
 api/.env*
-!.vercel
-!.vercelignore
+
+# Mantener solo el punto de entrada
+api/*.ts
+!api/index.ts
+
+# Documentación
+*.md
+docs/
