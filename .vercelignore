@@ -1,16 +1,11 @@
 node_modules/
-.next/
-.vercel/
-*.log
-.DS_Store
-.vscode/
-.idea/
-.env*
-!.env.example
-
-# Excluir el directorio client completo (es una app React separada)
 client/
-
-# Documentación
+api/
 *.md
 docs/
+test/
+tests/
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
