@@ -384,7 +384,7 @@ const Home: React.FC = () => {
                     <span className="notice-date">15 Jun 2025</span>
                     <h4>Día del padre</h4>
                     <p>Féliz día a los papás Coacharteanos!!!</p>
-                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Banner día del padre', detail: 'Hoy celebramos a los papás que forman parte de nuestra organización.\nA ustedes, que equilibran reuniones, proyectos y responsabilidades con su papel más importante: ser guías, protectores y ejemplo de dedicación para sus familias.\n\n**¡Feliz Día del Padre!** De todos los que hacemos Coacharte.' }); }}>Ver más</a>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Día del padre', detail: 'Hoy celebramos a los papás que forman parte de nuestra organización.\nA ustedes, que equilibran reuniones, proyectos y responsabilidades con su papel más importante: ser guías, protectores y ejemplo de dedicación para sus familias.\n\n**¡Feliz Día del Padre!** De todos los que hacemos Coacharte.' }); }}>Ver más</a>
                   </div>
                 </div>
                 <div className="notice-card">
