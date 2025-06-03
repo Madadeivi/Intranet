@@ -113,9 +113,6 @@ const Home: React.FC = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setUserInfo({ ...parsed, email: parsed.email || '' });
-      console.log('Datos de usuario cargados:', parsed); // Depuración
-    } else {
-      console.log('No se encontraron datos de usuario.'); // Depuración
     }
   }, []);
 
@@ -243,13 +240,14 @@ const Home: React.FC = () => {
           </span>
           <span className="user-avatar">{userInfo?.initials}</span>
           <span className="user-name">{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''}</span>
-          <span className="user-dropdown-arrow" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
+          {/* Dropdown solo visible en desktop */}
+          <span className="user-dropdown-arrow desktop-only" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
           {dropdownOpen && (
-            <div className="user-dropdown-menu">
+            <div className="user-dropdown-menu desktop-only">
               <button className="user-dropdown-item" onClick={handleLogout}>Cerrar sesión</button>
             </div>
           )}
@@ -277,7 +275,15 @@ const Home: React.FC = () => {
               {item.label}
             </a>
           ))}
-          {/* Considerar añadir "Cerrar Sesión" aquí también o solo en el dropdown de usuario */}
+          <button 
+            className="mobile-logout-button"
+            onClick={() => {
+              handleLogout();
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Cerrar Sesión
+          </button>
         </div>
       )}
 

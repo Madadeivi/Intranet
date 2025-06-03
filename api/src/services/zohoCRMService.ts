@@ -2,6 +2,48 @@
 import axios from 'axios';
 import bcrypt from 'bcrypt'; // Importar bcrypt
 
+// 🔒 FUNCIONES DE SEGURIDAD Y LOGGING
+// =======================================================================
+
+/**
+ * Registra eventos de seguridad con diferentes niveles de criticidad
+ * @param level - Nivel del evento: 'INFO', 'WARNING', 'ALERT'
+ * @param event - Descripción del evento
+ * @param metadata - Datos adicionales del evento
+ */
+const logSecurityEvent = (level: 'INFO' | 'WARNING' | 'ALERT', event: string, metadata: any = {}) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    event,
+    metadata,
+    service: 'zohoCRMService'
+  };
+  
+  switch (level) {
+    case 'INFO':
+      console.info(`[SECURITY INFO] ${event}`, logEntry);
+      break;
+    case 'WARNING':
+      console.warn(`[SECURITY WARNING] ${event}`, logEntry);
+      break;
+    case 'ALERT':
+      console.error(`[SECURITY ALERT] ${event}`, logEntry);
+      break;
+  }
+};
+
+/**
+ * Introduce un delay aleatorio para prevenir timing attacks
+ * @param minMs - Tiempo mínimo en milisegundos
+ * @param maxMs - Tiempo máximo en milisegundos
+ */
+const securityDelay = async (minMs: number, maxMs: number): Promise<void> => {
+  const delayMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+  return new Promise(resolve => setTimeout(resolve, delayMs));
+};
+
 // 🔒 FUNCIONES DE SEGURIDAD PARA PREVENIR INYECCIÓN SQL EN CONSULTAS COQL
 // =======================================================================
 
@@ -501,6 +543,11 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     await securityDelay(100, 300);
     return null; // Email no encontrado o contraseña no coincide
   } catch (error) {
+    // 🔒 SEGURIDAD: Re-lanzar errores específicos de cuenta inactiva
+    if (error instanceof Error && error.message === 'INACTIVE_ACCOUNT') {
+      throw error; // Re-lanzar sin modificar para que el controller lo detecte
+    }
+    
     // 🔒 SEGURIDAD: Error en autenticación
     logSecurityEvent('ALERT', 'Authentication error', { 
       email: email.substring(0, 3) + '***',
@@ -813,72 +860,3 @@ export const clearPasswordResetToken = async (userId: string): Promise<boolean> 
     return false;
   }
 };
-
-
-/**
- * Registra eventos de seguridad para monitoreo y auditoría
- * @param level - Nivel de seguridad (ALERT, WARNING, INFO)
- * @param event - Descripción del evento
- * @param details - Detalles adicionales del evento
- */
-const logSecurityEvent = (level: 'ALERT' | 'WARNING' | 'INFO', event: string, details: any = {}) => {
-  const timestamp = new Date().toISOString();
-  const logEntry = {
-    timestamp,
-    level,
-    event,
-    details: typeof details === 'object' ? JSON.stringify(details) : details,
-    source: 'zohoCRMService'
-  };
-
-  switch (level) {
-    case 'ALERT':
-      console.error(`[SECURITY ALERT ${timestamp}] ${event}`, logEntry);
-      // En producción, aquí se podría enviar a un sistema de monitoreo
-      break;
-    case 'WARNING':
-      console.warn(`[SECURITY WARNING ${timestamp}] ${event}`, logEntry);
-      break;
-    case 'INFO':
-      console.log(`[SECURITY INFO ${timestamp}] ${event}`, logEntry);
-      break;
-  }
-};
-
-/**
- * Implementa un delay aleatorio para prevenir ataques de timing
- * Ayuda a prevenir que atacantes determinen información basada en tiempo de respuesta
- * @param minMs - Tiempo mínimo de delay en milisegundos
- * @param maxMs - Tiempo máximo de delay en milisegundos
- */
-const securityDelay = async (minMs: number = 50, maxMs: number = 200): Promise<void> => {
-  const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
-  await new Promise(resolve => setTimeout(resolve, delay));
-};
-
-// Example usage (optional, for testing)
-/*
-if (process.env.NODE_ENV === 'development' && ZOHO_API_URL && ZOHO_ACCESS_TOKEN) {
-  // Replace 'Leads' with an actual module API name from your Zoho CRM
-  getRecords<{ FirstName: string; LastName: string; Email: string }>('Leads')
-    .then(response => {
-      if (response.data && response.data.length > 0) {
-        console.log('Successfully fetched records from Zoho CRM:', response.data.slice(0, 2)); // Log first 2 records
-        const firstRecordId = (response.data[0] as any).id; // Assuming records have an 'id'
-        if (firstRecordId) {
-          return getRecordById<{ FirstName: string; LastName: string; Email: string }>('Leads', firstRecordId);
-        }
-      } else {
-        console.log('No records found in Zoho CRM module Leads or an error occurred.');
-      }
-    })
-    .then(recordResponse => {
-      if (recordResponse) {
-        console.log('Successfully fetched single record by ID:', recordResponse.data);
-      }
-    })
-    .catch(error => {
-      console.error('Error interacting with Zoho CRM:', error.message);
-    });
-}
-*/
