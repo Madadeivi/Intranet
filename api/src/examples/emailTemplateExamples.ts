@@ -27,7 +27,7 @@ export async function sendWelcomeEmail(userEmail: string, userName: string): Pro
     html: welcomeHtml,
   });
   
-  console.log(`✅ Email de bienvenida enviado a ${userEmail}`);
+  console.log('✅ Email de bienvenida enviado a %s', userEmail);
 }
 
 /**
@@ -44,7 +44,7 @@ export async function sendPasswordResetEmail(userEmail: string, userName: string
     html: resetHtml,
   });
   
-  console.log(`✅ Email de restablecimiento enviado a ${userEmail}`);
+  console.log('✅ Email de restablecimiento enviado a %s', userEmail);
 }
 
 /**
@@ -71,7 +71,7 @@ export async function sendGeneralNotification(
     html: notificationHtml,
   });
   
-  console.log(`✅ Notificación general enviada a ${userEmail}`);
+  console.log('✅ Notificación general enviada a %s', userEmail);
 }
 
 /**
@@ -82,7 +82,7 @@ export async function sendBulkNotifications(
   subject: string,
   message: string
 ): Promise<void> {
-  console.log(`📧 Enviando notificación masiva a ${recipients.length} destinatarios...`);
+  console.log('📧 Enviando notificación masiva a %d destinatarios...', recipients.length);
   
   // Procesar en lotes para evitar sobrecarga del servidor SMTP
   const batchSize = 10;
@@ -96,14 +96,14 @@ export async function sendBulkNotifications(
         try {
           await sendGeneralNotification(recipient.email, recipient.name, subject, message);
         } catch (error) {
-          console.error(`❌ Error enviando a ${recipient.email}:`, error);
+          console.error('❌ Error enviando a %s:', recipient.email, error);
         }
       })
     );
     
     // Esperar antes del siguiente lote
     if (i + batchSize < recipients.length) {
-      console.log(`⏳ Esperando ${delay}ms antes del siguiente lote...`);
+      console.log('⏳ Esperando %dms antes del siguiente lote...', delay);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -123,7 +123,7 @@ export async function sendCustomTicketConfirmation(ticketData: TicketConfirmatio
     html: confirmationHtml,
   });
   
-  console.log(`✅ Confirmación de ticket enviada a ${ticketData.userEmail}`);
+  console.log('✅ Confirmación de ticket enviada a %s', ticketData.userEmail);
 }
 
 /**
