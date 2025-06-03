@@ -36,17 +36,17 @@ app.use('*', (req: any, res: any) => {
   });
 });
 
-const server = require('./src/server');
-
 module.exports = function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
   
   try {
-    return server(req, res);
+    const appInstance = require('./src/server'); // O la app configurada aquí
+    return appInstance(req, res);
   } catch (error) {
     console.error('Handler error:', error);
     res.status(500).json({ 
-      error: 'Internal server error',
+      error: 'Internal server error in handler',
+      details: error instanceof Error ? error.message : String(error),
       timestamp: new Date().toISOString()
     });
   }
