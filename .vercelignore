@@ -1,6 +1,7 @@
 node_modules/
 client/
 api/
+app/api/
 *.md
 docs/
 test/
