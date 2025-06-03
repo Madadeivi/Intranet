@@ -82,3 +82,4 @@ test-results
 .yarn/install-state.gz
 .cache
 .parcel-cache
+.vercel

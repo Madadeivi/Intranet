@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/src/server.ts",
-      "use": "@vercel/node"
-    },
-    {
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -13,10 +9,15 @@
       }
     }
   ],
+  "functions": {
+    "api/[...path].ts": {
+      "maxDuration": 30
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/src/server.ts"
+      "dest": "/api/[...path].ts"
     },
     {
       "handle": "filesystem"
