@@ -1,6 +1,6 @@
 {
   "functions": {
-    "src/server.ts": {
+    "[...path].ts": {
       "maxDuration": 30
     }
   }
