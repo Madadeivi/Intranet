@@ -6,19 +6,19 @@ import morgan from 'morgan';
 
 const app = express();
 
-// Middlewares básicos
+// Middlewares
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
+// Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Login endpoint básico para probar
+// Login básico para testing
 app.post('/users/login', (req, res) => {
   console.log('Login attempt:', req.body);
   res.json({ 
@@ -28,13 +28,9 @@ app.post('/users/login', (req, res) => {
   });
 });
 
-// Catch-all para otras rutas
+// Catch-all
 app.use('*', (req, res) => {
-  res.status(404).json({ 
-    error: 'Route not found', 
-    path: req.path,
-    method: req.method 
-  });
+  res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
