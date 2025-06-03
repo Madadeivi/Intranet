@@ -39,4 +39,4 @@ app.use('*', (req: any, res: any) => {
 export default function handler(req: Request, res: Response) {
   console.log('API called:', req.method, req.url);
   return app(req, res);
-};
+}
