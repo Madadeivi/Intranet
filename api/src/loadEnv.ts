@@ -27,19 +27,19 @@ function logEnvironmentStatus() {
   requiredVars.forEach(varName => {
     const value = process.env[varName];
     if (value) {
-      console.log(`${varName}: ✓ Cargada`);
+      console.log('%s: ✓ Cargada', varName);
     } else {
-      console.log(`${varName}: ✗ NO Cargada`);
+      console.log('%s: ✗ NO Cargada', varName);
     }
   });
 
   // Solo mostrar URLs en desarrollo (no contienen secretos)
   if (process.env.NODE_ENV === 'development') {
     if (process.env.ZOHO_API_URL) {
-      console.log(`ZOHO_API_URL: ${process.env.ZOHO_API_URL}`);
+      console.log('ZOHO_API_URL: %s', process.env.ZOHO_API_URL);
     }
     if (process.env.CLIENT_URL_FROM_ENV) {
-      console.log(`CLIENT_URL_FROM_ENV: ${process.env.CLIENT_URL_FROM_ENV}`);
+      console.log('CLIENT_URL_FROM_ENV: %s', process.env.CLIENT_URL_FROM_ENV);
     }
   }
 
