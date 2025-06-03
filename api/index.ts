@@ -14,7 +14,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check
 app.get('/health', (_req: any, res: any) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'production'
+  });
 });
 
 // Login básico para testing
@@ -44,8 +48,7 @@ module.exports = function handler(req: any, res: any) {
   } catch (error) {
     console.error('Handler error:', error);
     res.status(500).json({ 
-      error: 'Internal server error in handler',
-      details: error instanceof Error ? error.message : String(error),
+      error: 'Internal server error',
       timestamp: new Date().toISOString()
     });
   }
