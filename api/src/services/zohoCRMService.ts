@@ -454,7 +454,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     logSecurityEvent('INFO', 'Login attempt', { email: email.substring(0, 3) + '***' });
 
     // 🔒 SEGURIDAD: Incluir verificación de estado activo para prevenir login de cuentas inactivas
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // Comparación directa de Email para evitar función unsupported
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Estatus from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // Comparación directa de Email para evitar función unsupported
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -462,7 +462,15 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       const collaborator = response.data[0] as ZohoRecord;
       
-      // Nota: Se omite la verificación del campo Activo de Zoho para evitar bloqueos incorrectos
+      // 🔒 SEGURIDAD: Verificar Estatus ('Asignado' indica cuenta activa)
+      const status = collaborator.Estatus as string;
+      const isActive = status === 'Asignado';
+      if (!isActive) {
+        logSecurityEvent('WARNING', 'Inactive account login attempt', { email: email.substring(0, 3) + '***', status });
+        console.warn(`Intento de login con cuenta inactiva para email: ${email}, Estatus=${status}`);
+        await securityDelay(100, 300);
+        throw new Error('INACTIVE_ACCOUNT');
+      }
       
       if (collaborator.Password_Intranet && typeof collaborator.Password_Intranet === 'string') {
         const match = await bcrypt.compare(plainPassword, collaborator.Password_Intranet);
@@ -474,7 +482,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
           });
           // No devolver el hash de la contraseña
           const { Password_Intranet, ...collaboratorData } = collaborator;
-          return collaboratorData as ZohoRecord; // Devuelve todos los datos, incluido Password_Personalizada_Establecida
+          return collaboratorData as ZohoRecord;
         } else {
           // 🔒 SEGURIDAD: Contraseña incorrecta
           logSecurityEvent('WARNING', 'Failed login - incorrect password', { 

@@ -68,9 +68,20 @@ export class UserController {
     try {
       const { email, password } = req.body;
 
-// Removed redundant manual validation of email and password fields.
-
-      const collaborator = await verifyCollaboratorPassword(email, password);
+      let collaborator;
+      try {
+        collaborator = await verifyCollaboratorPassword(email, password);
+      } catch (err) {
+        if (err instanceof Error && err.message === 'INACTIVE_ACCOUNT') {
+          res.status(403).json({
+            success: false,
+            code: 'INACTIVE_ACCOUNT',
+            message: 'Cuenta inactiva. Por favor contacte al administrador.'
+          });
+          return;
+        }
+        throw err;
+      }
 
       if (collaborator) {
         // Asume que 'Contrasena_Personalizada_Establecida' es el nombre API correcto

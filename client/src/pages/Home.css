@@ -246,43 +246,17 @@
   margin-right: auto;
 }
 
-/* Overlay optimizado para contraste de texto blanco sobre imágenes claras */
-.home-welcome::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.45) 0%,
-    rgba(53, 53, 53, 0.35) 30%,
-    rgba(0, 0, 0, 0.25) 50%,
-    rgba(53, 53, 53, 0.4) 80%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
+.home-welcome h1 {
+  color: var(--color-text-title);
+}
+.home-welcome p {
+  color: var(--color-text-secondary);
 }
 
-/* Overlay adicional para texto específico con blur backdrop */
-.home-welcome::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(53, 53, 53, 0.2) 0%,
-    transparent 70%
-  );
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
-  pointer-events: none;
-  z-index: 2;
+/* Ajuste de color del placeholder de búsqueda */
+.home-search::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1;
 }
 
 .home-welcome-content {
@@ -312,7 +286,7 @@
 .home-welcome h1 {
   font-family: 'Geometria-Bold', 'Geometria', Arial, sans-serif;
   font-size: var(--text-2xl);
-  color: white;
+  color: var(--color-text-title);
   margin: 0 0 var(--space-4) 0;
   line-height: 1.2;
   position: relative;
@@ -339,7 +313,7 @@
 
 .home-welcome p {
   font-size: var(--text-base);
-  color: rgba(255, 255, 255, 0.98);
+  color: var(--color-text-secondary);
   margin: 0 0 var(--space-8) 0;
   line-height: 1.5;
   position: relative;

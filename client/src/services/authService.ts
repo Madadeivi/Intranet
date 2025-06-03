@@ -20,6 +20,7 @@ export interface LoginCredentials {
 // Actualizar AuthResult para incluir los nuevos campos
 export interface AuthResult {
   success: boolean;
+  code?: string; // Código de error opcional, e.g., 'INACTIVE_ACCOUNT'
   message?: string;
   token?: string; // Token de sesión normal
   tempToken?: string; // Token para el cambio de contraseña
@@ -86,7 +87,11 @@ export class AuthService {
         },
         body: JSON.stringify({ email: credentials.username, password: credentials.password }),
       });
-      const data: AuthResult = await response.json(); // Esperamos que la respuesta coincida con AuthResult
+      const data: AuthResult = await response.json();
+      // Handle inactive account status
+      if (response.status === 403 && data.code === 'INACTIVE_ACCOUNT') {
+        return { success: false, code: data.code, message: data.message };
+      }
       
       if (data.success) {
         if (data.token && !data.requiresPasswordChange) {

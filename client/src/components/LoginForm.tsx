@@ -87,10 +87,17 @@ const LoginForm: React.FC = () => {
           });
         }
       } else {
-        setMessage({ 
-          text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 
-          type: 'error' 
-        });
+        if (result.code === 'INACTIVE_ACCOUNT') {
+          setMessage({ 
+            text: 'Cuenta inactiva. Por favor contacte al administrador.', 
+            type: 'error' 
+          });
+        } else {
+          setMessage({ 
+            text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 
+            type: 'error' 
+          });
+        }
       }
     } catch (error) {
       setMessage({ 
