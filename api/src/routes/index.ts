@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import userRoutes from './users';
-import zohoDeskRoutes from './zohoDeskRoutes';
+import userRoutes from './users.js';
+import zohoDeskRoutes from './zohoDeskRoutes.js';
 import { handleSendEmail, createSupportTicket } from '../controllers/emailController.js';
 import { 
   fetchZohoRecords, 

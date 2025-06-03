@@ -22,7 +22,7 @@ export const authRateLimit = rateLimit({
 
   // Handler personalizado para cuando se excede el límite
   handler: (req, res) => {
-    console.warn(`Rate limit exceeded for IP: ${req.ip}, URL: ${req.originalUrl}, Time: ${new Date().toISOString()}`);
+    console.warn('Rate limit exceeded for IP: %s, URL: %s, Time: %s', req.ip, req.originalUrl, new Date().toISOString());
     
     res.status(429).json({
       error: 'Demasiados intentos de autenticación',
@@ -55,7 +55,7 @@ export const generalRateLimit = rateLimit({
   legacyHeaders: false,
   
   handler: (req, res) => {
-    console.warn(`General rate limit exceeded for IP: ${req.ip}, URL: ${req.originalUrl}, Time: ${new Date().toISOString()}`);
+    console.warn('General rate limit exceeded for IP: %s, URL: %s, Time: %s', req.ip, req.originalUrl, new Date().toISOString());
     
     res.status(429).json({
       error: 'Demasiadas solicitudes',
@@ -87,7 +87,7 @@ export const passwordResetRateLimit = rateLimit({
   },
 
   handler: (req, res) => {
-    console.warn(`Password reset rate limit exceeded for IP: ${req.ip}, Email: ${req.body?.email || 'unknown'}, Time: ${new Date().toISOString()}`);
+    console.warn('Password reset rate limit exceeded for IP: %s, Email: %s, Time: %s', req.ip, req.body?.email || 'unknown', new Date().toISOString());
     
     res.status(429).json({
       error: 'Demasiadas solicitudes de restablecimiento',

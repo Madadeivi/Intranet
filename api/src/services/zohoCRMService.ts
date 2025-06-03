@@ -2,6 +2,48 @@
 import axios from 'axios';
 import bcrypt from 'bcrypt'; // Importar bcrypt
 
+// 🔒 FUNCIONES DE SEGURIDAD Y LOGGING
+// =======================================================================
+
+/**
+ * Registra eventos de seguridad con diferentes niveles de criticidad
+ * @param level - Nivel del evento: 'INFO', 'WARNING', 'ALERT'
+ * @param event - Descripción del evento
+ * @param metadata - Datos adicionales del evento
+ */
+const logSecurityEvent = (level: 'INFO' | 'WARNING' | 'ALERT', event: string, metadata: any = {}) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    event,
+    metadata,
+    service: 'zohoCRMService'
+  };
+  
+  switch (level) {
+    case 'INFO':
+      console.info('[SECURITY INFO] %s', event, logEntry);
+      break;
+    case 'WARNING':
+      console.warn('[SECURITY WARNING] %s', event, logEntry);
+      break;
+    case 'ALERT':
+      console.error('[SECURITY ALERT] %s', event, logEntry);
+      break;
+  }
+};
+
+/**
+ * Introduce un delay aleatorio para prevenir timing attacks
+ * @param minMs - Tiempo mínimo en milisegundos
+ * @param maxMs - Tiempo máximo en milisegundos
+ */
+const securityDelay = async (minMs: number, maxMs: number): Promise<void> => {
+  const delayMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+  return new Promise(resolve => setTimeout(resolve, delayMs));
+};
+
 // 🔒 FUNCIONES DE SEGURIDAD PARA PREVENIR INYECCIÓN SQL EN CONSULTAS COQL
 // =======================================================================
 
@@ -19,7 +61,7 @@ const sanitizeStringForCOQL = (input: string): string => {
 
   // 🔒 VALIDACIÓN DE LONGITUD para prevenir ataques de desbordamiento
   if (input.length > 255) {
-    console.warn(`[SECURITY] Input excede longitud máxima: ${input.length} caracteres`);
+    console.warn('[SECURITY] Input excede longitud máxima: %d caracteres', input.length);
     throw new Error('Input exceeds maximum allowed length');
   }
 
@@ -43,7 +85,7 @@ const sanitizeStringForCOQL = (input: string): string => {
 
   for (const pattern of maliciousPatterns) {
     if (pattern.test(input)) {
-      console.error(`[SECURITY ALERT] Patrón malicioso detectado en input: ${input.substring(0, 50)}...`);
+      console.error('[SECURITY ALERT] Patrón malicioso detectado en input: %s...', input.substring(0, 50));
       throw new Error('Input contains potentially malicious patterns');
     }
   }
@@ -72,7 +114,7 @@ const sanitizeStringForCOQL = (input: string): string => {
   // 🔒 VERIFICACIÓN FINAL: Asegurar que no queden patrones peligrosos
   const finalCheck = /[';\\"\x00-\x1f\x7f-\x9f`|&$*?~<>^()[\]{}%_]/;
   if (finalCheck.test(sanitized)) {
-    console.error(`[SECURITY] Sanitización falló, caracteres peligrosos restantes: ${sanitized}`);
+    console.error('[SECURITY] Sanitización falló, caracteres peligrosos restantes: %s', sanitized);
     throw new Error('Sanitization failed - dangerous characters remain');
   }
 
@@ -93,7 +135,7 @@ const validateAndSanitizeEmail = (email: string): string => {
   }
   
   if (email.length > 254) { // RFC 5321 - longitud máxima de email
-    console.warn(`[SECURITY] Email excede longitud máxima RFC: ${email.length} caracteres`);
+    console.warn('[SECURITY] Email excede longitud máxima RFC: %d caracteres', email.length);
     throw new Error('Email exceeds maximum allowed length');
   }
 
@@ -101,7 +143,7 @@ const validateAndSanitizeEmail = (email: string): string => {
   const strictEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
   
   if (!strictEmailRegex.test(email)) {
-    console.warn(`[SECURITY] Formato de email inválido: ${email.substring(0, 20)}...`);
+    console.warn('[SECURITY] Formato de email inválido: %s...', email.substring(0, 20));
     throw new Error('Invalid email format');
   }
 
@@ -118,7 +160,7 @@ const validateAndSanitizeEmail = (email: string): string => {
 
   for (const pattern of suspiciousEmailPatterns) {
     if (pattern.test(email)) {
-      console.error(`[SECURITY ALERT] Patrón sospechoso detectado en email: ${email.substring(0, 20)}...`);
+      console.error('[SECURITY ALERT] Patrón sospechoso detectado en email: %s...', email.substring(0, 20));
       throw new Error('Email contains suspicious patterns');
     }
   }
@@ -147,7 +189,7 @@ const validateAndSanitizeToken = (token: string): string => {
 
   // Tokens deben tener longitud razonable (entre 8 y 128 caracteres)
   if (token.length < 8 || token.length > 128) {
-    console.warn(`[SECURITY] Token con longitud sospechosa: ${token.length} caracteres`);
+    console.warn('[SECURITY] Token con longitud sospechosa: %d caracteres', token.length);
     throw new Error('Token length is outside acceptable range');
   }
 
@@ -155,7 +197,7 @@ const validateAndSanitizeToken = (token: string): string => {
   // Solo permitir caracteres alfanuméricos, guiones y guiones bajos
   const strictTokenRegex = /^[a-zA-Z0-9\-_]+$/;
   if (!strictTokenRegex.test(token)) {
-    console.warn(`[SECURITY] Token contiene caracteres no permitidos: ${token.substring(0, 20)}...`);
+    console.warn('[SECURITY] Token contiene caracteres no permitidos: %s...', token.substring(0, 20));
     throw new Error('Token contains invalid characters');
   }
 
@@ -170,7 +212,7 @@ const validateAndSanitizeToken = (token: string): string => {
 
   for (const pattern of suspiciousTokenPatterns) {
     if (pattern.test(token)) {
-      console.error(`[SECURITY ALERT] Token con patrón sospechoso detectado: ${token.substring(0, 10)}...`);
+      console.error('[SECURITY ALERT] Token con patrón sospechoso detectado: %s...', token.substring(0, 10));
       throw new Error('Token contains suspicious patterns');
     }
   }
@@ -180,7 +222,7 @@ const validateAndSanitizeToken = (token: string): string => {
   const entropyRatio = uniqueChars / token.length;
   
   if (entropyRatio < 0.3) { // Al menos 30% de caracteres únicos
-    console.warn(`[SECURITY] Token con baja entropía detectado: ${entropyRatio.toFixed(2)}`);
+    console.warn('[SECURITY] Token con baja entropía detectado: %s', entropyRatio.toFixed(2));
     throw new Error('Token has insufficient entropy');
   }
 
@@ -452,13 +494,9 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     
     // 🔒 SEGURIDAD: Registrar intento de autenticación
     logSecurityEvent('INFO', 'Login attempt', { email: email.substring(0, 3) + '***' });
-    
-    // Zoho CRM no permite filtrar directamente por email en una sola llamada GET para todos los registros de forma estándar y eficiente.
-    // La forma más común es buscar/consultar. Usaremos COQL (CRM Object Query Language) para esto.
-    // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
 
     // 🔒 SEGURIDAD: Incluir verificación de estado activo para prevenir login de cuentas inactivas
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' and Activo = 1 limit 1`; // <--- MODIFICADO: Agregado verificación de Activo = 1
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Estatus from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // Comparación directa de Email para evitar función unsupported
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -466,13 +504,14 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       const collaborator = response.data[0] as ZohoRecord;
       
-      // 🔒 SEGURIDAD: Verificación adicional del estado activo a nivel de aplicación
-      if (collaborator.Activo !== 1) {
-        logSecurityEvent('WARNING', 'Inactive account login attempt', { email: email.substring(0, 3) + '***' });
-        console.warn(`Intento de login con cuenta inactiva para email: ${email}`);
-        // 🔒 SEGURIDAD: Delay para prevenir timing attacks en cuentas inactivas
+      // 🔒 SEGURIDAD: Verificar Estatus ('Asignado' indica cuenta activa)
+      const status = collaborator.Estatus as string;
+      const isActive = status === 'Asignado';
+      if (!isActive) {
+        logSecurityEvent('WARNING', 'Inactive account login attempt', { email: email.substring(0, 3) + '***', status });
+        console.warn('Intento de login con cuenta inactiva para email: %s, Estatus=%s', email, status);
         await securityDelay(100, 300);
-        return null; // Cuenta inactiva
+        throw new Error('INACTIVE_ACCOUNT');
       }
       
       if (collaborator.Password_Intranet && typeof collaborator.Password_Intranet === 'string') {
@@ -485,7 +524,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
           });
           // No devolver el hash de la contraseña
           const { Password_Intranet, ...collaboratorData } = collaborator;
-          return collaboratorData as ZohoRecord; // Devuelve todos los datos, incluido Password_Personalizada_Establecida
+          return collaboratorData as ZohoRecord;
         } else {
           // 🔒 SEGURIDAD: Contraseña incorrecta
           logSecurityEvent('WARNING', 'Failed login - incorrect password', { 
@@ -504,6 +543,11 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     await securityDelay(100, 300);
     return null; // Email no encontrado o contraseña no coincide
   } catch (error) {
+    // 🔒 SEGURIDAD: Re-lanzar errores específicos de cuenta inactiva
+    if (error instanceof Error && error.message === 'INACTIVE_ACCOUNT') {
+      throw error; // Re-lanzar sin modificar para que el controller lo detecte
+    }
+    
     // 🔒 SEGURIDAD: Error en autenticación
     logSecurityEvent('ALERT', 'Authentication error', { 
       email: email.substring(0, 3) + '***',
@@ -542,13 +586,23 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
       logSecurityEvent('WARNING', 'Password change attempt for non-existent user', { 
         email: email.substring(0, 3) + '***' 
       });
-      console.warn(`Colaborador con email ${email} no encontrado.`);
+      console.warn('Colaborador con email %s no encontrado.', email);
       // 🔒 SEGURIDAD: Delay para prevenir timing attacks
       await securityDelay(100, 300);
       return false; // Colaborador no encontrado
     }
 
-    const collaboratorId = coqlResponse.data[0].id;
+    // 🔒 SEGURIDAD: Validación adicional del primer elemento del array
+    const firstCollaborator = coqlResponse.data[0];
+    if (!firstCollaborator || !firstCollaborator.id) {
+      logSecurityEvent('WARNING', 'Invalid collaborator data structure', { 
+        email: email.substring(0, 3) + '***' 
+      });
+      await securityDelay(100, 300);
+      return false;
+    }
+
+    const collaboratorId = firstCollaborator.id;
 
     // 2. Hashear la nueva contraseña
     const hashedPassword = await bcrypt.hash(newPlainPassword, SALT_ROUNDS);
@@ -573,7 +627,7 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
           email: email.substring(0, 3) + '***',
           collaboratorId 
         });
-        console.log(`Contraseña para ${email} actualizada y ${nombreAPICampoPasswordEstablecida} establecida a true.`);
+        console.log('Contraseña para %s actualizada y %s establecida a true.', email, nombreAPICampoPasswordEstablecida);
         return true;
       } else {
         // 🔒 SEGURIDAD: Error en actualización de contraseña
@@ -581,7 +635,7 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
           email: email.substring(0, 3) + '***',
           error: result.message 
         });
-        console.error(`Error al actualizar el registro de Zoho para ${email}:`, result.message, result.details);
+        console.error('Error al actualizar el registro de Zoho para %s:', email, result.message, result.details);
         return false;
       }
     } else {
@@ -589,7 +643,7 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
       logSecurityEvent('ALERT', 'Password change failed - unexpected Zoho response', { 
         email: email.substring(0, 3) + '***' 
       });
-      console.error(`Respuesta inesperada de Zoho al actualizar el registro para ${email}:`, updateResponse);
+      console.error('Respuesta inesperada de Zoho al actualizar el registro para %s:', email, updateResponse);
       return false;
     }
   } catch (error) {
@@ -598,7 +652,7 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
       email: email.substring(0, 3) + '***',
       error: error instanceof Error ? error.message : String(error)
     });
-    console.error(`Error al establecer la contraseña y marcar como personalizada para el email ${email}:`, error); // <--- MODIFICADO: Mensaje de log
+    console.error('Error al establecer la contraseña y marcar como personalizada para el email %s:', email, error); // <--- MODIFICADO: Mensaje de log
     // 🔒 SEGURIDAD: Delay para prevenir timing attacks en errores
     await securityDelay(100, 300);
     return false;
@@ -634,19 +688,28 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     // const lowercasedEmail = email.toLowerCase(); // Eliminado para prueba
     // Modificar la consulta para usar lower(Email) para una búsqueda insensible a mayúsculas/minúsculas
     // const query = `select ${fieldsToSelect} from ${moduleName} where lower(Email) = '${lowercasedEmail}' limit 1`;
-    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' and Activo = 1 limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = 1)
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = true)
     
-    console.log(`Executing COQL query: ${query}`); // Log para ver la consulta exacta
+    console.log('Executing COQL query: %s', query); // Log para ver la consulta exacta
 
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      // 🔒 SEGURIDAD: Validación adicional del primer elemento
+      const firstCollaborator = response.data[0];
+      if (!firstCollaborator || !firstCollaborator.id) {
+        logSecurityEvent('WARNING', 'Invalid collaborator data structure in details', { 
+          email: email.substring(0, 3) + '***' 
+        });
+        return null;
+      }
+      
       // 🔒 SEGURIDAD: Detalles de colaborador encontrados
       logSecurityEvent('INFO', 'Collaborator details found', { 
         email: email.substring(0, 3) + '***',
-        collaboratorId: response.data[0].id 
+        collaboratorId: firstCollaborator.id 
       });
-      return response.data[0] as ZohoRecord;
+      return firstCollaborator as ZohoRecord;
     }
     
     // 🔒 SEGURIDAD: Colaborador no encontrado
@@ -655,7 +718,7 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     });
     
     // Si no se encontraron datos, registrar la respuesta completa para depuración
-    console.warn(`No se encontraron detalles para el colaborador con email ${email} en Zoho CRM. Respuesta de Zoho:`, JSON.stringify(response, null, 2));
+    console.warn('No se encontraron detalles para el colaborador con email %s en Zoho CRM. Respuesta de Zoho:', email, JSON.stringify(response, null, 2));
     return null;
   } catch (error) {
     // 🔒 SEGURIDAD: Error al obtener detalles de colaborador
@@ -694,7 +757,7 @@ export const storePasswordResetToken = async (userId: string, token: string, exp
     if (response.data && Array.isArray(response.data) && response.data.length > 0 && response.data[0].code === 'SUCCESS') {
       // 🔒 SEGURIDAD: Token almacenado exitosamente
       logSecurityEvent('INFO', 'Password reset token stored successfully', { userId });
-      console.log(`Token de restablecimiento de contraseña almacenado para el usuario ${userId}.`);
+      console.log('Token de restablecimiento de contraseña almacenado para el usuario %s.', userId);
       return true;
     } else {
       // 🔒 SEGURIDAD: Error al almacenar token
@@ -702,7 +765,7 @@ export const storePasswordResetToken = async (userId: string, token: string, exp
         userId,
         error: response.data?.[0]?.message || 'Unknown error'
       });
-      console.error(`Error al almacenar el token de restablecimiento para ${userId}:`, response.data?.[0]?.message || response);
+      console.error('Error al almacenar el token de restablecimiento para %s:', userId, response.data?.[0]?.message || response);
       return false;
     }
   } catch (error) {
@@ -711,7 +774,7 @@ export const storePasswordResetToken = async (userId: string, token: string, exp
       userId,
       error: error instanceof Error ? error.message : String(error)
     });
-    console.error(`Excepción al almacenar el token de restablecimiento para ${userId}:`, error);
+    console.error('Excepción al almacenar el token de restablecimiento para %s:', userId, error);
     return false;
   }
 };
@@ -732,7 +795,16 @@ export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRe
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      const collaborator = response.data[0] as ZohoRecord;
+      // 🔒 SEGURIDAD: Validación adicional del primer elemento
+      const firstCollaborator = response.data[0];
+      if (!firstCollaborator || !firstCollaborator.id || !firstCollaborator.Email) {
+        logSecurityEvent('WARNING', 'Invalid collaborator data structure in reset token validation', { 
+          tokenPrefix: token.substring(0, 8) + '***' 
+        });
+        return null;
+      }
+      
+      const collaborator = firstCollaborator as ZohoRecord;
       const expiryTime = collaborator[PASSWORD_RESET_EXPIRY_FIELD] ? new Date(collaborator[PASSWORD_RESET_EXPIRY_FIELD]).getTime() : 0;
       
       if (expiryTime > Date.now()) {
@@ -748,7 +820,7 @@ export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRe
           tokenPrefix: token.substring(0, 8) + '***',
           collaboratorId: collaborator.id 
         });
-        console.warn(`Token de restablecimiento encontrado para ${token} pero ha expirado.`);
+        console.warn('Token de restablecimiento encontrado para %s pero ha expirado.', token);
         return null; // Token expirado
       }
     }
@@ -768,7 +840,7 @@ export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRe
       error: error instanceof Error ? error.message : String(error)
     });
     
-    console.error(`Error al buscar colaborador por token de restablecimiento ${token}:`, error);
+    console.error('Error al buscar colaborador por token de restablecimiento %s:', token, error);
     if (error instanceof Error && error.message.includes('INVALID_QUERY')) {
       console.error('COQL Query para buscar por token es inválida. Revisa los nombres de módulos/campos y la sintaxis.');
     }
@@ -795,7 +867,7 @@ export const clearPasswordResetToken = async (userId: string): Promise<boolean> 
     if (response.data && Array.isArray(response.data) && response.data.length > 0 && response.data[0].code === 'SUCCESS') {
       // 🔒 SEGURIDAD: Token limpiado exitosamente
       logSecurityEvent('INFO', 'Password reset token cleared successfully', { userId });
-      console.log(`Token de restablecimiento de contraseña limpiado para el usuario ${userId}.`);
+      console.log('Token de restablecimiento de contraseña limpiado para el usuario %s.', userId);
       return true;
     } else {
       // 🔒 SEGURIDAD: Error al limpiar token
@@ -803,7 +875,7 @@ export const clearPasswordResetToken = async (userId: string): Promise<boolean> 
         userId,
         error: response.data?.[0]?.message || 'Unknown error'
       });
-      console.error(`Error al limpiar el token de restablecimiento para ${userId}:`, response.data?.[0]?.message || response);
+      console.error('Error al limpiar el token de restablecimiento para %s:', userId, response.data?.[0]?.message || response);
       return false;
     }
   } catch (error) {
@@ -812,76 +884,7 @@ export const clearPasswordResetToken = async (userId: string): Promise<boolean> 
       userId,
       error: error instanceof Error ? error.message : String(error)
     });
-    console.error(`Excepción al limpiar el token de restablecimiento para ${userId}:`, error);
+    console.error('Excepción al limpiar el token de restablecimiento para %s:', userId, error);
     return false;
   }
 };
-
-
-/**
- * Registra eventos de seguridad para monitoreo y auditoría
- * @param level - Nivel de seguridad (ALERT, WARNING, INFO)
- * @param event - Descripción del evento
- * @param details - Detalles adicionales del evento
- */
-const logSecurityEvent = (level: 'ALERT' | 'WARNING' | 'INFO', event: string, details: any = {}) => {
-  const timestamp = new Date().toISOString();
-  const logEntry = {
-    timestamp,
-    level,
-    event,
-    details: typeof details === 'object' ? JSON.stringify(details) : details,
-    source: 'zohoCRMService'
-  };
-
-  switch (level) {
-    case 'ALERT':
-      console.error(`[SECURITY ALERT ${timestamp}] ${event}`, logEntry);
-      // En producción, aquí se podría enviar a un sistema de monitoreo
-      break;
-    case 'WARNING':
-      console.warn(`[SECURITY WARNING ${timestamp}] ${event}`, logEntry);
-      break;
-    case 'INFO':
-      console.log(`[SECURITY INFO ${timestamp}] ${event}`, logEntry);
-      break;
-  }
-};
-
-/**
- * Implementa un delay aleatorio para prevenir ataques de timing
- * Ayuda a prevenir que atacantes determinen información basada en tiempo de respuesta
- * @param minMs - Tiempo mínimo de delay en milisegundos
- * @param maxMs - Tiempo máximo de delay en milisegundos
- */
-const securityDelay = async (minMs: number = 50, maxMs: number = 200): Promise<void> => {
-  const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
-  await new Promise(resolve => setTimeout(resolve, delay));
-};
-
-// Example usage (optional, for testing)
-/*
-if (process.env.NODE_ENV === 'development' && ZOHO_API_URL && ZOHO_ACCESS_TOKEN) {
-  // Replace 'Leads' with an actual module API name from your Zoho CRM
-  getRecords<{ FirstName: string; LastName: string; Email: string }>('Leads')
-    .then(response => {
-      if (response.data && response.data.length > 0) {
-        console.log('Successfully fetched records from Zoho CRM:', response.data.slice(0, 2)); // Log first 2 records
-        const firstRecordId = (response.data[0] as any).id; // Assuming records have an 'id'
-        if (firstRecordId) {
-          return getRecordById<{ FirstName: string; LastName: string; Email: string }>('Leads', firstRecordId);
-        }
-      } else {
-        console.log('No records found in Zoho CRM module Leads or an error occurred.');
-      }
-    })
-    .then(recordResponse => {
-      if (recordResponse) {
-        console.log('Successfully fetched single record by ID:', recordResponse.data);
-      }
-    })
-    .catch(error => {
-      console.error('Error interacting with Zoho CRM:', error.message);
-    });
-}
-*/

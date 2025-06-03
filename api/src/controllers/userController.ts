@@ -4,12 +4,20 @@ import { sendEmail } from '../services/emailService.js'; // Importar sendEmail d
 import jwt, { SignOptions } from 'jsonwebtoken'; // Para generar tokens JWT, importar SignOptions
 
 const JWT_SECRET_FROM_ENV = process.env.JWT_SECRET;
+const CLIENT_URL_FROM_ENV = process.env.CLIENT_URL_FROM_ENV;
 
 if (!JWT_SECRET_FROM_ENV) {
   console.error('ERROR CRÍTICO: La variable de entorno JWT_SECRET no está definida.');
   console.error('La aplicación no puede iniciarse de forma segura sin JWT_SECRET.');
   console.error('Por favor, defina la variable de entorno JWT_SECRET y reinicie la aplicación.');
   process.exit(1); // Salir del proceso si JWT_SECRET no está definido
+}
+
+if (!CLIENT_URL_FROM_ENV) {
+  console.error('ERROR CRÍTICO: La variable de entorno CLIENT_URL_FROM_ENV no está definida.');
+  console.error('Esta variable es necesaria para generar URLs de redirección para reset de contraseña.');
+  console.error('Por favor, defina la variable de entorno CLIENT_URL_FROM_ENV y reinicie la aplicación.');
+  process.exit(1); // Salir del proceso si CLIENT_URL_FROM_ENV no está definido
 }
 
 // Validar que JWT_SECRET tenga una longitud mínima segura
@@ -60,9 +68,20 @@ export class UserController {
     try {
       const { email, password } = req.body;
 
-// Removed redundant manual validation of email and password fields.
-
-      const collaborator = await verifyCollaboratorPassword(email, password);
+      let collaborator;
+      try {
+        collaborator = await verifyCollaboratorPassword(email, password);
+      } catch (err) {
+        if (err instanceof Error && err.message === 'INACTIVE_ACCOUNT') {
+          res.status(403).json({
+            success: false,
+            code: 'INACTIVE_ACCOUNT',
+            message: 'Cuenta inactiva. Por favor contacte al administrador.'
+          });
+          return;
+        }
+        throw err;
+      }
 
       if (collaborator) {
         // Asume que 'Contrasena_Personalizada_Establecida' es el nombre API correcto
@@ -186,7 +205,7 @@ export class UserController {
       const collaborator = await getCollaboratorDetailsByEmail(email);
       if (!collaborator || !collaborator.id) {
         // No revelar si el email existe o no por seguridad, pero sí loguearlo.
-        console.warn(`Solicitud de restablecimiento para email no encontrado o sin ID: ${email}`);
+        console.warn('Solicitud de restablecimiento para email no encontrado o sin ID: %s', email);
         // Devolver una respuesta genérica para evitar la enumeración de usuarios
         res.status(200).json({ 
           success: true, 

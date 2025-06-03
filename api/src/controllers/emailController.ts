@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import * as zohoDeskService from '../services/zohoDeskService';
-import { ZohoDeskTicketPriority } from '../services/zohoDeskService';
-import { sendEmail } from '../services/emailService'; // Importar sendEmail directamente
+import * as zohoDeskService from '../services/zohoDeskService.js';
+import { ZohoDeskTicketPriority } from '../services/zohoDeskService.js';
+import { sendEmail } from '../services/emailService.js'; // Importar sendEmail directamente
+import { generateTicketConfirmationEmail, TicketConfirmationData } from '../services/emailTemplateService.js';
 
 interface SupportTicketPayload {
   userEmail: string;
@@ -61,16 +62,21 @@ export async function createSupportTicket(req: Request, res: Response, next: Nex
 
     const ticketResult = await zohoDeskService.createZohoDeskTicket(ticketData);
 
-    // Enviar confirmación por correo electrónico al usuario
-    const confirmationSubject = `Confirmación de Ticket de Soporte #${ticketResult.ticketNumber}`;
-    const confirmationHtml = `
-      <p>Hola ${userName},</p>
-      <p>Hemos recibido tu solicitud de soporte. Tu número de ticket es <strong>${ticketResult.ticketNumber}</strong>.</p>
-      <p>Categoría reportada: ${category || 'No especificada'}</p>
-      <p>Puedes ver el estado de tu ticket y las actualizaciones aquí: <a href="${ticketResult.webUrl}">${ticketResult.webUrl}</a></p>
-      <p>Nos pondremos en contacto contigo lo antes posible.</p>
-      <p>Gracias,<br>El equipo de Coacharte</p>
-    `;
+    // Preparar datos para la plantilla de email
+    const emailData: TicketConfirmationData = {
+      userName,
+      ticketNumber: ticketResult.ticketNumber,
+      subject,
+      category: category || 'general',
+      priority: priority || 'Medium',
+      message,
+      webUrl: ticketResult.webUrl,
+      userEmail
+    };
+
+    // Generar email HTML profesional usando la plantilla
+    const confirmationSubject = `✅ Confirmación de Ticket de Soporte #${ticketResult.ticketNumber} - Coacharte`;
+    const confirmationHtml = generateTicketConfirmationEmail(emailData);
 
     await sendEmail({
       to: userEmail,

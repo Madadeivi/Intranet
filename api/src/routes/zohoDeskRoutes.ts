@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as zohoDeskController from '../controllers/zohoDeskController';
+import * as zohoDeskController from '../controllers/zohoDeskController.js';
 
 const router = Router();
 

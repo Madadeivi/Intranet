@@ -113,9 +113,6 @@ const Home: React.FC = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setUserInfo({ ...parsed, email: parsed.email || '' });
-      console.log('Datos de usuario cargados:', parsed); // Depuración
-    } else {
-      console.log('No se encontraron datos de usuario.'); // Depuración
     }
   }, []);
 
@@ -243,13 +240,14 @@ const Home: React.FC = () => {
           </span>
           <span className="user-avatar">{userInfo?.initials}</span>
           <span className="user-name">{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''}</span>
-          <span className="user-dropdown-arrow" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
+          {/* Dropdown solo visible en desktop */}
+          <span className="user-dropdown-arrow desktop-only" aria-label="Más opciones" onClick={() => setDropdownOpen(v => !v)} title="Opciones de usuario">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
           {dropdownOpen && (
-            <div className="user-dropdown-menu">
+            <div className="user-dropdown-menu desktop-only">
               <button className="user-dropdown-item" onClick={handleLogout}>Cerrar sesión</button>
             </div>
           )}
@@ -277,7 +275,15 @@ const Home: React.FC = () => {
               {item.label}
             </a>
           ))}
-          {/* Considerar añadir "Cerrar Sesión" aquí también o solo en el dropdown de usuario */}
+          <button 
+            className="mobile-logout-button"
+            onClick={() => {
+              handleLogout();
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Cerrar Sesión
+          </button>
         </div>
       )}
 
@@ -378,7 +384,7 @@ const Home: React.FC = () => {
                     <span className="notice-date">15 Jun 2025</span>
                     <h4>Día del padre</h4>
                     <p>Féliz día a los papás Coacharteanos!!!</p>
-                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Banner día del padre', detail: 'Hoy celebramos a los papás que forman parte de nuestra organización.\nA ustedes, que equilibran reuniones, proyectos y responsabilidades con su papel más importante: ser guías, protectores y ejemplo de dedicación para sus familias.\n\n**¡Feliz Día del Padre!** De todos los que hacemos Coacharte.' }); }}>Ver más</a>
+                    <a href="#" onClick={e => { e.preventDefault(); setNoticeModal({ open: true, title: 'Día del padre', detail: 'Hoy celebramos a los papás que forman parte de nuestra organización.\nA ustedes, que equilibran reuniones, proyectos y responsabilidades con su papel más importante: ser guías, protectores y ejemplo de dedicación para sus familias.\n\n**¡Feliz Día del Padre!** De todos los que hacemos Coacharte.' }); }}>Ver más</a>
                   </div>
                 </div>
                 <div className="notice-card">

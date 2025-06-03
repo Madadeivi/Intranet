@@ -66,7 +66,7 @@ const LoginForm: React.FC = () => {
           });
           setTimeout(() => {
             navigate('/set-new-password');
-          }, 1000);
+          }, 800);
         } else if (result.token && result.user) {
           // Inicio de sesión normal, el token ya se guarda en authService si no hay cambio de contraseña
           // coacharteUserInfo ya se guardó antes
@@ -76,7 +76,7 @@ const LoginForm: React.FC = () => {
           });
           setTimeout(() => {
             navigate('/home');
-          }, 1000);
+          }, 800);
           setEmail('');
           setPassword('');
         } else {
@@ -87,10 +87,17 @@ const LoginForm: React.FC = () => {
           });
         }
       } else {
-        setMessage({ 
-          text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 
-          type: 'error' 
-        });
+        if (result.code === 'INACTIVE_ACCOUNT') {
+          setMessage({ 
+            text: 'Cuenta inactiva. Por favor contacte al administrador.', 
+            type: 'error' 
+          });
+        } else {
+          setMessage({ 
+            text: result.message || 'Fallo de inicio de sesión, revise sus credenciales.', 
+            type: 'error' 
+          });
+        }
       }
     } catch (error) {
       setMessage({ 
@@ -161,8 +168,3 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
-
-/* Si quieres mostrar las iniciales en el avatar, reemplaza el logo/avatar por:
-<span className="user-avatar">{initials}</span>
-*/
-

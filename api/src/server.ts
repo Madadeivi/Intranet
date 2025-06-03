@@ -33,7 +33,7 @@ export default app;
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3001;
   app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`📡 Health check disponible en http://localhost:${PORT}/health`);
+    console.log('🚀 Servidor corriendo en http://localhost:%s', PORT);
+    console.log('📡 Health check disponible en http://localhost:%s/health', PORT);
   });
 }

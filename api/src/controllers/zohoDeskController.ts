@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as zohoDeskService from '../services/zohoDeskService';
+import * as zohoDeskService from '../services/zohoDeskService.js';
 
 /**
  * Controlador para crear un nuevo ticket en Zoho Desk.

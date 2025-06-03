@@ -156,7 +156,7 @@ export async function listZohoDeskDepartments(): Promise<any> {
 
   const token = await getZohoAccessToken();
   const requestUrl = `${ZOHO_DESK_API_URL}/departments`;
-  console.log(`[ZohoDeskService] Intentando llamar a Zoho Desk API en: ${requestUrl} con OrgID: ${ZOHO_DESK_ORG_ID}`); // Loguear la URL y OrgID
+  console.log('[ZohoDeskService] Intentando llamar a Zoho Desk API en: %s con OrgID: %s', requestUrl, ZOHO_DESK_ORG_ID); // Loguear la URL y OrgID
 
   try {
     const response = await axios.get(
