@@ -16,8 +16,8 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
-  credentials: true
+  origin: process.env.CLIENT_URL ? process.env.CLIENT_URL : [],
+  credentials: !!process.env.CLIENT_URL
 }));
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
