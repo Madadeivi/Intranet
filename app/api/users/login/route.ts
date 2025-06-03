@@ -1,19 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('Login attempt:', body);
     
-    return NextResponse.json({ 
-      message: 'Login endpoint working', 
-      receivedData: body,
+    return Response.json({ 
+      message: 'Login working', 
+      email: body.email,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Login error:', error);
-    return NextResponse.json(
-      { error: 'Invalid request body' }, 
+    return Response.json(
+      { error: 'Invalid JSON' }, 
       { status: 400 }
     );
   }
