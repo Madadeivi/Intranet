@@ -1,3 +1,10 @@
 dist/
 !.vercel
 !.vercelignore
+api/src/
+api/dist/
+api/node_modules/
+api/test-*
+api/*.test.ts
+api/*.spec.ts
+api/.env*
