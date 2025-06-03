@@ -4,18 +4,16 @@ dist/
 build/
 .vercel/
 *.log
-
-# OS y IDE files
 .DS_Store
 .vscode/
 .idea/
-.git/
-
-# Environment files
 .env*
 !.env.example
 
-# CRÍTICO: Excluir TODO el directorio api/src para evitar detección de funciones
+# CRÍTICO: Excluir el directorio client completo (es una app React separada)
+client/
+
+# Excluir TODO el directorio api/src para evitar detección de funciones
 api/src/
 
 # Excluir archivos de configuración en api/
@@ -36,7 +34,7 @@ api/test-*
 *.md
 docs/
 
-# SOLO permitir el punto de entrada principal
+# SOLO permitir el punto de entrada principal de la API
 api/*.ts
 api/*.js
 !api/index.ts

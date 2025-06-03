@@ -1,12 +1,8 @@
 {
-  "name": "intranet-coacharte",
+  "name": "intranet-coacharte-api",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "client",
-    "api"
-  ],
-  "description": "Intranet for Coacharte - monorepo",
+  "description": "API for Coacharte Intranet",
   "engines": {
     "node": ">=18.0.0"
   },

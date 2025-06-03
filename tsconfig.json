@@ -33,15 +33,16 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "app/**/*",
-    "api/**/*"
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "api/index.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "client/node_modules",
-    "api/node_modules"
+    "client/**/*",
+    "client/",
+    "api/node_modules",
+    "api/src/"
   ]
 }
