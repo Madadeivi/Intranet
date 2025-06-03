@@ -1,4 +1,3 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -33,7 +32,7 @@ app.use('*', (req: any, res: any) => {
   res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
   return app(req, res);
 }
