@@ -2,7 +2,7 @@
   "name": "intranet-api",
   "version": "1.0.0",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "dist/server.js",
   "engines": {
     "node": ">=18.0.0"
   },
