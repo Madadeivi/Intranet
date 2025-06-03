@@ -10,7 +10,8 @@ import { errorHandler } from './src/middleware/errorHandler.js';
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+const allowedOrigins = ['https://example.com', 'https://another-example.com'];
+app.use(cors({ origin: allowedOrigins }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
