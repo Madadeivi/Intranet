@@ -1,13 +1,29 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+import routes from './src/routes/index.js';
+import { errorHandler } from './src/middleware/errorHandler.js';
+
+const app = express();
+
+app.use(helmet());
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/', routes);
+
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.use(errorHandler);
+
+export default function handler(req: VercelRequest, res: VercelResponse) {
   console.log('API called:', req.method, req.url);
-  
-  try {
-    const { default: app } = await import('./src/server.js');
-    return app(req as any, res as any);
-  } catch (error) {
-    console.error('Error importing server:', error);
-    res.status(500).json({ error: 'Server import failed' });
-  }
+  return app(req as any, res as any);
 }
