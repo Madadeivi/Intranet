@@ -1,8 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -14,12 +14,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: any, res: any) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // Login básico para testing
-app.post('/users/login', (req, res) => {
+app.post('/users/login', (req: any, res: any) => {
   console.log('Login attempt:', req.body);
   res.json({ 
     message: 'Login endpoint working', 
@@ -29,11 +29,11 @@ app.post('/users/login', (req, res) => {
 });
 
 // Catch-all
-app.use('*', (req, res) => {
+app.use('*', (req: any, res: any) => {
   res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   console.log('API called:', req.method, req.url);
-  return app(req as any, res as any);
+  return app(req, res);
 }
