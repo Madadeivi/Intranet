@@ -1,25 +1,27 @@
-import './loadEnv.js'; // <--- IMPORTAR PRIMERO
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import { errorHandler } from './middleware/errorHandler.js';
-import routes from './routes/index.js';
+// Cargar variables de entorno PRIMERO
+require('./loadEnv'); // CommonJS syntax
 
-// Cargar variables de entorno
-require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+
+// Importar tipos de Express
+import { Request, Response, NextFunction } from 'express';
 
 const app = express();
 
-// Middlewares
+// Middlewares de seguridad
 app.use(helmet({
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false // Ajuste común para Vercel
 }));
+
 app.use(cors({
-  origin: process.env.CLIENT_URL ? process.env.CLIENT_URL : [],
-  credentials: !!process.env.CLIENT_URL
+  origin: process.env.CLIENT_URL || '*', // Ser más específico en producción
+  credentials: true
 }));
-app.use(morgan('combined'));
+
+app.use(morgan('combined')); // 'combined' es más detallado para producción
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -28,54 +30,55 @@ const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // máximo 100 requests por ventana
-  message: 'Too many requests from this IP'
+  standardHeaders: true, // Devuelve información del rate limit en las cabeceras `RateLimit-*`
+  legacyHeaders: false, // Deshabilita las cabeceras `X-RateLimit-*`
+  message: 'Too many requests from this IP, please try again after 15 minutes'
 });
-app.use('/api/', limiter);
+app.use('/', limiter); // Aplicar a todas las rutas bajo /api (ya que Vercel rutea /api a este handler)
 
-// Rutas
-app.use('/api', routes);
-
-// Health check
-app.get('/health', (_req, res) => {
-  res.json({ 
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Rutas básicas (expandiremos después)
-app.post('/users/login', (req, res) => {
+// Login básico para testing
+app.post('/users/login', (req: Request, res: Response) => {
   console.log('Login attempt:', req.body);
-  res.json({ 
+  res.status(200).json({ 
     message: 'Login endpoint working', 
     receivedData: req.body,
     timestamp: new Date().toISOString()
   });
 });
 
-// Middleware de manejo de errores
-app.use((err, req, res, next) => {
-  console.error('Error stack:', err.stack);
-  res.status(500).json({
+// Middleware de manejo de errores (debe ser el último middleware de app.use ANTES del 404)
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => { // _next es necesario para que Express lo reconozca como error handler
+  console.error('Error Timestamp:', new Date().toISOString());
+  console.error('Error Path:', _req.path);
+  console.error('Error Message:', err.message);
+  console.error('Error Stack:', err.stack);
+  
+  res.status(err.status || 500).json({
     error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler (debe ir al FINAL de toda la pila de middlewares y rutas)
+app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ 
     error: 'Route not found', 
-    path: req.path,
+    path: req.originalUrl, // Usar originalUrl para ver la ruta completa
     method: req.method 
   });
 });
 
-// Exportar la app para Vercel
-export default app;
+// Exportar usando CommonJS
+module.exports = app;
 
-// Solo para desarrollo local
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3001;
   app.listen(PORT, () => {

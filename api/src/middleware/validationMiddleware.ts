@@ -89,3 +89,18 @@ export const setPasswordSchema = Joi.object({
     'any.required': 'La nueva contraseña es obligatoria.'
   })
 });
+
+// Middleware para validación
+export const validate = (schema: Joi.ObjectSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { error } = schema.validate(req.body, { abortEarly: false, allowUnknown: true });
+    if (error) {
+      const errors = error.details.map((detail: Joi.ValidationErrorItem) => ({ // Tipar 'detail' aquí
+        message: detail.message.replace(/['"]/g, ''),
+        path: detail.path.join('.'),
+      }));
+      return res.status(400).json({ errors });
+    }
+    next();
+  };
+};
