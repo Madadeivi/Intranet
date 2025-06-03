@@ -13,7 +13,6 @@ const app = express();
 
 // Middlewares
 app.use(helmet({
-  contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false
 }));
 app.use(cors({
