@@ -1,14 +1,9 @@
 {
   "version": 2,
-  "functions": {
-    "api/[...path].ts": {
-      "maxDuration": 30
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/[...path].ts"
+      "dest": "/api"
     },
     {
       "handle": "filesystem"
@@ -17,5 +12,7 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/dist"
 }
