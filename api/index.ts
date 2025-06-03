@@ -36,11 +36,13 @@ app.use('*', (req: any, res: any) => {
   });
 });
 
-export default function handler(req: any, res: any) {
+const server = require('./src/server');
+
+module.exports = function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
   
   try {
-    return app(req, res);
+    return server(req, res);
   } catch (error) {
     console.error('Handler error:', error);
     res.status(500).json({ 

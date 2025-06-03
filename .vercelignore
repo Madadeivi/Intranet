@@ -1,73 +1,33 @@
-# Node modules
+# Node modules y build outputs
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Build outputs
 dist/
 build/
 .vercel/
+*.log
 
 # Environment files
 .env*
 !.env.example
 
-# Logs
-logs/
-*.log
-
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# Dependency directories
-api/node_modules/
-api/dist/
-
-# Excluir TODA la carpeta src para evitar que Vercel detecte funciones
-api/src/
-
-# Excluir archivos de configuración
+# Excluir archivos de configuración que podrían generar funciones
 api/tsconfig.json
-api/package.json
 api/.env*
-api/dist/
-api/node_modules/
 
 # Test files
 api/**/*.test.ts
 api/**/*.spec.ts
 api/test-*
 
-# Mantener SOLO el punto de entrada
-api/*.ts
-api/*.js
-!api/index.ts
-
-# OS generated files
+# OS y IDE files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# Exclude non-essential files in the API source directory
-api/src/**/*.test.ts
-api/src/**/*.spec.ts
-api/src/test-*
-!api/src/**/*.ts
+# MANTENER SOLO el punto de entrada principal
+api/*.ts
+api/*.js
+!api/index.ts
+
+# NO excluir api/src/ completamente ya que index.ts lo necesita
