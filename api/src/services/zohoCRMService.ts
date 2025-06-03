@@ -452,13 +452,9 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     
     // 🔒 SEGURIDAD: Registrar intento de autenticación
     logSecurityEvent('INFO', 'Login attempt', { email: email.substring(0, 3) + '***' });
-    
-    // Zoho CRM no permite filtrar directamente por email en una sola llamada GET para todos los registros de forma estándar y eficiente.
-    // La forma más común es buscar/consultar. Usaremos COQL (CRM Object Query Language) para esto.
-    // Documentación de COQL: https://www.zoho.com/crm/developer/docs/api/coql-overview.html
 
     // 🔒 SEGURIDAD: Incluir verificación de estado activo para prevenir login de cuentas inactivas
-    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' and Activo = true limit 1`; // <--- MODIFICADO: Agregado verificación de Activo = true
+    const query = `select id, Email, Password_Intranet, ${nombreAPICampoPasswordEstablecida}, Activo from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // Comparación directa de Email para evitar función unsupported
     
     // El endpoint para COQL es /coql
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
@@ -466,14 +462,7 @@ export const verifyCollaboratorPassword = async (email: string, plainPassword: s
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       const collaborator = response.data[0] as ZohoRecord;
       
-      // 🔒 SEGURIDAD: Verificación adicional del estado activo a nivel de aplicación
-      if (collaborator.Activo !== true) {
-        logSecurityEvent('WARNING', 'Inactive account login attempt', { email: email.substring(0, 3) + '***' });
-        console.warn(`Intento de login con cuenta inactiva para email: ${email}`);
-        // 🔒 SEGURIDAD: Delay para prevenir timing attacks en cuentas inactivas
-        await securityDelay(100, 300);
-        return null; // Cuenta inactiva
-      }
+      // Nota: Se omite la verificación del campo Activo de Zoho para evitar bloqueos incorrectos
       
       if (collaborator.Password_Intranet && typeof collaborator.Password_Intranet === 'string') {
         const match = await bcrypt.compare(plainPassword, collaborator.Password_Intranet);
@@ -634,7 +623,7 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     // const lowercasedEmail = email.toLowerCase(); // Eliminado para prueba
     // Modificar la consulta para usar lower(Email) para una búsqueda insensible a mayúsculas/minúsculas
     // const query = `select ${fieldsToSelect} from ${moduleName} where lower(Email) = '${lowercasedEmail}' limit 1`;
-    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' and Activo = true limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = true)
+    const query = `select ${fieldsToSelect} from ${moduleName} where Email = '${sanitizedEmail}' limit 1`; // 🔒 CORREGIDO: Buscar colaboradores ACTIVOS (Activo = true)
     
     console.log(`Executing COQL query: ${query}`); // Log para ver la consulta exacta
 

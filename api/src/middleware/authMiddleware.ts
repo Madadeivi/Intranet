@@ -20,7 +20,6 @@ export interface AuthenticatedRequest extends Request {
 export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   let token;
   
-  // Verificar si hay header de autorización con Bearer token
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
