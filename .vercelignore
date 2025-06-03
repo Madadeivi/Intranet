@@ -1,7 +1,5 @@
-# Build outputs y cache
 node_modules/
-dist/
-build/
+.next/
 .vercel/
 *.log
 .DS_Store
@@ -10,32 +8,9 @@ build/
 .env*
 !.env.example
 
-# CRÍTICO: Excluir el directorio client completo (es una app React separada)
+# Excluir el directorio client completo (es una app React separada)
 client/
-
-# Excluir TODO el directorio api/src para evitar detección de funciones
-api/src/
-
-# Excluir archivos de configuración en api/
-api/tsconfig.json
-api/package.json
-api/package-lock.json
-api/yarn.lock
-api/.env*
-api/dist/
-api/node_modules/
-
-# Test files
-api/**/*.test.ts
-api/**/*.spec.ts
-api/test-*
 
 # Documentación
 *.md
 docs/
-
-# SOLO permitir el punto de entrada principal de la API
-api/*.ts
-api/*.js
-!api/index.ts
-!api/index.js

@@ -5,7 +5,7 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-    dirs: ['app', 'api'], // Solo revisar app/ y api/, ignorar client/
+    dirs: ['app'], // Solo revisar app/
   },
   // Excluir explícitamente el directorio client
   webpack: (config) => {

@@ -41,14 +41,11 @@
     "next-env.d.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
-    "api/index.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "client/**/*",
-    "client/",
-    "api/node_modules",
-    "api/src/"
+    "client/"
   ]
 }
