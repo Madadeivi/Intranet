@@ -36,7 +36,7 @@ app.use('*', (req: any, res: any) => {
   });
 });
 
-module.exports = function handler(req: any, res: any) {
+export default function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
   
   try {
