@@ -592,7 +592,17 @@ export const setCollaboratorPasswordByEmail = async (email: string, newPlainPass
       return false; // Colaborador no encontrado
     }
 
-    const collaboratorId = coqlResponse.data[0].id;
+    // 🔒 SEGURIDAD: Validación adicional del primer elemento del array
+    const firstCollaborator = coqlResponse.data[0];
+    if (!firstCollaborator || !firstCollaborator.id) {
+      logSecurityEvent('WARNING', 'Invalid collaborator data structure', { 
+        email: email.substring(0, 3) + '***' 
+      });
+      await securityDelay(100, 300);
+      return false;
+    }
+
+    const collaboratorId = firstCollaborator.id;
 
     // 2. Hashear la nueva contraseña
     const hashedPassword = await bcrypt.hash(newPlainPassword, SALT_ROUNDS);
@@ -685,12 +695,21 @@ export const getCollaboratorDetailsByEmail = async (email: string): Promise<Zoho
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      // 🔒 SEGURIDAD: Validación adicional del primer elemento
+      const firstCollaborator = response.data[0];
+      if (!firstCollaborator || !firstCollaborator.id) {
+        logSecurityEvent('WARNING', 'Invalid collaborator data structure in details', { 
+          email: email.substring(0, 3) + '***' 
+        });
+        return null;
+      }
+      
       // 🔒 SEGURIDAD: Detalles de colaborador encontrados
       logSecurityEvent('INFO', 'Collaborator details found', { 
         email: email.substring(0, 3) + '***',
-        collaboratorId: response.data[0].id 
+        collaboratorId: firstCollaborator.id 
       });
-      return response.data[0] as ZohoRecord;
+      return firstCollaborator as ZohoRecord;
     }
     
     // 🔒 SEGURIDAD: Colaborador no encontrado
@@ -776,7 +795,16 @@ export const getCollaboratorByResetToken = async (token: string): Promise<ZohoRe
     const response = await makeZohoAPIRequest('post', '/coql', { select_query: query });
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      const collaborator = response.data[0] as ZohoRecord;
+      // 🔒 SEGURIDAD: Validación adicional del primer elemento
+      const firstCollaborator = response.data[0];
+      if (!firstCollaborator || !firstCollaborator.id || !firstCollaborator.Email) {
+        logSecurityEvent('WARNING', 'Invalid collaborator data structure in reset token validation', { 
+          tokenPrefix: token.substring(0, 8) + '***' 
+        });
+        return null;
+      }
+      
+      const collaborator = firstCollaborator as ZohoRecord;
       const expiryTime = collaborator[PASSWORD_RESET_EXPIRY_FIELD] ? new Date(collaborator[PASSWORD_RESET_EXPIRY_FIELD]).getTime() : 0;
       
       if (expiryTime > Date.now()) {
