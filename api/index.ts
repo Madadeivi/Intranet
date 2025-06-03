@@ -36,7 +36,16 @@ app.use('*', (req: any, res: any) => {
   });
 });
 
-export default function handler(req: Request, res: Response) {
+module.exports = function handler(req: any, res: any) {
   console.log('API called:', req.method, req.url);
-  return app(req, res);
-}
+  
+  try {
+    return app(req, res);
+  } catch (error) {
+    console.error('Handler error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      timestamp: new Date().toISOString()
+    });
+  }
+};
