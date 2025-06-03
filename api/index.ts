@@ -1,7 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import app from './src/server';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('API called:', req.method, req.url);
-  return app(req as any, res as any);
+  
+  try {
+    const { default: app } = await import('./src/server.js');
+    return app(req as any, res as any);
+  } catch (error) {
+    console.error('Error importing server:', error);
+    res.status(500).json({ error: 'Server import failed' });
+  }
 }
