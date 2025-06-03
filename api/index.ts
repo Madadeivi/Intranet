@@ -4,8 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import routes from './src/routes/index.js';
-import { errorHandler } from './src/middleware/errorHandler.js';
+import routes from './src/routes/index';
+import { errorHandler } from './src/middleware/errorHandler';
 
 const app = express();
 
